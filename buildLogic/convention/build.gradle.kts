@@ -28,6 +28,14 @@ gradlePlugin {
             id = "tasky.android.library.compose"
             implementationClass = "AndroidLibraryComposeConventionPlugin"
         }
+        register("androidComposeUiLibrary") {
+            id = "tasky.android.library.compose.ui"
+            implementationClass = "AndroidComposeUiConventionPlugin"
+        }
+        register("JvmLibrary") {
+            id = "tasky.jvm.library"
+            implementationClass = "JvmLibraryConventionPlugin"
+        }
     }
 }
 

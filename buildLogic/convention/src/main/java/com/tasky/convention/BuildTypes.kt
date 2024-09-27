@@ -15,10 +15,6 @@ fun Project.configureBuildTypes(
 
     commonExtension.run {
 
-        buildFeatures {
-            compose = true
-        }
-
         when (extension) {
             Extension.LIBRARY -> {
                 extensions.configure<LibraryExtension> {

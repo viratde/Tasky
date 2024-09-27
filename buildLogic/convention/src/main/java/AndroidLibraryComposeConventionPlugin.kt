@@ -1,10 +1,12 @@
 import com.android.build.api.dsl.LibraryExtension
 import com.tasky.convention.Extension
+import com.tasky.convention.configureAndroidCompose
 import com.tasky.convention.configureBuildTypes
 import com.tasky.convention.configureKotlinAndroid
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
 
 
 class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
@@ -14,22 +16,12 @@ class AndroidLibraryComposeConventionPlugin : Plugin<Project> {
         target.run {
 
             pluginManager.run {
-                apply("com.android.application")
-                apply("org.jetbrains.kotlin.android")
+                apply("tasky.android.library")
+                apply("org.jetbrains.kotlin.plugin.compose")
             }
 
-
-
-            extensions.configure<LibraryExtension> {
-
-                defaultConfig {
-                    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-                }
-
-                configureKotlinAndroid(this)
-                configureBuildTypes(this, Extension.APPLICATION)
-
-            }
+            val extension = extensions.getByType<LibraryExtension>()
+            configureAndroidCompose(extension)
 
         }
 
