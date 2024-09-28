@@ -44,7 +44,7 @@ fun NavGraphBuilder.authGraph(
 
             SignUpScreenRoot(
                 onBack = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                 onNavigateToAgendaScreen = {
 

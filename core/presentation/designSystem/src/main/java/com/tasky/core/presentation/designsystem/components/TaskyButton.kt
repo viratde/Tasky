@@ -19,8 +19,8 @@ import com.tasky.core.presentation.designsystem.ui.inter
 
 @Composable
 fun TaskyButton(
-    modifier: Modifier = Modifier,
     label: String,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onClick: () -> Unit = {}
 ) {

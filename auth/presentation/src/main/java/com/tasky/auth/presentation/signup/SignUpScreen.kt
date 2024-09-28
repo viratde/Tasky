@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import com.tasky.auth.presentation.R
 import com.tasky.core.presentation.designsystem.components.TaskyButton
 import com.tasky.core.presentation.designsystem.components.TaskyPasswordTextField
+import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.components.TaskySuccessIcon
 import com.tasky.core.presentation.designsystem.components.TaskyTextField
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
@@ -61,111 +62,111 @@ fun SignUpScreen(
     onAction: (SignUpAction) -> Unit
 ) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(TaskyBlack)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-    ) {
-
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.create_your_account),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = TaskyWhite,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = inter
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
-
-
+    TaskyScaffold { innerPadding ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 30.dp,
-                        topEnd = 30.dp,
-                    )
-                )
-                .background(TaskyWhite)
-                .padding(
-                    vertical = 48.dp,
-                    horizontal = 16.dp
-                )
-                .fillMaxWidth()
+                .fillMaxSize()
+                .padding(innerPadding)
+                .background(TaskyBlack)
         ) {
 
-            TaskyTextField(
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                value = state.name,
-                onValueChange = {
-                    onAction(SignUpAction.OnNameChange(it))
-                },
-                placeHolder = stringResource(id = R.string.name),
-                endIcon = {
-                    TaskySuccessIcon(state.isValidName)
-                }
-            )
+                    .fillMaxWidth()
+                    .height(140.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.create_your_account),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = TaskyWhite,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = inter
+                    ),
+                    textAlign = TextAlign.Center
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            TaskyTextField(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                value = state.email,
-                onValueChange = {
-                    onAction(SignUpAction.OnEmailChange(it))
-                },
-                placeHolder = stringResource(id = R.string.email_address),
-                endIcon = {
-                    TaskySuccessIcon(state.isValidEmail)
-                }
-            )
+                    .weight(1f)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 30.dp,
+                            topEnd = 30.dp,
+                        )
+                    )
+                    .background(TaskyWhite)
+                    .padding(
+                        vertical = 48.dp,
+                        horizontal = 16.dp
+                    )
+                    .fillMaxWidth()
+            ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+                TaskyTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.name,
+                    onValueChange = {
+                        onAction(SignUpAction.OnNameChange(it))
+                    },
+                    placeHolder = stringResource(id = R.string.name),
+                    endIcon = if (state.isValidName) ({
+                        TaskySuccessIcon()
+                    }) else null
+                )
 
-            TaskyPasswordTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                value = state.password,
-                onValueChange = {
-                    onAction(SignUpAction.OnPasswordChange(it))
-                },
-                isVisible = state.isPasswordVisible,
-                onToggleVisibility = {
-                    onAction(SignUpAction.OnTogglePasswordVisibility)
-                },
-                placeHolder = stringResource(id = R.string.password),
-            )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.height(16.dp))
+                TaskyTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.email,
+                    onValueChange = {
+                        onAction(SignUpAction.OnEmailChange(it))
+                    },
+                    placeHolder = stringResource(id = R.string.email_address),
+                    endIcon = if (state.isValidEmail) ({
+                        TaskySuccessIcon()
+                    }) else null
+                )
 
-            TaskyButton(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = stringResource(id = R.string.sign_up),
-                onClick = {
-                    onAction(SignUpAction.OnSignUp)
-                }
-            )
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Spacer(modifier = Modifier.weight(1f))
+                TaskyPasswordTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.password,
+                    onValueChange = {
+                        onAction(SignUpAction.OnPasswordChange(it))
+                    },
+                    isVisible = state.isPasswordVisible,
+                    onToggleVisibility = {
+                        onAction(SignUpAction.OnTogglePasswordVisibility)
+                    },
+                    placeHolder = stringResource(id = R.string.password),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TaskyButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = stringResource(id = R.string.sign_up),
+                    onClick = {
+                        onAction(SignUpAction.OnSignUp)
+                    }
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
         }
-
     }
-
 }
 
 

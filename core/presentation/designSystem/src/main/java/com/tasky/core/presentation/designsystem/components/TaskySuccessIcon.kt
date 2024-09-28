@@ -13,18 +13,15 @@ import com.tasky.core.presentation.designsystem.ui.TaskyGreen
 
 @Composable
 fun TaskySuccessIcon(
-    isVisible: Boolean = false,
 ) {
-    if (isVisible) {
-        Box(
-            modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = CheckedIcon,
-                contentDescription = null,
-                tint = TaskyGreen
-            )
-        }
+    Box(
+        modifier = Modifier.size(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = CheckedIcon,
+            contentDescription = null,
+            tint = TaskyGreen
+        )
     }
 }

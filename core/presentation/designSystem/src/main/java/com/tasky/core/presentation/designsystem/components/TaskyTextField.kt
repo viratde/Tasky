@@ -37,10 +37,10 @@ import com.tasky.core.presentation.designsystem.ui.inter
 
 @Composable
 fun TaskyTextField(
-    modifier: Modifier = Modifier,
     value: String,
-    onValueChange: (String) -> Unit,
     placeHolder: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
     error: Boolean = false,
     enabled: Boolean = true,
     endIcon: (@Composable () -> Unit)? = null,

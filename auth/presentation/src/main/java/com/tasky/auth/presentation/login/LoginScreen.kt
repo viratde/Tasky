@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.tasky.auth.presentation.R
 import com.tasky.core.presentation.designsystem.components.TaskyButton
 import com.tasky.core.presentation.designsystem.components.TaskyPasswordTextField
+import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.components.TaskySuccessIcon
 import com.tasky.core.presentation.designsystem.components.TaskyTextField
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
@@ -67,137 +68,137 @@ fun LoginScreen(
     onAction: (LoginAction) -> Unit
 ) {
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(TaskyBlack)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-    ) {
-
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(140.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.welcome_back),
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = TaskyWhite,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = inter
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
-
-
+    TaskyScaffold {innerPadding ->
         Column(
             modifier = Modifier
-                .weight(1f)
-                .clip(
-                    RoundedCornerShape(
-                        topStart = 30.dp,
-                        topEnd = 30.dp,
-                    )
-                )
-                .background(TaskyWhite)
-                .padding(
-                    vertical = 48.dp,
-                    horizontal = 16.dp
-                )
-                .fillMaxWidth()
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(TaskyBlack)
         ) {
 
-
-            TaskyTextField(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                value = state.email,
-                onValueChange = {
-                    onAction(LoginAction.OnEmailChange(it))
-                },
-                placeHolder = stringResource(id = R.string.email_address),
-                endIcon = {
-                    TaskySuccessIcon(state.isValidEmail)
-                }
-            )
+                    .fillMaxWidth()
+                    .height(140.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.welcome_back),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = TaskyWhite,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = inter
+                    ),
+                    textAlign = TextAlign.Center
+                )
+            }
 
-            Spacer(modifier = Modifier.height(16.dp))
 
-            TaskyPasswordTextField(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                value = state.password,
-                onValueChange = {
-                    onAction(LoginAction.OnPasswordChange(it))
-                },
-                isVisible = state.isPasswordVisible,
-                onToggleVisibility = {
-                    onAction(LoginAction.OnTogglePasswordVisibility)
-                },
-                placeHolder = stringResource(id = R.string.password),
-                error = state.isPasswordError,
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TaskyButton(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = stringResource(id = R.string.log_in),
-                onClick = {
-                    onAction(LoginAction.OnLogin)
-                }
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
-
-            val annotatedString = buildAnnotatedString {
-                withStyle(
-                    SpanStyle(
-                        color = TaskyTextFieldPlaceHolderColor,
-                        fontFamily = inter,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp
+                    .weight(1f)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 30.dp,
+                            topEnd = 30.dp,
+                        )
                     )
-                ) {
-                    append(stringResource(id = R.string.donot_have_an_account) + " ")
-                }
-                withLink(
-                    link = LinkAnnotation.Clickable(
-                        linkInteractionListener = {
-                            onAction(LoginAction.OnNavigateToSignUpScreen)
-                        },
-                        tag = stringResource(id = R.string.sign_up)
+                    .background(TaskyWhite)
+                    .padding(
+                        vertical = 48.dp,
+                        horizontal = 16.dp
                     )
-                ) {
+                    .fillMaxWidth()
+            ) {
+
+
+                TaskyTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.email,
+                    onValueChange = {
+                        onAction(LoginAction.OnEmailChange(it))
+                    },
+                    placeHolder = stringResource(id = R.string.email_address),
+                    endIcon = if (state.isValidEmail) ({
+                        TaskySuccessIcon()
+                    }) else null
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TaskyPasswordTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    value = state.password,
+                    onValueChange = {
+                        onAction(LoginAction.OnPasswordChange(it))
+                    },
+                    isVisible = state.isPasswordVisible,
+                    onToggleVisibility = {
+                        onAction(LoginAction.OnTogglePasswordVisibility)
+                    },
+                    placeHolder = stringResource(id = R.string.password),
+                    error = state.isPasswordError,
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TaskyButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    label = stringResource(id = R.string.log_in),
+                    onClick = {
+                        onAction(LoginAction.OnLogin)
+                    }
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+
+                val annotatedString = buildAnnotatedString {
                     withStyle(
                         SpanStyle(
-                            color = TaskyBlue,
+                            color = TaskyTextFieldPlaceHolderColor,
                             fontFamily = inter,
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.sp
                         )
                     ) {
-                        append(stringResource(id = R.string.sign_up))
+                        append(stringResource(id = R.string.donot_have_an_account) + " ")
+                    }
+                    withLink(
+                        link = LinkAnnotation.Clickable(
+                            linkInteractionListener = {
+                                onAction(LoginAction.OnNavigateToSignUpScreen)
+                            },
+                            tag = stringResource(id = R.string.sign_up)
+                        )
+                    ) {
+                        withStyle(
+                            SpanStyle(
+                                color = TaskyBlue,
+                                fontFamily = inter,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 14.sp
+                            )
+                        ) {
+                            append(stringResource(id = R.string.sign_up))
+                        }
                     }
                 }
+
+                Text(
+                    text = annotatedString,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
             }
 
-            Text(
-                text = annotatedString,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
-
         }
-
     }
 
 }
