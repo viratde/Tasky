@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.tasky.android.application.compose)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -23,6 +24,21 @@ dependencies {
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    //koin
+    implementation(libs.bundles.koin)
+    implementation(libs.bundles.koin.compose)
+
+    //projects
+    implementation(projects.auth.presentation)
+    implementation(projects.core.presentation.designSystem)
+
+    //splash screen
+    implementation(libs.androidx.core.splashscreen)
 
 
 }

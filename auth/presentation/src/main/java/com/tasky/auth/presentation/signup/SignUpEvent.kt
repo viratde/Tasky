@@ -1,6 +1,7 @@
-package com.tasky.auth.presentation.login
+package com.tasky.auth.presentation.signup
 
-sealed interface LoginEvent {
-    data object OnLoginSuccess : LoginEvent
-    data class OnShowMessage(val message: String) : LoginEvent
+sealed interface SignUpEvent {
+    data object OnSignUpSuccess : SignUpEvent
+    data class OnShowSuccessMessage(val message: String) : SignUpEvent
+    data class OnShowErrorMessage(val message: String) : SignUpEvent
 }
