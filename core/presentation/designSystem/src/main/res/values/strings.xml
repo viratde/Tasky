@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="password_visiblity">Password Visibility</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="click_to_toggle">Click to toggle</string>
+</resources>
