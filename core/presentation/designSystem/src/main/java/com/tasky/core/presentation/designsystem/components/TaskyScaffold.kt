@@ -22,15 +22,8 @@ fun TaskyScaffold(
     Scaffold(
         modifier = modifier
             .fillMaxSize()
-            .background(TaskyBlack)
-            .statusBarsPadding()
-            .navigationBarsPadding(),
-        contentWindowInsets = WindowInsets(
-            left = 0.dp,
-            bottom = 0.dp,
-            top = 0.dp,
-            right = 0.dp
-        )
+            .background(TaskyBlack),
+        containerColor = TaskyBlack
     ) { innerPadding ->
         content(innerPadding)
     }

@@ -36,6 +36,10 @@ gradlePlugin {
             id = "tasky.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
         }
+        register("JvmKtorLibrary") {
+            id = "tasky.jvm.ktor"
+            implementationClass = "JvmKtorConventionPlugin"
+        }
     }
 }
 
