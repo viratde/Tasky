@@ -1,3 +1,5 @@
 package com.tasky.core.data.networking
 
-data class AccessTokenResponse()
+data class AccessTokenResponse(
+    val accessToken:String
+)
