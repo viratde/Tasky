@@ -1,5 +1,6 @@
 package com.tasky.auth.presentation.login
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -41,14 +43,30 @@ import com.tasky.core.presentation.designsystem.ui.TaskyTextFieldPlaceHolderColo
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
+import com.tasky.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun LoginScreenRoot(
     viewModel: LoginViewModel = koinViewModel(),
+    onLoginSuccess: () -> Unit = {},
     onNavigateToSignUpScreen: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    ObserverAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            is LoginEvent.OnError -> {
+                Toast.makeText(context, event.message.asText(context), Toast.LENGTH_SHORT).show()
+            }
+
+            LoginEvent.OnLoginSuccess -> {
+                onLoginSuccess()
+            }
+        }
+    }
 
     LoginScreen(
         state = viewModel.state,
@@ -68,7 +86,7 @@ fun LoginScreen(
     onAction: (LoginAction) -> Unit
 ) {
 
-    TaskyScaffold {innerPadding ->
+    TaskyScaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -149,6 +167,8 @@ fun LoginScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = stringResource(id = R.string.log_in),
+                    isLoading = state.isLoggingIn,
+                    enabled = !state.isLoggingIn && state.isValidEmail,
                     onClick = {
                         onAction(LoginAction.OnLogin)
                     }

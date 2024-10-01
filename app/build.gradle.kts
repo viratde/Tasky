@@ -25,6 +25,9 @@ dependencies {
 
     androidTestImplementation(libs.androidx.espresso.core)
 
+    //crypto
+    implementation(libs.androidx.security.crypto.ktx)
+
     //
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
@@ -36,6 +39,9 @@ dependencies {
     //projects
     implementation(projects.auth.presentation)
     implementation(projects.core.presentation.designSystem)
+    implementation(projects.core.data)
+    implementation(projects.auth.data)
+    implementation(projects.agenda.presentation)
 
     //splash screen
     implementation(libs.androidx.core.splashscreen)

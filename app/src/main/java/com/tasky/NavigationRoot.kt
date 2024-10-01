@@ -6,8 +6,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.tasky.agenda.presentation.AgendaScreen
 import com.tasky.auth.presentation.login.LoginScreenRoot
 import com.tasky.auth.presentation.signup.SignUpScreenRoot
+import com.tasky.screens.AgendaGraph
+import com.tasky.screens.AgendaScreen
 import com.tasky.screens.AuthGraph
 import com.tasky.screens.LoginScreen
 import com.tasky.screens.SignUpScreen
@@ -19,10 +22,24 @@ fun NavigationRoot(
 
     NavHost(navController = navController, startDestination = AuthGraph) {
         authGraph(navController)
+        agendaGraph(navController)
     }
 
 }
 
+
+fun NavGraphBuilder.agendaGraph(
+    navController: NavHostController
+) {
+
+    navigation<AgendaGraph>(startDestination = AgendaScreen) {
+
+        composable<AgendaScreen> {
+            AgendaScreen()
+        }
+
+    }
+}
 
 fun NavGraphBuilder.authGraph(
     navController: NavHostController
@@ -35,6 +52,13 @@ fun NavGraphBuilder.authGraph(
             LoginScreenRoot(
                 onNavigateToSignUpScreen = {
                     navController.navigate(SignUpScreen)
+                },
+                onLoginSuccess = {
+                    navController.navigate(AgendaGraph) {
+                        popUpTo<AuthGraph> {
+                            inclusive = true
+                        }
+                    }
                 }
             )
 
@@ -46,8 +70,12 @@ fun NavGraphBuilder.authGraph(
                 onBack = {
                     navController.navigateUp()
                 },
-                onNavigateToAgendaScreen = {
-
+                onNavigateToLoginScreen = {
+                    navController.navigate(LoginScreen) {
+                        popUpTo<SignUpScreen> {
+                            inclusive = true
+                        }
+                    }
                 }
             )
 
@@ -56,3 +84,4 @@ fun NavGraphBuilder.authGraph(
     }
 
 }
+

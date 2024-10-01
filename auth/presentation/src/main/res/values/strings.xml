@@ -8,4 +8,6 @@
     <string name="password">Password</string>
     <string name="log_in">LOG IN</string>
     <string name="create_your_account">Create your account</string>
+    <string name="error_email_password_incorrect">The email or password is incorrect</string>
+    <string name="user_already_exists">A user with this email already exists.</string>
 </resources>

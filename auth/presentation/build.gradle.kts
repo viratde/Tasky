@@ -14,4 +14,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(projects.auth.domain)
+    implementation(projects.core.domain)
+
 }
