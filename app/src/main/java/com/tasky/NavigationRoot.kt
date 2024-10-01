@@ -67,10 +67,10 @@ fun NavGraphBuilder.authGraph(
         composable<SignUpScreen> {
 
             SignUpScreenRoot(
-                onBack = {
+                onBackClick = {
                     navController.navigateUp()
                 },
-                onNavigateToLoginScreen = {
+                onSignUpSuccess = {
                     navController.navigate(LoginScreen) {
                         popUpTo<SignUpScreen> {
                             inclusive = true

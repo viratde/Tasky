@@ -32,7 +32,7 @@ class SignUpViewModel(
     fun onAction(action: SignUpAction) {
         when (action) {
             SignUpAction.OnBack -> {
-
+                // handled in ui layer
             }
 
             is SignUpAction.OnEmailChange -> {

@@ -43,8 +43,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SignUpScreenRoot(
     viewModel: SignUpViewModel = koinViewModel(),
-    onBack: () -> Unit,
-    onNavigateToLoginScreen: () -> Unit
+    onBackClick: () -> Unit,
+    onSignUpSuccess: () -> Unit
 ) {
 
     val context = LocalContext.current
@@ -56,7 +56,7 @@ fun SignUpScreenRoot(
             }
 
             SignUpEvent.OnSignUpSuccess -> {
-                onNavigateToLoginScreen()
+                onSignUpSuccess()
             }
         }
     }
@@ -65,7 +65,7 @@ fun SignUpScreenRoot(
         state = viewModel.state,
         onAction = { action ->
             if (action == SignUpAction.OnBack) {
-                onBack()
+                onBackClick()
             }
             viewModel.onAction(action)
         }

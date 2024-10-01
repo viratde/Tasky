@@ -9,11 +9,11 @@ import org.koin.dsl.module
 val appModule = module {
     single<SharedPreferences> {
         EncryptedSharedPreferences(
-            androidApplication(),
-            "",
-            MasterKey(androidApplication()),
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            context = androidApplication(),
+            fileName = "auth_prefs",
+            masterKey = MasterKey(androidApplication()),
+            prefKeyEncryptionScheme = EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            prefValueEncryptionScheme = EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
     }
 }
