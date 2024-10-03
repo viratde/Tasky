@@ -1,9 +1,7 @@
 package com.tasky.core.presentation.designsystem.ui
 
-import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
-
 
 val TaskyBlack = Color(0xFF16161C)
 val TaskyDarkGrey = Color(0xFF5C5D5A)
@@ -21,10 +19,9 @@ val TaskyTextFieldPlaceHolderColor = Color(0xFFA1A4B2)
 val TaskyError = Color(0xFFFF7272)
 val TaskyBlue = Color(0xFF8E97FD)
 
-
-val taskyColorScheme = lightColorScheme(
-    primary = TaskyBlack,
-    onPrimary = TaskyWhite,
-    /// Todo Not Able to figure out other colors will do that according to need in design
-
-)
+val taskyColorScheme =
+    lightColorScheme(
+        primary = TaskyBlack,
+        onPrimary = TaskyWhite,
+        // / Todo Not Able to figure out other colors will do that according to need in design
+    )

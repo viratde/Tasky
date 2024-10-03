@@ -7,11 +7,10 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val coreDataModule = module {
+val coreDataModule =
+    module {
 
-    singleOf(::AuthInfoStorageImpl).bind<AuthInfoStorage>()
+        singleOf(::AuthInfoStorageImpl).bind<AuthInfoStorage>()
 
-    single { HttpClientFactory(get()).build() }
-
-
-}
+        single { HttpClientFactory(get()).build() }
+    }

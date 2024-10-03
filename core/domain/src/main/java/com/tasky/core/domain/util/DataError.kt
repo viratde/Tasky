@@ -1,7 +1,6 @@
 package com.tasky.core.domain.util
 
 sealed interface DataError : Error {
-
     enum class Network : DataError {
         REQUEST_TIMEOUT,
         UNAUTHORIZED,
@@ -11,11 +10,10 @@ sealed interface DataError : Error {
         PAYLOAD_TOO_LARGE,
         SERVER_ERROR,
         SERIALIZATION,
-        UNKNOWN
+        UNKNOWN,
     }
 
     enum class Local : DataError {
-        DISK_FULL
+        DISK_FULL,
     }
-
 }

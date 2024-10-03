@@ -11,22 +11,17 @@ import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 
 @Composable
 fun AgendaScreen() {
-
     TaskyScaffold {
-
         Box(
-            modifier = Modifier
-                .padding(it)
-                .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .padding(it)
+                    .fillMaxSize(),
+            contentAlignment = Alignment.Center,
         ) {
-
-
             Text(
-                text = "Agenda"
+                text = "Agenda",
             )
-
         }
-
     }
 }

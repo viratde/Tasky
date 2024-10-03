@@ -10,7 +10,6 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class TaskyApp : Application() {
-
     override fun onCreate() {
         super.onCreate()
         startKoin {
@@ -20,9 +19,8 @@ class TaskyApp : Application() {
                 authPresentationModule,
                 authDataModule,
                 coreDataModule,
-                appModule
+                appModule,
             )
         }
     }
-
 }
