@@ -12,35 +12,37 @@ import io.ktor.client.HttpClient
 
 class AuthRepositoryImpl(
     private val httpClient: HttpClient,
-    private val authInfoStorage: AuthInfoStorage
+    private val authInfoStorage: AuthInfoStorage,
 ) : AuthRepository {
-
     override suspend fun register(
         fullName: String,
         email: String,
-        password: String
+        password: String,
     ): EmptyDataResult<DataError.Network> {
         return httpClient.post<RegisterRequest, Unit>(
             route = "/register",
-            body = RegisterRequest(
-                fullName = fullName,
-                email = email,
-                password = password
-            )
+            body =
+                RegisterRequest(
+                    fullName = fullName,
+                    email = email,
+                    password = password,
+                ),
         )
     }
 
     override suspend fun login(
         email: String,
-        password: String
+        password: String,
     ): EmptyDataResult<DataError.Network> {
-        val response = httpClient.post<LoginRequest, LoginResponse>(
-            route = "/login",
-            body = LoginRequest(
-                email = email,
-                password = password
+        val response =
+            httpClient.post<LoginRequest, LoginResponse>(
+                route = "/login",
+                body =
+                    LoginRequest(
+                        email = email,
+                        password = password,
+                    ),
             )
-        )
 
         if (response is Result.Success) {
             authInfoStorage.set(
@@ -48,13 +50,11 @@ class AuthRepositoryImpl(
                     accessToken = response.data.accessToken,
                     refreshToken = response.data.refreshToken,
                     fullName = response.data.fullName,
-                    userId = response.data.userId
-                )
+                    userId = response.data.userId,
+                ),
             )
         }
 
         return response.asEmptyDataResult()
-
     }
-
 }

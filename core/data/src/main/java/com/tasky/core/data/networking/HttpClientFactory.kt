@@ -21,28 +21,27 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 class HttpClientFactory(
-    private val authInfoStorage: AuthInfoStorage
+    private val authInfoStorage: AuthInfoStorage,
 ) {
-
     fun build(): HttpClient {
         return HttpClient(CIO) {
-
-
             install(ContentNegotiation) {
                 json(
-                    json = Json {
-                        ignoreUnknownKeys = true
-                    }
+                    json =
+                        Json {
+                            ignoreUnknownKeys = true
+                        },
                 )
             }
 
             install(Logging) {
                 level = LogLevel.ALL
-                logger = object : Logger {
-                    override fun log(message: String) {
-                        println(message) // needs to implement some logger
+                logger =
+                    object : Logger {
+                        override fun log(message: String) {
+                            println(message) // needs to implement some logger
+                        }
                     }
-                }
             }
 
             defaultRequest {
@@ -51,27 +50,27 @@ class HttpClientFactory(
             }
 
             install(Auth) {
-
                 bearer {
-
                     loadTokens {
                         val authInfo = authInfoStorage.get()
                         BearerTokens(
                             accessToken = authInfo?.accessToken ?: "",
-                            refreshToken = authInfo?.refreshToken ?: ""
+                            refreshToken = authInfo?.refreshToken ?: "",
                         )
                     }
 
                     refreshTokens {
                         val authInfo = authInfoStorage.get()
 
-                        val response = client.post<AccessTokenRequest, AccessTokenResponse>(
-                            route = "/accessToken",
-                            body = AccessTokenRequest(
-                                refreshToken = authInfo?.refreshToken ?: "",
-                                userId = authInfo?.userId ?: ""
+                        val response =
+                            client.post<AccessTokenRequest, AccessTokenResponse>(
+                                route = "/accessToken",
+                                body =
+                                    AccessTokenRequest(
+                                        refreshToken = authInfo?.refreshToken ?: "",
+                                        userId = authInfo?.userId ?: "",
+                                    ),
                             )
-                        )
 
                         if (response is Result.Success) {
                             authInfoStorage.set(
@@ -79,27 +78,23 @@ class HttpClientFactory(
                                     accessToken = response.data.accessToken,
                                     refreshToken = authInfo?.refreshToken ?: "",
                                     userId = authInfo?.userId ?: "",
-                                    fullName = authInfo?.fullName ?: ""
-                                )
+                                    fullName = authInfo?.fullName ?: "",
+                                ),
                             )
 
                             BearerTokens(
                                 accessToken = response.data.accessToken,
-                                refreshToken = authInfo?.refreshToken ?: ""
+                                refreshToken = authInfo?.refreshToken ?: "",
                             )
                         } else {
                             BearerTokens(
                                 accessToken = "",
-                                refreshToken = ""
+                                refreshToken = "",
                             )
                         }
                     }
-
                 }
-
             }
-
         }
     }
-
 }

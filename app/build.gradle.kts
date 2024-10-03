@@ -1,18 +1,20 @@
 plugins {
     alias(libs.plugins.tasky.android.application.compose)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.ktlint)
+}
+
+ktlint {
 }
 
 android {
     namespace = "com.tasky"
-
 }
 
 dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-
 
     implementation(libs.androidx.activity.compose)
 
@@ -25,26 +27,24 @@ dependencies {
 
     androidTestImplementation(libs.androidx.espresso.core)
 
-    //crypto
+    // crypto
     implementation(libs.androidx.security.crypto.ktx)
 
     //
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
-    //koin
+    // koin
     implementation(libs.bundles.koin)
     implementation(libs.bundles.koin.compose)
 
-    //projects
+    // projects
     implementation(projects.auth.presentation)
     implementation(projects.core.presentation.designSystem)
     implementation(projects.core.data)
     implementation(projects.auth.data)
     implementation(projects.agenda.presentation)
 
-    //splash screen
+    // splash screen
     implementation(libs.androidx.core.splashscreen)
-
-
 }

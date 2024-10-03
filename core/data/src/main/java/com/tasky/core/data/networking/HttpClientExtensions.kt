@@ -16,13 +16,10 @@ import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
 
-
-
 suspend inline fun <reified Response : Any> HttpClient.get(
     route: String,
-    queryParameters: Map<String, Any?> = mapOf()
+    queryParameters: Map<String, Any?> = mapOf(),
 ): Result<Response, DataError.Network> {
-
     return safeCall {
         get {
             url(constructRoute(route))
@@ -31,14 +28,12 @@ suspend inline fun <reified Response : Any> HttpClient.get(
             }
         }
     }
-
 }
 
 suspend inline fun <reified Response : Any> HttpClient.delete(
     route: String,
-    queryParameters: Map<String, Any?>
+    queryParameters: Map<String, Any?>,
 ): Result<Response, DataError.Network> {
-
     return safeCall {
         delete {
             url(constructRoute(route))
@@ -47,47 +42,40 @@ suspend inline fun <reified Response : Any> HttpClient.delete(
             }
         }
     }
-
 }
 
-
-suspend inline fun <reified Request,reified Response : Any> HttpClient.post(
+suspend inline fun <reified Request, reified Response : Any> HttpClient.post(
     route: String,
-    body: Request
+    body: Request,
 ): Result<Response, DataError.Network> {
-
     return safeCall {
         post {
             url(constructRoute(route))
             setBody(body)
         }
     }
-
 }
 
 suspend inline fun <reified T> safeCall(execute: () -> HttpResponse): Result<T, DataError.Network> {
-    val response = try {
-        execute()
-    } catch (err: UnresolvedAddressException) {
-        err.printStackTrace()
-        return Result.Error(DataError.Network.NO_INTERNET)
-    } catch (err: SerializationException) {
-        err.printStackTrace()
-        return Result.Error(DataError.Network.SERIALIZATION)
-    } catch (err: Exception) {
-        if (err is CancellationException) throw err
-        err.printStackTrace()
-        return Result.Error(DataError.Network.UNKNOWN)
-    }
+    val response =
+        try {
+            execute()
+        } catch (err: UnresolvedAddressException) {
+            err.printStackTrace()
+            return Result.Error(DataError.Network.NO_INTERNET)
+        } catch (err: SerializationException) {
+            err.printStackTrace()
+            return Result.Error(DataError.Network.SERIALIZATION)
+        } catch (err: Exception) {
+            if (err is CancellationException) throw err
+            err.printStackTrace()
+            return Result.Error(DataError.Network.UNKNOWN)
+        }
 
     return responseToResult(response)
 }
 
-
-suspend inline fun <reified T> responseToResult(
-    response: HttpResponse
-): Result<T, DataError.Network> {
-
+suspend inline fun <reified T> responseToResult(response: HttpResponse): Result<T, DataError.Network> {
     return when (response.status.value) {
         in 200..299 -> Result.Success(response.body<T>())
         401 -> Result.Error(DataError.Network.UNAUTHORIZED)
@@ -98,15 +86,12 @@ suspend inline fun <reified T> responseToResult(
         in 500..599 -> Result.Error(DataError.Network.SERVER_ERROR)
         else -> Result.Error(DataError.Network.UNKNOWN)
     }
-
 }
 
 fun constructRoute(route: String): String {
-
     return when {
         route.contains(BuildConfig.BASE_URL) -> route
         route.startsWith("/") -> "${BuildConfig.BASE_URL}$route"
         else -> "${BuildConfig.BASE_URL}/$route"
     }
-
 }

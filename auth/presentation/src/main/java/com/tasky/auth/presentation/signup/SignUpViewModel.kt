@@ -19,9 +19,8 @@ import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val userDataValidator: UserDataValidator,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
-
     var state by mutableStateOf(SignUpState())
         private set
 
@@ -36,24 +35,27 @@ class SignUpViewModel(
             }
 
             is SignUpAction.OnEmailChange -> {
-                state = state.copy(
-                    email = action.email,
-                    isValidEmail = userDataValidator.isValidEmail(action.email)
-                )
+                state =
+                    state.copy(
+                        email = action.email,
+                        isValidEmail = userDataValidator.isValidEmail(action.email),
+                    )
             }
 
             is SignUpAction.OnNameChange -> {
-                state = state.copy(
-                    name = action.name,
-                    isValidName = userDataValidator.isValidFullName(action.name)
-                )
+                state =
+                    state.copy(
+                        name = action.name,
+                        isValidName = userDataValidator.isValidFullName(action.name),
+                    )
             }
 
             is SignUpAction.OnPasswordChange -> {
-                state = state.copy(
-                    password = action.password,
-                    isValidPassword = userDataValidator.isValidPassword(action.password)
-                )
+                state =
+                    state.copy(
+                        password = action.password,
+                        isValidPassword = userDataValidator.isValidPassword(action.password),
+                    )
             }
 
             SignUpAction.OnSignUp -> {
@@ -61,25 +63,24 @@ class SignUpViewModel(
             }
 
             SignUpAction.OnTogglePasswordVisibility -> {
-                state = state.copy(
-                    isPasswordVisible = !state.isPasswordVisible
-                )
+                state =
+                    state.copy(
+                        isPasswordVisible = !state.isPasswordVisible,
+                    )
             }
         }
-
     }
 
     private fun register() {
-
         viewModelScope.launch {
-
             state = state.copy(isSigningUp = true)
 
-            val response = authRepository.register(
-                fullName = state.name,
-                email = state.email,
-                password = state.password
-            )
+            val response =
+                authRepository.register(
+                    fullName = state.name,
+                    email = state.email,
+                    password = state.password,
+                )
 
             state = state.copy(isSigningUp = false)
 
@@ -91,9 +92,6 @@ class SignUpViewModel(
                 }
                 _events.send(SignUpEvent.OnError(error.asUiText()))
             }
-
         }
-
     }
-
 }

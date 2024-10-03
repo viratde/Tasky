@@ -5,10 +5,19 @@ plugins {
 group = "com.tasky.buildLogic"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
+kotlin {
+    jvmToolchain(11)
+}
+
+repositories {
+    gradlePluginPortal()
+    mavenCentral()
+    google()
+}
 
 gradlePlugin {
     plugins {
@@ -40,6 +49,10 @@ gradlePlugin {
             id = "tasky.jvm.ktor"
             implementationClass = "JvmKtorConventionPlugin"
         }
+        register("Ktlint") {
+            id = "tasky.ktlint"
+            implementationClass = "KtlintConventionPlugin"
+        }
     }
 }
 
@@ -47,5 +60,6 @@ dependencies {
 
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+    compileOnly(libs.ktlint.gradlePlugin)
 
 }

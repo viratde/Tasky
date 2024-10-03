@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,16 +43,14 @@ fun TaskyTextField(
     enabled: Boolean = true,
     endIcon: (@Composable () -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions(),
-    keyboardActions: KeyboardActions = KeyboardActions()
+    keyboardActions: KeyboardActions = KeyboardActions(),
 ) {
-
-
-    val textStyle = MaterialTheme.typography.bodyMedium.copy(
-        fontFamily = inter,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
-    )
-
+    val textStyle =
+        MaterialTheme.typography.bodyMedium.copy(
+            fontFamily = inter,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+        )
 
     BasicTextField(
         value = value,
@@ -62,43 +58,43 @@ fun TaskyTextField(
         keyboardOptions = keyboardOptions,
         keyboardActions = keyboardActions,
         enabled = enabled,
-        textStyle = textStyle.copy(
-            color = TaskyDarkGrey
-        ),
+        textStyle =
+            textStyle.copy(
+                color = TaskyDarkGrey,
+            ),
         maxLines = 1,
         decorationBox = {
-
             Row(
-                modifier = modifier
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(
-                        1.dp,
-                        if (error) TaskyError else Color.Transparent,
-                        RoundedCornerShape(10.dp)
-                    )
-                    .background(TaskyLight2)
-                    .padding(
-                        vertical = 24.dp,
-                        horizontal = 16.dp
-                    ),
-                verticalAlignment = Alignment.CenterVertically
+                modifier =
+                    modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .border(
+                            1.dp,
+                            if (error) TaskyError else Color.Transparent,
+                            RoundedCornerShape(10.dp),
+                        )
+                        .background(TaskyLight2)
+                        .padding(
+                            vertical = 24.dp,
+                            horizontal = 16.dp,
+                        ),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-
                 Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(IntrinsicSize.Max)
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .height(IntrinsicSize.Max),
                 ) {
-
                     Text(
                         text = if (value.isEmpty()) placeHolder else "",
-                        style = textStyle.copy(
-                            color = TaskyTextFieldPlaceHolderColor
-                        )
+                        style =
+                            textStyle.copy(
+                                color = TaskyTextFieldPlaceHolderColor,
+                            ),
                     )
 
                     it()
-
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
@@ -106,24 +102,20 @@ fun TaskyTextField(
                 if (endIcon != null) {
                     endIcon()
                 }
-
             }
-        }
+        },
     )
-
 }
 
-
 @Preview(
-    showBackground = true
+    showBackground = true,
 )
 @Composable
 private fun TaskyTextFieldPreview() {
     TaskyTheme {
         Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-
             TaskyTextField(
                 value = "",
                 onValueChange = {},
@@ -135,8 +127,7 @@ private fun TaskyTextFieldPreview() {
                 onValueChange = {},
                 placeHolder = "Email address",
                 endIcon = {
-
-                }
+                },
             )
 
             TaskyTextField(
@@ -145,7 +136,6 @@ private fun TaskyTextFieldPreview() {
                 error = true,
                 placeHolder = "Email address",
             )
-
         }
     }
 }

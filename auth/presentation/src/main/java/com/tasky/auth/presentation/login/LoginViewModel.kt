@@ -19,9 +19,8 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val authRepository: AuthRepository,
-    private val patternValidator: PatternValidator
+    private val patternValidator: PatternValidator,
 ) : ViewModel() {
-
     var state by mutableStateOf(LoginState())
         private set
 
@@ -30,25 +29,27 @@ class LoginViewModel(
     val events = _events.receiveAsFlow()
 
     fun onAction(action: LoginAction) {
-
         when (action) {
             is LoginAction.OnEmailChange -> {
-                state = state.copy(
-                    email = action.email,
-                    isValidEmail = patternValidator.matches(action.email)
-                )
+                state =
+                    state.copy(
+                        email = action.email,
+                        isValidEmail = patternValidator.matches(action.email),
+                    )
             }
 
             is LoginAction.OnPasswordChange -> {
-                state = state.copy(
-                    password = action.password
-                )
+                state =
+                    state.copy(
+                        password = action.password,
+                    )
             }
 
             LoginAction.OnTogglePasswordVisibility -> {
-                state = state.copy(
-                    isPasswordVisible = !state.isPasswordVisible
-                )
+                state =
+                    state.copy(
+                        isPasswordVisible = !state.isPasswordVisible,
+                    )
             }
 
             LoginAction.OnLogin -> {
@@ -59,13 +60,10 @@ class LoginViewModel(
                 // handled in ui layer
             }
         }
-
     }
 
     private fun login() {
-
         viewModelScope.launch {
-
             state = state.copy(isLoggingIn = true)
             val result = authRepository.login(state.email, state.password)
             state = state.copy(isLoggingIn = false)
@@ -79,9 +77,6 @@ class LoginViewModel(
                     _events.send(LoginEvent.OnError(error.asUiText()))
                 }
             }
-
         }
-
     }
-
 }

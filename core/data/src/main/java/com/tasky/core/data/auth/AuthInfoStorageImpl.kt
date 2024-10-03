@@ -10,9 +10,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class AuthInfoStorageImpl(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : AuthInfoStorage {
-
     @SuppressLint("ApplySharedPref")
     override suspend fun set(authInfo: AuthInfo?) {
         return withContext(Dispatchers.IO) {
@@ -33,10 +32,7 @@ class AuthInfoStorageImpl(
                 Json.decodeFromString<AuthInfoSerializable>(it).toAuthInfo()
             }
         }
-
-
     }
-
 
     companion object {
         const val AUTH_INFO_KEY = "AUTH_INFO_KEY"

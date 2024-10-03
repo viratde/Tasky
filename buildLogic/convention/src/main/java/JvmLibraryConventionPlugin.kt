@@ -10,6 +10,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
 
             pluginManager.run {
                 apply("org.jetbrains.kotlin.jvm")
+                apply("tasky.ktlint")
             }
 
             configureKotlinJvm()
