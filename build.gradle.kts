@@ -7,5 +7,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.compose.compiler) apply false
     alias(libs.plugins.jetbrains.kotlin.serialization) apply false
     alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.junit5) apply false
 }
 

@@ -8,10 +8,6 @@ android {
 }
 
 dependencies {
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-
     implementation(projects.auth.domain)
     implementation(projects.core.data)
     implementation(projects.core.domain)
