@@ -1,5 +1,6 @@
 package com.tasky.auth.presentation.signup
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,21 +36,36 @@ import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
+import com.tasky.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 
 @Composable
 fun SignUpScreenRoot(
     viewModel: SignUpViewModel = koinViewModel(),
-    onBack: () -> Unit,
-    onNavigateToAgendaScreen: () -> Unit
+    onBackClick: () -> Unit,
+    onSignUpSuccess: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    ObserverAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            is SignUpEvent.OnError -> {
+                Toast.makeText(context, event.message.asText(context), Toast.LENGTH_SHORT).show()
+            }
+
+            SignUpEvent.OnSignUpSuccess -> {
+                onSignUpSuccess()
+            }
+        }
+    }
 
     SignUpScreen(
         state = viewModel.state,
         onAction = { action ->
             if (action == SignUpAction.OnBack) {
-                onBack()
+                onBackClick()
             }
             viewModel.onAction(action)
         }
@@ -157,6 +174,8 @@ fun SignUpScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = stringResource(id = R.string.sign_up),
+                    isLoading = state.isSigningUp,
+                    enabled = !state.isSigningUp && state.isValidName && state.isValidEmail && state.isValidPassword,
                     onClick = {
                         onAction(SignUpAction.OnSignUp)
                     }

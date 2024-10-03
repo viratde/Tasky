@@ -1,12 +1,12 @@
-package com.tasky.auth.data
+package com.tasky.core.data.auth
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class LoginResponse(
+data class AuthInfoSerializable(
     val accessToken: String,
     val refreshToken: String,
     val fullName: String,
-    val userId: String,
-    val accessTokenExpirationTimestamp: Long
+    val userId: String
 )
+
