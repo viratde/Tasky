@@ -1,14 +1,14 @@
 plugins {
     alias(libs.plugins.tasky.android.application.compose)
     alias(libs.plugins.jetbrains.kotlin.serialization)
-    alias(libs.plugins.ktlint)
-}
-
-ktlint {
 }
 
 android {
     namespace = "com.tasky"
+
+    defaultConfig {
+        testInstrumentationRunner = "com.tasky.common.InstrumentationTestRunner"
+    }
 }
 
 dependencies {
@@ -23,10 +23,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    testImplementation(libs.junit)
-
-    androidTestImplementation(libs.androidx.espresso.core)
-
+    debugImplementation(libs.androidx.ui.test.manifest)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
     // crypto
     implementation(libs.androidx.security.crypto.ktx)
 

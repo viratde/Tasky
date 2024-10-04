@@ -9,9 +9,6 @@ android {
 
 dependencies {
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-
     implementation(projects.core.domain)
     implementation(libs.bundles.koin)
 }
