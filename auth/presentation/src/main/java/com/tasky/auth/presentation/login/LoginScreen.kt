@@ -2,8 +2,10 @@ package com.tasky.auth.presentation.login
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -82,75 +84,75 @@ fun LoginScreen(
     TaskyScaffold { innerPadding ->
         Column(
             modifier =
-                Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .background(TaskyBlack),
+            Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+                .background(TaskyBlack),
         ) {
             Box(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(140.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .height(140.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = stringResource(id = R.string.welcome_back),
                     style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = TaskyWhite,
-                            fontSize = 28.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = inter,
-                        ),
+                    MaterialTheme.typography.bodyMedium.copy(
+                        color = TaskyWhite,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = inter,
+                    ),
                     textAlign = TextAlign.Center,
                 )
             }
 
             Column(
                 modifier =
-                    Modifier
-                        .weight(1f)
-                        .clip(
-                            RoundedCornerShape(
-                                topStart = 30.dp,
-                                topEnd = 30.dp,
-                            ),
-                        )
-                        .background(TaskyWhite)
-                        .padding(
-                            vertical = 48.dp,
-                            horizontal = 16.dp,
-                        )
-                        .fillMaxWidth(),
+                Modifier
+                    .weight(1f)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 30.dp,
+                            topEnd = 30.dp,
+                        ),
+                    )
+                    .background(TaskyWhite)
+                    .padding(
+                        vertical = 48.dp,
+                        horizontal = 16.dp,
+                    )
+                    .fillMaxWidth(),
             ) {
                 TaskyTextField(
                     modifier =
-                        Modifier
-                            .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                     value = state.email,
                     onValueChange = {
                         onAction(LoginAction.OnEmailChange(it))
                     },
                     placeHolder = stringResource(id = R.string.email_address),
                     endIcon =
-                        if (state.isValidEmail) {
-                            (
+                    if (state.isValidEmail) {
+                        (
                                 {
                                     TaskySuccessIcon()
                                 }
-                            )
-                        } else {
-                            null
-                        },
+                                )
+                    } else {
+                        null
+                    },
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 TaskyPasswordTextField(
                     modifier =
-                        Modifier
-                            .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                     value = state.password,
                     onValueChange = {
                         onAction(LoginAction.OnPasswordChange(it))
@@ -167,8 +169,8 @@ fun LoginScreen(
 
                 TaskyButton(
                     modifier =
-                        Modifier
-                            .fillMaxWidth(),
+                    Modifier
+                        .fillMaxWidth(),
                     label = stringResource(id = R.string.log_in),
                     isLoading = state.isLoggingIn,
                     enabled = !state.isLoggingIn && state.isValidEmail,
@@ -181,24 +183,14 @@ fun LoginScreen(
 
                 val annotatedString =
                     buildAnnotatedString {
-                        withStyle(
-                            SpanStyle(
-                                color = TaskyTextFieldPlaceHolderColor,
-                                fontFamily = inter,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp,
-                            ),
-                        ) {
-                            append(stringResource(id = R.string.donot_have_an_account) + " ")
-                        }
                         withLink(
                             link =
-                                LinkAnnotation.Clickable(
-                                    linkInteractionListener = {
-                                        onAction(LoginAction.OnNavigateToSignUpScreen)
-                                    },
-                                    tag = stringResource(id = R.string.sign_up),
-                                ),
+                            LinkAnnotation.Clickable(
+                                linkInteractionListener = {
+                                    onAction(LoginAction.OnNavigateToSignUpScreen)
+                                },
+                                tag = stringResource(id = R.string.sign_up),
+                            ),
                         ) {
                             withStyle(
                                 SpanStyle(
@@ -213,13 +205,33 @@ fun LoginScreen(
                         }
                     }
 
-                Text(
-                    text = annotatedString,
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    textAlign = TextAlign.Center,
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+
+                    Text(
+                        text = stringResource(id = R.string.donot_have_an_account) + " ",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = TaskyTextFieldPlaceHolderColor,
+                            fontFamily = inter,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                    )
+
+                    Text(
+                        text = annotatedString,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = TaskyTextFieldPlaceHolderColor,
+                            fontFamily = inter,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.sp,
+                        )
+                    )
+
+                }
             }
         }
     }

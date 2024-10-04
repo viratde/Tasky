@@ -6,10 +6,10 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isTrue
 import com.tasky.auth.domain.UserDataValidator
-import com.tasky.auth.presentation.common.FakeAuthRepository
-import com.tasky.auth.presentation.common.FakePatternValidator
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.presentation.ui.asUiText
+import com.tasky.test_utils.auth.domain.FakeAuthRepository
+import com.tasky.test_utils.auth.domain.FakePatternValidator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -60,12 +60,12 @@ class SignUpViewModelTest {
     @Test
     fun `Email Change Reflects Correctly And Calls PatternMatcher Matches Function`() {
 
-        patternValidator.shouldReturn = true
+        patternValidator.shouldPatternMatch = true
         viewModel.onAction(SignUpAction.OnEmailChange("test@gmail.com"))
         assertThat(viewModel.state.email).isEqualTo("test@gmail.com")
         assertThat(viewModel.state.isValidEmail).isTrue()
 
-        patternValidator.shouldReturn = false
+        patternValidator.shouldPatternMatch = false
         viewModel.onAction(SignUpAction.OnEmailChange("test@test"))
         assertThat(viewModel.state.email).isEqualTo("test@test")
         assertThat(viewModel.state.isValidEmail).isFalse()

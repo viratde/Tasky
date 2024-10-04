@@ -9,7 +9,6 @@ android {
     defaultConfig {
         testInstrumentationRunner = "com.tasky.common.InstrumentationTestRunner"
     }
-
 }
 
 dependencies {
@@ -24,7 +23,7 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    androidTestImplementation(libs.androidx.runner)
+    debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(libs.androidx.ui.test.junit4)
     // crypto
     implementation(libs.androidx.security.crypto.ktx)
