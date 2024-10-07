@@ -4,4 +4,5 @@
     <string name="on">On</string>
     <string name="off">Off</string>
     <string name="click_to_toggle">Click to toggle</string>
+    <string name="apply">Apply</string>
 </resources>

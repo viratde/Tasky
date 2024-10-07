@@ -6,12 +6,12 @@ import org.gradle.kotlin.dsl.project
 
 
 fun DependencyHandlerScope.addAndroidTestDependency(project: Project) {
-    addJvmTestDependency(project)
     "androidTestImplementation"(project.libs.findLibrary("androidx.runner").get())
     "androidTestImplementation"(project.libs.findLibrary("androidx.junit").get())
     "androidTestImplementation"(project.libs.findLibrary("kotlinx.coroutines.test").get())
     "androidTestImplementation"(project.libs.findLibrary("assertk").get())
     "androidTestImplementation"(project.libs.findLibrary("turbine").get())
+    "androidTestImplementation"(project(":test-utils"))
 }
 
 
