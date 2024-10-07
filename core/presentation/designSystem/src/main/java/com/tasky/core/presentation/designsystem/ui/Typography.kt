@@ -23,39 +23,54 @@ val inter =
 
 val typography =
     Typography(
+        headlineLarge = TextStyle(
+            fontFamily = inter
+        ),
+        headlineSmall = TextStyle(
+            fontFamily = inter
+        ),
+        displayLarge = TextStyle(
+            fontFamily = inter
+        ),
+        displayMedium = TextStyle(
+            fontFamily = inter
+        ),
+        displaySmall = TextStyle(
+            fontFamily = inter
+        ),
         bodySmall =
-            TextStyle(
-                fontFamily = inter,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                lineHeight = 20.sp,
-            ),
+        TextStyle(
+            fontFamily = inter,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 20.sp,
+        ),
         bodyMedium =
-            TextStyle(
-                fontFamily = inter,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                lineHeight = 22.sp,
-            ),
+        TextStyle(
+            fontFamily = inter,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 22.sp,
+        ),
         bodyLarge =
-            TextStyle(
-                fontFamily = inter,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.4.sp,
-            ),
+        TextStyle(
+            fontFamily = inter,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.4.sp,
+        ),
         labelLarge =
-            TextStyle(
-                fontFamily = inter,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                lineHeight = 24.sp,
-            ),
+        TextStyle(
+            fontFamily = inter,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 24.sp,
+        ),
         headlineMedium =
-            TextStyle(
-                fontFamily = inter,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp,
-            ),
+        TextStyle(
+            fontFamily = inter,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp,
+        ),
     )
