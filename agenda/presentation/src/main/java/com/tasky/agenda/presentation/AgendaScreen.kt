@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tasky.agenda.presentation.common.TaskyDateTimePicker
+import com.tasky.agenda.presentation.common.TaskyTitleTextField
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import java.time.LocalDateTime
@@ -36,20 +37,17 @@ fun AgendaScreen() {
 
 
             var date by remember {
-                mutableLongStateOf(ZonedDateTime.now().toInstant().toEpochMilli())
+                mutableStateOf("")
             }
 
 
-            TaskyDateTimePicker(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                title = "From",
-                dateTime = date
+            TaskyTitleTextField(
+                placeHolder = "Task Title",
+                title = "TASK TITLE",
+                text = date
             ) {
                 date = it
             }
-
 
         }
     }

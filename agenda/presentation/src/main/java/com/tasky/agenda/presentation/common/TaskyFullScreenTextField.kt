@@ -1,59 +1,159 @@
 package com.tasky.agenda.presentation.common
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.tasky.agenda.presentation.R
+import com.tasky.core.presentation.designsystem.components.TaskyScaffold
+import com.tasky.core.presentation.designsystem.ui.LeftArrowIcon
+import com.tasky.core.presentation.designsystem.ui.TaskyBlack
+import com.tasky.core.presentation.designsystem.ui.TaskyGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
+import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import com.tasky.core.presentation.designsystem.ui.inter
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskyFullScreenTextField(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    title: String,
+    value: String,
+    isTitle: Boolean,
+    onSave: (String) -> Unit,
+    onBack: () -> Unit
 ) {
 
-
-    var isOpen by remember {
-        mutableStateOf(true)
+    var text by remember(value) {
+        mutableStateOf(value)
     }
+    
+    val bottomSheet = rememberModalBottomSheetState()
 
+    TaskyScaffold { innerPadding ->
 
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
-    Button(onClick = { isOpen = true }) {
-        Text(text = "Open")
-    }
-
-    if (isOpen) {
-        ModalBottomSheet(
-            onDismissRequest = { isOpen = false },
-            shape = RectangleShape,
-            sheetState = sheetState,
-            dragHandle = null
+        Column(
+            modifier = modifier
+                .padding(innerPadding)
+                .background(TaskyWhite)
+                .fillMaxWidth()
         ) {
 
-            TextField(
-                value = "",
-                onValueChange = {},
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 6.dp,
+                        vertical = 6.dp
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+
+                    IconButton(
+                        onClick = onBack
+                    ) {
+
+                        Icon(
+                            imageVector = LeftArrowIcon,
+                            contentDescription = null,
+                            tint = TaskyBlack
+                        )
+
+                    }
+
+
+
+                    TextButton(
+                        onClick = { onSave(text) },
+                        modifier = Modifier
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.save),
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = TaskyGreen,
+                                fontFamily = inter,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                    }
+
+                }
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = TaskyBlack,
+                        fontFamily = inter,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                )
+            }
+
+            HorizontalDivider()
+
+            TextField(
+                value = text,
+                onValueChange = {
+                    text = it
+                },
+                textStyle = MaterialTheme.typography.bodyMedium.copy(
+                    fontFamily = inter,
+                    fontSize = if (isTitle) 26.sp else 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = TaskyBlack
+                ),
+                singleLine = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = TaskyWhite,
+                    focusedContainerColor = TaskyWhite,
+                    unfocusedTextColor = TaskyBlack,
+                    focusedTextColor = TaskyBlack
+                )
             )
 
         }
+
     }
+
 
 }
 
@@ -62,6 +162,34 @@ fun TaskyFullScreenTextField(
 @Composable
 private fun TaskyFullScreenTextFieldPreview() {
     TaskyTheme {
-        TaskyFullScreenTextField()
+        TaskyFullScreenTextField(
+            title = "EDIT TITLE",
+            onSave = {
+
+            },
+            isTitle = true,
+            value = "Meeting",
+            onBack = {
+
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TaskyFullScreenTextFieldDescPreview() {
+    TaskyTheme {
+        TaskyFullScreenTextField(
+            title = "EDIT TITLE",
+            onSave = {
+
+            },
+            isTitle = false,
+            value = "Meeting",
+            onBack = {
+
+            }
+        )
     }
 }

@@ -17,3 +17,6 @@ val CheckedIcon
 val RightArrowIcon
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.arrow_right)
+val LeftArrowIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.left_arrow)
