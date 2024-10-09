@@ -42,7 +42,7 @@ fun TaskyTextField(
     placeHolder: String,
     title: String,
     text: String,
-    isTitle: Boolean,
+    inputType: InputType,
     onValueChange: (String) -> Unit
 ) {
 
@@ -58,7 +58,7 @@ fun TaskyTextField(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        if (isTitle) {
+        if (inputType == InputType.TITLE) {
             Box(
                 modifier = Modifier
                     .size(20.dp)
@@ -75,14 +75,14 @@ fun TaskyTextField(
             style = MaterialTheme.typography.bodyMedium.copy(
                 color = TaskyBlack,
                 fontFamily = inter,
-                fontSize = if (isTitle) 26.sp else 16.sp,
-                fontWeight = if (isTitle) FontWeight.SemiBold else FontWeight.Normal
+                fontSize = if (inputType == InputType.TITLE) 26.sp else 16.sp,
+                fontWeight = if (inputType == InputType.TITLE) FontWeight.SemiBold else FontWeight.Normal
             ),
             modifier = Modifier
                 .weight(1f)
         )
 
-        if (isTitle) {
+        if (inputType == InputType.TITLE) {
             Icon(
                 imageVector = RightArrowIcon,
                 contentDescription = null,
@@ -111,7 +111,7 @@ fun TaskyTextField(
                     .fillMaxSize(),
                 title = title,
                 value = text,
-                isTitle = isTitle,
+                inputType = inputType,
                 onSave = { value ->
                     onValueChange(value)
                     isOpen = !isOpen
@@ -139,7 +139,7 @@ private fun TaskyTitleTextFieldPreview() {
                 .padding(16.dp),
             placeHolder = "Task Title",
             title = "TASK TITLE",
-            isTitle = false,
+            inputType = InputType.TITLE,
             text = ""
         ) {
 
@@ -159,7 +159,7 @@ private fun TaskyTitleTextFieldTitlePreview() {
                 .padding(16.dp),
             placeHolder = "Task Title",
             title = "TASK TITLE",
-            isTitle = true,
+            inputType = InputType.DESCRIPTION,
             text = ""
         ) {
 

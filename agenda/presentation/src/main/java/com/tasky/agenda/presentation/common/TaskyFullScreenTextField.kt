@@ -47,7 +47,7 @@ fun TaskyFullScreenTextField(
     modifier: Modifier = Modifier,
     title: String,
     value: String,
-    isTitle: Boolean,
+    inputType: InputType,
     onSave: (String) -> Unit,
     onBack: () -> Unit
 ) {
@@ -134,7 +134,7 @@ fun TaskyFullScreenTextField(
                 },
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontFamily = inter,
-                    fontSize = if (isTitle) 26.sp else 16.sp,
+                    fontSize = if (inputType == InputType.TITLE) 26.sp else 16.sp,
                     fontWeight = FontWeight.Normal,
                     color = TaskyBlack
                 ),
@@ -167,7 +167,7 @@ private fun TaskyFullScreenTextFieldPreview() {
             onSave = {
 
             },
-            isTitle = true,
+            inputType = InputType.TITLE,
             value = "Meeting",
             onBack = {
 
@@ -185,7 +185,7 @@ private fun TaskyFullScreenTextFieldDescPreview() {
             onSave = {
 
             },
-            isTitle = false,
+            inputType = InputType.DESCRIPTION,
             value = "Meeting",
             onBack = {
 
