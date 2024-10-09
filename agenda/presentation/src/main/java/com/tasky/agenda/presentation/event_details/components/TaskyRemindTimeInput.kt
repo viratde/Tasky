@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,7 +80,7 @@ fun TaskyRemindTimeInput(
         ) {
 
             Text(
-                text = "${remindTime.value} ${remindTime.unit} before",
+                text = remindTime.asUiText().asText(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = TaskyBlack,
                     fontSize = 16.sp,
@@ -101,7 +102,7 @@ fun TaskyRemindTimeInput(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "${time.value} ${time.unit} before",
+                                text = time.asUiText().asText(),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = TaskyBlack,
                                     fontSize = 16.sp,
@@ -120,11 +121,13 @@ fun TaskyRemindTimeInput(
 
         }
 
-        Icon(
-            imageVector = RightArrowIcon,
-            contentDescription = null,
-            tint = TaskyBlack
-        )
+        IconButton(onClick = { isDropDownMenuOpen = !isDropDownMenuOpen }) {
+            Icon(
+                imageVector = RightArrowIcon,
+                contentDescription = null,
+                tint = TaskyBlack
+            )
+        }
 
     }
 
