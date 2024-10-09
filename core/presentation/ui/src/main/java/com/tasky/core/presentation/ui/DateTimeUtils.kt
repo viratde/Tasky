@@ -16,6 +16,14 @@ fun Long.toUiDate(): String {
     return zonedDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"))
 }
 
+fun Long.toFullUiDate(): String {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+}
+
 fun Long.toUiTime(): String {
     val zonedDateTime = ZonedDateTime.ofInstant(
         Instant.ofEpochMilli(this),
