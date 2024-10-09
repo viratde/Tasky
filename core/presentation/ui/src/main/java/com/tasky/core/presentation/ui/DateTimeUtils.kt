@@ -21,7 +21,7 @@ fun Long.toFullUiDate(): String {
         Instant.ofEpochMilli(this),
         ZoneId.systemDefault()
     )
-    return "${zonedDateTime.format(DateTimeFormatter.ofPattern("dd"))} ${zonedDateTime.month.name} ${zonedDateTime.year}"
+    return zonedDateTime.format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
 }
 
 fun Long.toUiTime(): String {

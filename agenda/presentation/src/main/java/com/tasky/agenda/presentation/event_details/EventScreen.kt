@@ -16,15 +16,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.common.InputType
-import com.tasky.agenda.presentation.common.TaskyDateTimePicker
-import com.tasky.agenda.presentation.common.TaskyModeledTextField
-import com.tasky.agenda.presentation.common.TaskyTitle
-import com.tasky.agenda.presentation.common.TaskyTopBar
+import com.tasky.agenda.presentation.event_details.components.InputType
+import com.tasky.agenda.presentation.event_details.components.TaskyDateTimePicker
+import com.tasky.agenda.presentation.event_details.components.TaskyModeledTextField
+import com.tasky.agenda.presentation.event_details.components.TaskyRemindTimeInput
+import com.tasky.agenda.presentation.event_details.components.TaskyTitle
+import com.tasky.agenda.presentation.event_details.components.TaskyTopBar
+import com.tasky.agenda.presentation.event_details.model.AgendaItemUi
 import com.tasky.agenda.presentation.event_details.model.FakeEventUi
 import com.tasky.core.presentation.designsystem.components.LoadingContainer
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
-import com.tasky.core.presentation.designsystem.ui.TaskyGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
@@ -148,16 +149,69 @@ fun EventScreen(
                         )
                 )
 
-                TaskyDateTimePicker(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    title = stringResource(id = R.string.from),
-                    dateTime = state.eventUi.from,
-                    onChange = { from ->
+                when (state.eventUi) {
+                    is AgendaItemUi.EventUi -> {
+                        TaskyDateTimePicker(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            title = stringResource(id = R.string.from),
+                            dateTime = state.eventUi.from,
+                            onChange = { from ->
+
+                            }
+                        )
+
+                        HorizontalDivider(
+                            color = TaskyLight,
+                            modifier = Modifier
+                                .padding(
+                                    vertical = 16.dp,
+                                    horizontal = 16.dp
+                                )
+                        )
+
+                        TaskyDateTimePicker(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            title = stringResource(id = R.string.to),
+                            dateTime = state.eventUi.to,
+                            onChange = { to ->
+
+                            }
+                        )
+                    }
+
+                    is AgendaItemUi.ReminderUi -> {
+                        TaskyDateTimePicker(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            title = stringResource(id = R.string.at),
+                            dateTime = state.eventUi.time,
+                            onChange = { from ->
+
+                            }
+                        )
+
 
                     }
-                )
+
+                    is AgendaItemUi.TaskUi -> {
+                        TaskyDateTimePicker(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            title = stringResource(id = R.string.at),
+                            dateTime = state.eventUi.time,
+                            onChange = { to ->
+
+                            }
+                        )
+                    }
+                }
+
 
                 HorizontalDivider(
                     color = TaskyLight,
@@ -168,16 +222,14 @@ fun EventScreen(
                         )
                 )
 
-                TaskyDateTimePicker(
+                TaskyRemindTimeInput(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    title = stringResource(id = R.string.to),
-                    dateTime = state.eventUi.to,
-                    onChange = { to ->
+                    remindTime = state.eventUi.remindAt
+                ) { remindTime ->
 
-                    }
-                )
+                }
 
                 HorizontalDivider(
                     color = TaskyLight,
@@ -187,7 +239,6 @@ fun EventScreen(
                             horizontal = 16.dp
                         )
                 )
-
             }
 
         }

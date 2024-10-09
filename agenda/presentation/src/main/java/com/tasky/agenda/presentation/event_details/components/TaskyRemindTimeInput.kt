@@ -1,8 +1,7 @@
-package com.tasky.agenda.presentation.common
+package com.tasky.agenda.presentation.event_details.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,6 @@ import com.tasky.core.presentation.designsystem.ui.TaskyLight2
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
-import java.time.ZonedDateTime
 
 @Composable
 fun TaskyRemindTimeInput(

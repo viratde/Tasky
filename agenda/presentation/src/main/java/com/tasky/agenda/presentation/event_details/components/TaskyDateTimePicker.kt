@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.common
+package com.tasky.agenda.presentation.event_details.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

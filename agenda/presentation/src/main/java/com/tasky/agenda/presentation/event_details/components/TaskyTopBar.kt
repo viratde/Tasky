@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.common
+package com.tasky.agenda.presentation.event_details.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,12 +21,10 @@ import androidx.compose.ui.unit.sp
 import com.tasky.agenda.presentation.R
 import com.tasky.core.presentation.designsystem.ui.CrossIcon
 import com.tasky.core.presentation.designsystem.ui.EditIcon
-import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
 import com.tasky.core.presentation.ui.toFullUiDate
-import com.tasky.core.presentation.ui.toUiDate
 import java.time.ZonedDateTime
 
 @Composable

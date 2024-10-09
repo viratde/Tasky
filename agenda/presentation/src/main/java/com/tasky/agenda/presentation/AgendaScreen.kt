@@ -13,8 +13,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.tasky.agenda.presentation.common.RemindTimes
-import com.tasky.agenda.presentation.common.TaskyRemindTimeInput
+import com.tasky.agenda.presentation.event_details.components.RemindTimes
+import com.tasky.agenda.presentation.event_details.components.TaskyRemindTimeInput
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 
