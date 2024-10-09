@@ -17,7 +17,7 @@ import com.tasky.screens.SignUpScreen
 
 @Composable
 fun NavigationRoot(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = AuthGraph) {
+    NavHost(navController = navController, startDestination = AgendaGraph) {
         authGraph(navController)
         agendaGraph(navController)
     }

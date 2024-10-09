@@ -20,3 +20,12 @@ val RightArrowIcon
 val LeftArrowIcon
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.left_arrow)
+val NotificationIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.notification)
+val CrossIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.cross)
+val EditIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.edit_cion)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -37,7 +38,7 @@ import com.tasky.core.presentation.designsystem.ui.inter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskyTextField(
+fun TaskyModeledTextField(
     modifier: Modifier = Modifier,
     placeHolder: String,
     title: String,
@@ -82,7 +83,7 @@ fun TaskyTextField(
                 .weight(1f)
         )
 
-        if (inputType == InputType.TITLE) {
+        IconButton(onClick = { isOpen = !isOpen }) {
             Icon(
                 imageVector = RightArrowIcon,
                 contentDescription = null,
@@ -133,7 +134,7 @@ fun TaskyTextField(
 @Composable
 private fun TaskyTitleTextFieldPreview() {
     TaskyTheme {
-        TaskyTextField(
+        TaskyModeledTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -153,7 +154,7 @@ private fun TaskyTitleTextFieldPreview() {
 @Composable
 private fun TaskyTitleTextFieldTitlePreview() {
     TaskyTheme {
-        TaskyTextField(
+        TaskyModeledTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),

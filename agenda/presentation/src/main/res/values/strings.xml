@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="save">Save</string>
+    <string name="event">Event</string>
+    <string name="edit_title">Edit Title</string>
+    <string name="title">Title</string>
+    <string name="edit_description">EDIT DESCRIPTION</string>
+    <string name="description">Description</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
 </resources>

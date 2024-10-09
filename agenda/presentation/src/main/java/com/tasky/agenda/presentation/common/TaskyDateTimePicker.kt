@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,7 +73,9 @@ fun TaskyDateTimePicker(
                     fontFamily = inter,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
-                )
+                ),
+                modifier = Modifier
+                    .width(50.dp)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -94,14 +97,16 @@ fun TaskyDateTimePicker(
                         fontFamily = inter,
                         fontWeight = FontWeight.Normal,
                         fontSize = 16.sp,
-                    )
+                    ),
                 )
 
-                Icon(
-                    imageVector = RightArrowIcon,
-                    contentDescription = null,
-                    tint = TaskyBlack
-                )
+                IconButton(onClick = { isTimePickerOpen = !isTimePickerOpen }) {
+                    Icon(
+                        imageVector = RightArrowIcon,
+                        contentDescription = null,
+                        tint = TaskyBlack
+                    )
+                }
             }
 
         }
@@ -128,11 +133,13 @@ fun TaskyDateTimePicker(
                 )
             )
 
-            Icon(
-                imageVector = RightArrowIcon,
-                contentDescription = null,
-                tint = TaskyBlack
-            )
+            IconButton(onClick = { isDatePickerOpen = !isDatePickerOpen }) {
+                Icon(
+                    imageVector = RightArrowIcon,
+                    contentDescription = null,
+                    tint = TaskyBlack
+                )
+            }
         }
 
     }
