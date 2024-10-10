@@ -1,7 +1,7 @@
 package com.tasky.core.presentation.ui
 
 fun String.formattedUiName(): String {
-    val parts = this.split(" ")
+    val parts = this.split("\\s+".toRegex())
     return when (parts.size) {
         1 -> {
             parts.first().slice(0..1).uppercase()

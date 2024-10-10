@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.event_details
+package com.tasky.agenda.presentation.agenda_item_details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,15 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.event_details.components.utils.InputType
-import com.tasky.agenda.presentation.event_details.components.TaskyDateTimePicker
-import com.tasky.agenda.presentation.event_details.components.TaskyModeledTextField
-import com.tasky.agenda.presentation.event_details.components.TaskyRemindTimeInput
-import com.tasky.agenda.presentation.event_details.components.TaskyTitle
-import com.tasky.agenda.presentation.event_details.components.TaskyTopBar
-import com.tasky.agenda.presentation.event_details.components.TaskyVisitorsList
-import com.tasky.agenda.presentation.event_details.model.AgendaItemUi
-import com.tasky.agenda.presentation.event_details.model.FakeEventUi
+import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputType
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyModeledTextField
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyRemindTimeInput
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTitle
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTopBar
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsList
+import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
+import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
 import com.tasky.core.presentation.designsystem.components.LoadingContainer
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
@@ -37,7 +37,7 @@ import java.time.ZonedDateTime
 
 @Composable
 fun EventScreenRoot(
-    viewModel: EventDetailsViewModel,
+    viewModel: AgendaDetailsViewModel,
     selectedDate: Long
 ) {
 
@@ -60,9 +60,9 @@ fun EventScreenRoot(
 
 @Composable
 fun EventScreen(
-    state: EventDetailsState,
+    state: AgendaDetailsState,
     selectedDate: Long,
-    onAction: (EventDetailsAction) -> Unit
+    onAction: (AgendaItemDetailsAction) -> Unit
 ) {
 
     requireNotNull(value = state.agendaItemUi)
@@ -84,7 +84,7 @@ fun EventScreen(
                 isInEditMode = state.isInEditMode,
                 onCancel = { /*TODO*/ },
                 onEnableEditing = {
-                    onAction(EventDetailsAction.OnToggleEditMode)
+                    onAction(AgendaItemDetailsAction.OnToggleEditMode)
                 },
                 onSave = {
 
@@ -126,7 +126,7 @@ fun EventScreen(
                     inputType = InputType.TITLE,
                     isEnabled = state.isInEditMode,
                     onValueChange = { title ->
-                        onAction(EventDetailsAction.OnTitleChange(title))
+                        onAction(AgendaItemDetailsAction.OnTitleChange(title))
                     }
                 )
 
@@ -149,7 +149,7 @@ fun EventScreen(
                     inputType = InputType.DESCRIPTION,
                     isEnabled = state.isInEditMode,
                     onValueChange = { desc ->
-                        onAction(EventDetailsAction.OnDescriptionChange(desc))
+                        onAction(AgendaItemDetailsAction.OnDescriptionChange(desc))
                     }
                 )
 
@@ -172,7 +172,7 @@ fun EventScreen(
                             dateTime = state.agendaItemUi.from,
                             isEnabled = state.isInEditMode,
                             onChange = { from ->
-                                onAction(EventDetailsAction.OnFromChange(from))
+                                onAction(AgendaItemDetailsAction.OnFromChange(from))
                             }
                         )
 
@@ -193,7 +193,7 @@ fun EventScreen(
                             dateTime = state.agendaItemUi.to,
                             isEnabled = state.isInEditMode,
                             onChange = { to ->
-                                onAction(EventDetailsAction.OnFromChange(to))
+                                onAction(AgendaItemDetailsAction.OnFromChange(to))
                             }
                         )
                     }
@@ -207,7 +207,7 @@ fun EventScreen(
                             dateTime = state.agendaItemUi.time,
                             isEnabled = state.isInEditMode,
                             onChange = { at ->
-                                onAction(EventDetailsAction.OnAtChange(at))
+                                onAction(AgendaItemDetailsAction.OnAtChange(at))
                             }
                         )
 
@@ -223,7 +223,7 @@ fun EventScreen(
                             dateTime = state.agendaItemUi.time,
                             isEnabled = state.isInEditMode,
                             onChange = { at ->
-                                onAction(EventDetailsAction.OnAtChange(at))
+                                onAction(AgendaItemDetailsAction.OnAtChange(at))
                             }
                         )
                     }
@@ -246,7 +246,7 @@ fun EventScreen(
                     remindTime = state.agendaItemUi.remindAt,
                     isEnabled = state.isInEditMode
                 ) { remindTime ->
-                    onAction(EventDetailsAction.OnRemindTimeChange(remindTime))
+                    onAction(AgendaItemDetailsAction.OnRemindTimeChange(remindTime))
                 }
 
                 HorizontalDivider(
@@ -289,7 +289,7 @@ fun EventScreen(
 private fun EventScreenPreview() {
     TaskyTheme {
         EventScreen(
-            state = EventDetailsState(
+            state = AgendaDetailsState(
                 agendaItemUi = FakeEventUi
             ),
             selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()

@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.event_details.components.utils
+package com.tasky.agenda.presentation.agenda_item_details.components.utils
 
 import com.tasky.agenda.presentation.R
 import com.tasky.core.presentation.ui.UiText
