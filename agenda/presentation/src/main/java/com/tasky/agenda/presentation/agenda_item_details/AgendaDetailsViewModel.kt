@@ -1,25 +1,25 @@
-package com.tasky.agenda.presentation.event_details
+package com.tasky.agenda.presentation.agenda_item_details
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.tasky.agenda.presentation.event_details.model.AgendaItemUi
-import com.tasky.agenda.presentation.event_details.model.FakeEventUi
+import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
+import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
 
-class EventDetailsViewModel : ViewModel() {
+class AgendaDetailsViewModel : ViewModel() {
 
     var state by mutableStateOf(
-        EventDetailsState(
+        AgendaDetailsState(
             agendaItemUi = FakeEventUi
         )
     )
         private set
 
 
-    fun onAction(action: EventDetailsAction) {
+    fun onAction(action: AgendaItemDetailsAction) {
         when (action) {
-            is EventDetailsAction.OnAtChange -> {
+            is AgendaItemDetailsAction.OnAtChange -> {
                 when (val item = state.agendaItemUi) {
                     is AgendaItemUi.ReminderUi -> {
                         state = state.copy(
@@ -41,7 +41,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
             }
 
-            is EventDetailsAction.OnDescriptionChange -> {
+            is AgendaItemDetailsAction.OnDescriptionChange -> {
                 state = state.copy(
                     agendaItemUi = state.agendaItemUi?.copy(
                         description = action.description
@@ -49,7 +49,7 @@ class EventDetailsViewModel : ViewModel() {
                 )
             }
 
-            is EventDetailsAction.OnFromChange -> {
+            is AgendaItemDetailsAction.OnFromChange -> {
                 when (val item = state.agendaItemUi) {
                     is AgendaItemUi.EventUi -> {
                         state = state.copy(
@@ -63,7 +63,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
             }
 
-            is EventDetailsAction.OnRemindTimeChange -> {
+            is AgendaItemDetailsAction.OnRemindTimeChange -> {
                 state = state.copy(
                     agendaItemUi = state.agendaItemUi?.copy(
                         remindAt = action.remindTime
@@ -71,7 +71,7 @@ class EventDetailsViewModel : ViewModel() {
                 )
             }
 
-            is EventDetailsAction.OnTitleChange -> {
+            is AgendaItemDetailsAction.OnTitleChange -> {
                 state = state.copy(
                     agendaItemUi = state.agendaItemUi?.copy(
                         title = action.title
@@ -79,7 +79,7 @@ class EventDetailsViewModel : ViewModel() {
                 )
             }
 
-            is EventDetailsAction.OnToChange -> {
+            is AgendaItemDetailsAction.OnToChange -> {
                 when (val item = state.agendaItemUi) {
                     is AgendaItemUi.EventUi -> {
                         state = state.copy(
@@ -93,7 +93,7 @@ class EventDetailsViewModel : ViewModel() {
                 }
             }
 
-            EventDetailsAction.OnToggleEditMode -> {
+            AgendaItemDetailsAction.OnToggleEditMode -> {
                 state = state.copy(
                     isInEditMode = !state.isInEditMode
                 )

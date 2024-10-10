@@ -1,13 +1,13 @@
-package com.tasky.agenda.presentation.event_details
+package com.tasky.agenda.presentation.agenda_item_details
 
-import com.tasky.agenda.presentation.event_details.components.utils.RemindTimes
+import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 
-sealed interface EventDetailsAction {
-    data class OnTitleChange(val title: String) : EventDetailsAction
-    data class OnDescriptionChange(val description: String) : EventDetailsAction
-    data class OnFromChange(val from: Long) : EventDetailsAction
-    data class OnToChange(val to: Long) : EventDetailsAction
-    data class OnAtChange(val at: Long) : EventDetailsAction
-    data class OnRemindTimeChange(val remindTime: RemindTimes) : EventDetailsAction
-    data object OnToggleEditMode : EventDetailsAction
+sealed interface AgendaItemDetailsAction {
+    data class OnTitleChange(val title: String) : AgendaItemDetailsAction
+    data class OnDescriptionChange(val description: String) : AgendaItemDetailsAction
+    data class OnFromChange(val from: Long) : AgendaItemDetailsAction
+    data class OnToChange(val to: Long) : AgendaItemDetailsAction
+    data class OnAtChange(val at: Long) : AgendaItemDetailsAction
+    data class OnRemindTimeChange(val remindTime: RemindTimes) : AgendaItemDetailsAction
+    data object OnToggleEditMode : AgendaItemDetailsAction
 }

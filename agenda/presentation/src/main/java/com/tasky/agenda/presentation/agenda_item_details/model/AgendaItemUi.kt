@@ -1,6 +1,6 @@
-package com.tasky.agenda.presentation.event_details.model
+package com.tasky.agenda.presentation.agenda_item_details.model
 
-import com.tasky.agenda.presentation.event_details.components.utils.RemindTimes
+import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import java.time.ZonedDateTime
 
 
@@ -19,29 +19,9 @@ sealed interface AgendaItemUi {
         val from: Long,
         val to: Long,
         override val remindAt: RemindTimes,
-        val photos: List<ByteArray>,
+        val photos: List<AgendaPhoto>,
         val attendees: List<Attendee>
-    ) : AgendaItemUi {
-
-        fun copy(
-            from: Long = this.from,
-            to: Long = this.to,
-            photos: List<ByteArray>,
-            attendees: List<Attendee>
-        ): EventUi {
-            return EventUi(
-                from = from,
-                to = to,
-                photos = photos,
-                id = this.id,
-                title = this.title,
-                description = this.description,
-                remindAt = this.remindAt,
-                attendees = attendees
-            )
-        }
-
-    }
+    ) : AgendaItemUi
 
     data class TaskUi(
         override val id: String? = null,
@@ -50,23 +30,7 @@ sealed interface AgendaItemUi {
         val time: Long,
         override val remindAt: RemindTimes,
         val isDone: Boolean
-    ) : AgendaItemUi {
-
-        fun copy(
-            time: Long = this.time,
-            isDone: Boolean = this.isDone
-        ): TaskUi {
-            return TaskUi(
-                time = time,
-                id = this.id,
-                title = this.title,
-                description = this.description,
-                remindAt = this.remindAt,
-                isDone = isDone
-            )
-        }
-
-    }
+    ) : AgendaItemUi
 
     data class ReminderUi(
         override val id: String? = null,
@@ -74,21 +38,7 @@ sealed interface AgendaItemUi {
         override val description: String,
         val time: Long,
         override val remindAt: RemindTimes,
-    ) : AgendaItemUi {
-
-        fun copy(
-            time: Long = this.time
-        ): ReminderUi {
-            return ReminderUi(
-                time = time,
-                id = this.id,
-                title = this.title,
-                description = this.description,
-                remindAt = this.remindAt
-            )
-        }
-
-    }
+    ) : AgendaItemUi
 
     fun copy(
         id: String? = this.id,
