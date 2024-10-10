@@ -1,5 +1,6 @@
 package com.tasky.agenda.presentation.event_details.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +44,7 @@ fun TaskyDateTimePicker(
     modifier: Modifier = Modifier,
     title: String,
     dateTime: Long,
+    isEnabled: Boolean,
     onChange: (Long) -> Unit
 ) {
 
@@ -52,6 +56,9 @@ fun TaskyDateTimePicker(
     var isTimePickerOpen by remember {
         mutableStateOf(false)
     }
+
+    val opacity by animateFloatAsState(targetValue = if (isEnabled) 1f else 0f, label = "")
+
 
 
     Row(
@@ -84,7 +91,7 @@ fun TaskyDateTimePicker(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable {
+                    .clickable(isEnabled) {
                         isTimePickerOpen = !isTimePickerOpen
                     },
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -100,7 +107,13 @@ fun TaskyDateTimePicker(
                     ),
                 )
 
-                IconButton(onClick = { isTimePickerOpen = !isTimePickerOpen }) {
+                IconButton(
+                    onClick = { isTimePickerOpen = !isTimePickerOpen },
+                    enabled = isEnabled,
+                    modifier = Modifier.graphicsLayer {
+                        alpha = opacity
+                    }
+                ) {
                     Icon(
                         imageVector = RightArrowIcon,
                         contentDescription = null,
@@ -117,7 +130,7 @@ fun TaskyDateTimePicker(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .clickable {
+                .clickable(isEnabled) {
                     isDatePickerOpen = !isDatePickerOpen
                 },
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -133,7 +146,14 @@ fun TaskyDateTimePicker(
                 )
             )
 
-            IconButton(onClick = { isDatePickerOpen = !isDatePickerOpen }) {
+            IconButton(
+                onClick = { isDatePickerOpen = !isDatePickerOpen },
+                enabled = isEnabled,
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = opacity
+                    }
+            ) {
                 Icon(
                     imageVector = RightArrowIcon,
                     contentDescription = null,
@@ -144,7 +164,7 @@ fun TaskyDateTimePicker(
 
     }
 
-    if (isDatePickerOpen) {
+    if (isDatePickerOpen && isEnabled) {
         TaskyDatePickerDialog(
             selectedDateUtcTimeMillis = dateTime,
             onSelectionChange = { date ->
@@ -159,7 +179,7 @@ fun TaskyDateTimePicker(
         )
     }
 
-    if (isTimePickerOpen) {
+    if (isTimePickerOpen && isEnabled) {
         TaskyTimePickerDialog(
             hour = dateTime.getHour(),
             minutes = dateTime.getMinute(),
@@ -189,6 +209,26 @@ private fun TaskyDateTimePickerPreview() {
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth(),
+            isEnabled = true,
+            title = "From",
+            dateTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000L
+        ) {
+
+        }
+    }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+private fun TaskyDisabledDateTimePickerPreview() {
+    TaskyTheme {
+        TaskyDateTimePicker(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            isEnabled = false,
             title = "From",
             dateTime = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC) * 1000L
         ) {

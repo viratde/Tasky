@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
+import com.tasky.core.presentation.designsystem.ui.TaskyGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 
 @Composable
@@ -30,8 +31,8 @@ fun LoadingContainer(
         transitionSpec = {
             fadeIn() togetherWith fadeOut()
         }
-    ) { isLoading ->
-        if (isLoading) {
+    ) { loading ->
+        if (loading) {
             Column(
                 modifier = modifier
                     .background(TaskyWhite),
@@ -39,8 +40,8 @@ fun LoadingContainer(
                 verticalArrangement = Arrangement.Center
             ) {
                 CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = TaskyBlack,
+                    color = TaskyBlack,
+                    trackColor = TaskyGrey,
                     strokeWidth = 3.dp,
                     modifier = Modifier
                         .size(70.dp)

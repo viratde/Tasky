@@ -1,5 +1,6 @@
 package com.tasky.agenda.presentation.event_details.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,12 +25,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tasky.agenda.presentation.event_details.components.utils.InputType
 import com.tasky.core.presentation.designsystem.ui.RightArrowIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
@@ -43,6 +47,7 @@ fun TaskyModeledTextField(
     placeHolder: String,
     title: String,
     text: String,
+    isEnabled: Boolean,
     inputType: InputType,
     onValueChange: (String) -> Unit
 ) {
@@ -51,9 +56,12 @@ fun TaskyModeledTextField(
         mutableStateOf(false)
     }
 
+    val opacity by animateFloatAsState(targetValue = if (isEnabled) 1f else 0f, label = "")
+
+
     Row(
         modifier = modifier
-            .clickable {
+            .clickable(isEnabled) {
                 isOpen = !isOpen
             },
         verticalAlignment = Alignment.CenterVertically,
@@ -83,7 +91,14 @@ fun TaskyModeledTextField(
                 .weight(1f)
         )
 
-        IconButton(onClick = { isOpen = !isOpen }) {
+        IconButton(
+            onClick = { isOpen = !isOpen },
+            enabled = isEnabled,
+            modifier = Modifier
+                .graphicsLayer {
+                    alpha = opacity
+                }
+        ) {
             Icon(
                 imageVector = RightArrowIcon,
                 contentDescription = null,
@@ -97,7 +112,7 @@ fun TaskyModeledTextField(
         skipPartiallyExpanded = true
     )
 
-    if (isOpen) {
+    if (isOpen && isEnabled) {
         ModalBottomSheet(
             onDismissRequest = { isOpen = !isOpen },
             sheetState = bottomSheet,
@@ -141,6 +156,7 @@ private fun TaskyTitleTextFieldPreview() {
             placeHolder = "Task Title",
             title = "TASK TITLE",
             inputType = InputType.TITLE,
+            isEnabled = true,
             text = ""
         ) {
 
@@ -160,6 +176,28 @@ private fun TaskyTitleTextFieldTitlePreview() {
                 .padding(16.dp),
             placeHolder = "Task Title",
             title = "TASK TITLE",
+            isEnabled = true,
+            inputType = InputType.DESCRIPTION,
+            text = ""
+        ) {
+
+        }
+    }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+private fun TaskyDisabledTitleTextFieldTitlePreview() {
+    TaskyTheme {
+        TaskyModeledTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            placeHolder = "Task Title",
+            title = "TASK TITLE",
+            isEnabled = false,
             inputType = InputType.DESCRIPTION,
             text = ""
         ) {
