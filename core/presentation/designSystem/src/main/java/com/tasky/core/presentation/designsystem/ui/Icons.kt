@@ -29,3 +29,6 @@ val CrossIcon
 val EditIcon
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.edit_cion)
+val DeleteIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.delete)

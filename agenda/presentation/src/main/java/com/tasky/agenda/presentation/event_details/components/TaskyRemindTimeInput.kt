@@ -1,5 +1,6 @@
 package com.tasky.agenda.presentation.event_details.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -23,11 +24,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tasky.agenda.presentation.event_details.components.utils.RemindTimes
+import com.tasky.agenda.presentation.event_details.components.utils.asUiText
 import com.tasky.core.presentation.designsystem.ui.NotificationIcon
 import com.tasky.core.presentation.designsystem.ui.RightArrowIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
@@ -41,6 +45,7 @@ import com.tasky.core.presentation.designsystem.ui.inter
 fun TaskyRemindTimeInput(
     modifier: Modifier = Modifier,
     remindTime: RemindTimes,
+    isEnabled: Boolean,
     onRemindTimeChange: (RemindTimes) -> Unit
 ) {
 
@@ -48,11 +53,20 @@ fun TaskyRemindTimeInput(
         mutableStateOf(false)
     }
 
+    val opacity by animateFloatAsState(targetValue = if (isEnabled) 1f else 0f, label = "")
+
     Row(
         modifier = modifier
-            .clickable {
-                isDropDownMenuOpen = !isDropDownMenuOpen
-            },
+            .then(
+                if (isEnabled) {
+                    Modifier
+                        .clickable {
+                            isDropDownMenuOpen = !isDropDownMenuOpen
+                        }
+                } else {
+                    Modifier
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -88,7 +102,7 @@ fun TaskyRemindTimeInput(
             )
 
             DropdownMenu(
-                expanded = isDropDownMenuOpen,
+                expanded = isDropDownMenuOpen && isEnabled,
                 onDismissRequest = {
                     isDropDownMenuOpen = false
                 },
@@ -119,7 +133,12 @@ fun TaskyRemindTimeInput(
 
         }
 
-        IconButton(onClick = { isDropDownMenuOpen = !isDropDownMenuOpen }) {
+        IconButton(
+            onClick = { isDropDownMenuOpen = !isDropDownMenuOpen },
+            enabled = isEnabled,
+            modifier = Modifier
+                .alpha(opacity)
+        ) {
             Icon(
                 imageVector = RightArrowIcon,
                 contentDescription = null,
@@ -143,6 +162,25 @@ private fun TaskyRemindTimeInputPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
+            isEnabled = true,
+            remindTime = RemindTimes.ONE_DAY
+        ) {
+
+        }
+    }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+private fun TaskyDisabledRemindTimeInputPreview() {
+    TaskyTheme {
+        TaskyRemindTimeInput(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            isEnabled = false,
             remindTime = RemindTimes.ONE_DAY
         ) {
 

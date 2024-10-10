@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tasky.agenda.presentation.R
+import com.tasky.agenda.presentation.event_details.components.utils.InputType
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.LeftArrowIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
