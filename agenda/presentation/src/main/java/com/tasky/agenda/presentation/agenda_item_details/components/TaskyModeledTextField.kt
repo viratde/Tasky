@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,16 +61,9 @@ fun TaskyModeledTextField(
 
     Row(
         modifier = modifier
-            .then(
-                if (isEnabled) {
-                    Modifier
-                        .clickable {
-                            isOpen = !isOpen
-                        }
-                } else {
-                    Modifier
-                }
-            ),
+            .clickable(isEnabled) {
+                isOpen = !isOpen
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -100,7 +94,10 @@ fun TaskyModeledTextField(
         IconButton(
             onClick = { isOpen = !isOpen },
             enabled = isEnabled,
-            modifier = Modifier.alpha(opacity)
+            modifier = Modifier
+                .graphicsLayer {
+                    alpha = opacity
+                }
         ) {
             Icon(
                 imageVector = RightArrowIcon,

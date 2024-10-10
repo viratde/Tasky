@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -90,16 +91,9 @@ fun TaskyDateTimePicker(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .then(
-                        if (isEnabled) {
-                            Modifier
-                                .clickable {
-                                    isTimePickerOpen = !isTimePickerOpen
-                                }
-                        } else {
-                            Modifier
-                        }
-                    ),
+                    .clickable(isEnabled) {
+                        isTimePickerOpen = !isTimePickerOpen
+                    },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -116,7 +110,9 @@ fun TaskyDateTimePicker(
                 IconButton(
                     onClick = { isTimePickerOpen = !isTimePickerOpen },
                     enabled = isEnabled,
-                    modifier = Modifier.alpha(opacity)
+                    modifier = Modifier.graphicsLayer {
+                        alpha = opacity
+                    }
                 ) {
                     Icon(
                         imageVector = RightArrowIcon,
@@ -134,16 +130,9 @@ fun TaskyDateTimePicker(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .then(
-                    if (isEnabled) {
-                        Modifier
-                            .clickable {
-                                isDatePickerOpen = !isDatePickerOpen
-                            }
-                    } else {
-                        Modifier
-                    }
-                ),
+                .clickable(isEnabled) {
+                    isDatePickerOpen = !isDatePickerOpen
+                },
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -160,7 +149,10 @@ fun TaskyDateTimePicker(
             IconButton(
                 onClick = { isDatePickerOpen = !isDatePickerOpen },
                 enabled = isEnabled,
-                modifier = Modifier.alpha(opacity)
+                modifier = Modifier
+                    .graphicsLayer {
+                        alpha = opacity
+                    }
             ) {
                 Icon(
                     imageVector = RightArrowIcon,

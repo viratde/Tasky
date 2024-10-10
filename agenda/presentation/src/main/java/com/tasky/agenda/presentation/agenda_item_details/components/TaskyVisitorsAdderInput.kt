@@ -37,12 +37,12 @@ import com.tasky.core.presentation.designsystem.ui.inter
 
 @Composable
 fun TaskyVisitorsAdderInput(
-    modifier: Modifier = Modifier,
     email: String,
     onClose: () -> Unit,
     isValidEmail: Boolean,
     onAdd: () -> Unit,
-    onEmailChange: (String) -> Unit
+    onEmailChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
 
     Dialog(

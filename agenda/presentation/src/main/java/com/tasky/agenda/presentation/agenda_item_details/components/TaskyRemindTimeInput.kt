@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,16 +58,9 @@ fun TaskyRemindTimeInput(
 
     Row(
         modifier = modifier
-            .then(
-                if (isEnabled) {
-                    Modifier
-                        .clickable {
-                            isDropDownMenuOpen = !isDropDownMenuOpen
-                        }
-                } else {
-                    Modifier
-                }
-            ),
+            .clickable(isEnabled) {
+                isDropDownMenuOpen = !isDropDownMenuOpen
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -137,7 +131,9 @@ fun TaskyRemindTimeInput(
             onClick = { isDropDownMenuOpen = !isDropDownMenuOpen },
             enabled = isEnabled,
             modifier = Modifier
-                .alpha(opacity)
+                .graphicsLayer {
+                    alpha = opacity
+                }
         ) {
             Icon(
                 imageVector = RightArrowIcon,

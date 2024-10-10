@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,7 +39,7 @@ import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun TaskyFullScreenTextField(
     modifier: Modifier = Modifier,
@@ -54,8 +53,6 @@ fun TaskyFullScreenTextField(
     var text by remember(value) {
         mutableStateOf(value)
     }
-    
-    val bottomSheet = rememberModalBottomSheetState()
 
     TaskyScaffold { innerPadding ->
 

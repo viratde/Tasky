@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,7 +101,9 @@ fun TaskyVisitor(
                     fontWeight = FontWeight.Medium,
                     fontSize = 14.sp
                 ),
-                modifier = Modifier.alpha(opacity)
+                modifier = Modifier.graphicsLayer {
+                    alpha = opacity
+                }
             )
 
             IconButton(onClick = onDelete) {
@@ -109,9 +112,9 @@ fun TaskyVisitor(
                     contentDescription = null,
                     tint = TaskyDarkGrey,
                     modifier = Modifier
-                        .alpha(
-                            1f - opacity
-                        )
+                        .graphicsLayer {
+                            alpha = 1f - opacity
+                        }
                 )
             }
         }
