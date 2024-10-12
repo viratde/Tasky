@@ -7,7 +7,8 @@ sealed interface AgendaPhoto {
     ) : AgendaPhoto
 
     data class LocalPhoto(
-        val photo: ByteArray
+        val photo: ByteArray,
+        val id: String
     ) : AgendaPhoto {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
