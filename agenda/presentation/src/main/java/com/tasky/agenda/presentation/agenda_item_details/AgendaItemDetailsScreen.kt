@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.tasky.agenda.presentation.R
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputType
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyAgendaButton
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyModeledTextField
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyRemindTimeInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTitle
@@ -27,8 +28,12 @@ import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTopBar
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsList
 import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
 import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
+import com.tasky.agenda.presentation.agenda_item_details.model.FakeRemainderUi
+import com.tasky.agenda.presentation.agenda_item_details.model.FakeTaskUi
 import com.tasky.core.presentation.designsystem.components.LoadingContainer
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
+import com.tasky.core.presentation.designsystem.ui.TaskyGreen
+import com.tasky.core.presentation.designsystem.ui.TaskyGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
@@ -93,7 +98,7 @@ fun EventScreen(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
                     .clip(
                         RoundedCornerShape(
                             topEnd = 30.dp,
@@ -101,79 +106,190 @@ fun EventScreen(
                         )
                     )
                     .background(TaskyWhite)
-                    .verticalScroll(rememberScrollState())
             ) {
 
-                Spacer(modifier = Modifier.height(32.dp))
-
-                TaskyTitle(
+                Column(
                     modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxWidth(),
-                    title = stringResource(id = R.string.event),
-                    color = TaskyLightGreen
-                )
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                ) {
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
 
-                TaskyModeledTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    placeHolder = stringResource(id = R.string.title),
-                    title = stringResource(id = R.string.edit_title),
-                    text = state.agendaItemUi.title,
-                    inputType = InputType.TITLE,
-                    isEnabled = state.isInEditMode,
-                    onValueChange = { title ->
-                        onAction(AgendaItemDetailsAction.OnTitleChange(title))
+                    TaskyTitle(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                        title = when (state.agendaItemUi) {
+                            is AgendaItemUi.TaskUi -> stringResource(id = R.string.task)
+                            is AgendaItemUi.EventUi -> stringResource(id = R.string.event)
+                            is AgendaItemUi.ReminderUi -> stringResource(id = R.string.remainder)
+                        },
+                        color = when(state.agendaItemUi){
+                            is AgendaItemUi.EventUi -> TaskyLightGreen
+                            is AgendaItemUi.ReminderUi -> TaskyGrey
+                            is AgendaItemUi.TaskUi -> TaskyGreen
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    TaskyModeledTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        placeHolder = stringResource(id = R.string.title),
+                        title = stringResource(id = R.string.edit_title),
+                        text = state.agendaItemUi.title,
+                        inputType = InputType.TITLE,
+                        isEnabled = state.isInEditMode,
+                        onValueChange = { title ->
+                            onAction(AgendaItemDetailsAction.OnTitleChange(title))
+                        }
+                    )
+
+                    HorizontalDivider(
+                        color = TaskyLight,
+                        modifier = Modifier
+                            .padding(
+                                vertical = 16.dp,
+                                horizontal = 16.dp
+                            )
+                    )
+
+                    TaskyModeledTextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        placeHolder = stringResource(id = R.string.description),
+                        title = stringResource(id = R.string.edit_description),
+                        text = state.agendaItemUi.description,
+                        inputType = InputType.DESCRIPTION,
+                        isEnabled = state.isInEditMode,
+                        onValueChange = { desc ->
+                            onAction(AgendaItemDetailsAction.OnDescriptionChange(desc))
+                        }
+                    )
+
+                    HorizontalDivider(
+                        color = TaskyLight,
+                        modifier = Modifier
+                            .padding(
+                                vertical = 16.dp,
+                                horizontal = 16.dp
+                            )
+                    )
+
+                    when (state.agendaItemUi) {
+                        is AgendaItemUi.EventUi -> {
+                            TaskyDateTimePicker(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                title = stringResource(id = R.string.from),
+                                dateTime = state.agendaItemUi.from,
+                                isEnabled = state.isInEditMode,
+                                onChange = { from ->
+                                    onAction(AgendaItemDetailsAction.OnFromChange(from))
+                                }
+                            )
+
+                            HorizontalDivider(
+                                color = TaskyLight,
+                                modifier = Modifier
+                                    .padding(
+                                        vertical = 16.dp,
+                                        horizontal = 16.dp
+                                    )
+                            )
+
+                            TaskyDateTimePicker(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                title = stringResource(id = R.string.to),
+                                dateTime = state.agendaItemUi.to,
+                                isEnabled = state.isInEditMode,
+                                onChange = { to ->
+                                    onAction(AgendaItemDetailsAction.OnFromChange(to))
+                                }
+                            )
+                        }
+
+                        is AgendaItemUi.ReminderUi -> {
+                            TaskyDateTimePicker(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                title = stringResource(id = R.string.at),
+                                dateTime = state.agendaItemUi.time,
+                                isEnabled = state.isInEditMode,
+                                onChange = { at ->
+                                    onAction(AgendaItemDetailsAction.OnAtChange(at))
+                                }
+                            )
+
+
+                        }
+
+                        is AgendaItemUi.TaskUi -> {
+                            TaskyDateTimePicker(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp),
+                                title = stringResource(id = R.string.at),
+                                dateTime = state.agendaItemUi.time,
+                                isEnabled = state.isInEditMode,
+                                onChange = { at ->
+                                    onAction(AgendaItemDetailsAction.OnAtChange(at))
+                                }
+                            )
+                        }
                     }
-                )
 
-                HorizontalDivider(
-                    color = TaskyLight,
-                    modifier = Modifier
-                        .padding(
-                            vertical = 16.dp,
-                            horizontal = 16.dp
-                        )
-                )
 
-                TaskyModeledTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    placeHolder = stringResource(id = R.string.description),
-                    title = stringResource(id = R.string.edit_description),
-                    text = state.agendaItemUi.description,
-                    inputType = InputType.DESCRIPTION,
-                    isEnabled = state.isInEditMode,
-                    onValueChange = { desc ->
-                        onAction(AgendaItemDetailsAction.OnDescriptionChange(desc))
+                    HorizontalDivider(
+                        color = TaskyLight,
+                        modifier = Modifier
+                            .padding(
+                                vertical = 16.dp,
+                                horizontal = 16.dp
+                            )
+                    )
+
+                    TaskyRemindTimeInput(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        remindTime = state.agendaItemUi.remindAt,
+                        isEnabled = state.isInEditMode
+                    ) { remindTime ->
+                        onAction(AgendaItemDetailsAction.OnRemindTimeChange(remindTime))
                     }
-                )
 
-                HorizontalDivider(
-                    color = TaskyLight,
-                    modifier = Modifier
-                        .padding(
-                            vertical = 16.dp,
-                            horizontal = 16.dp
-                        )
-                )
+                    HorizontalDivider(
+                        color = TaskyLight,
+                        modifier = Modifier
+                            .padding(
+                                vertical = 16.dp,
+                                horizontal = 16.dp
+                            )
+                    )
 
-                when (state.agendaItemUi) {
-                    is AgendaItemUi.EventUi -> {
-                        TaskyDateTimePicker(
+                    if (state.agendaItemUi is AgendaItemUi.EventUi) {
+                        TaskyVisitorsList(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            title = stringResource(id = R.string.from),
-                            dateTime = state.agendaItemUi.from,
-                            isEnabled = state.isInEditMode,
-                            onChange = { from ->
-                                onAction(AgendaItemDetailsAction.OnFromChange(from))
-                            }
+                                .padding(
+                                    horizontal = 16.dp
+                                ),
+                            selectedVisitorsFilterState = state.selectedVisitorsFilterState,
+                            onVisitorsFilterStateChange = {
+
+                            },
+                            visitors = state.agendaItemUi.attendees,
+                            hostUserId = "",
+                            onToggleAddModel = { /*TODO*/ },
+                            isEnabled = state.isInEditMode
                         )
 
                         HorizontalDivider(
@@ -184,98 +300,33 @@ fun EventScreen(
                                     horizontal = 16.dp
                                 )
                         )
-
-                        TaskyDateTimePicker(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            title = stringResource(id = R.string.to),
-                            dateTime = state.agendaItemUi.to,
-                            isEnabled = state.isInEditMode,
-                            onChange = { to ->
-                                onAction(AgendaItemDetailsAction.OnFromChange(to))
-                            }
-                        )
                     }
 
-                    is AgendaItemUi.ReminderUi -> {
-                        TaskyDateTimePicker(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            title = stringResource(id = R.string.at),
-                            dateTime = state.agendaItemUi.time,
-                            isEnabled = state.isInEditMode,
-                            onChange = { at ->
-                                onAction(AgendaItemDetailsAction.OnAtChange(at))
-                            }
-                        )
+                    Spacer(modifier = Modifier.weight(1f))
 
-
-                    }
-
-                    is AgendaItemUi.TaskUi -> {
-                        TaskyDateTimePicker(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            title = stringResource(id = R.string.at),
-                            dateTime = state.agendaItemUi.time,
-                            isEnabled = state.isInEditMode,
-                            onChange = { at ->
-                                onAction(AgendaItemDetailsAction.OnAtChange(at))
-                            }
-                        )
-                    }
                 }
 
+                Spacer(modifier = Modifier.height(16.dp))
 
-                HorizontalDivider(
-                    color = TaskyLight,
-                    modifier = Modifier
-                        .padding(
-                            vertical = 16.dp,
-                            horizontal = 16.dp
-                        )
-                )
-
-                TaskyRemindTimeInput(
+                TaskyAgendaButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    remindTime = state.agendaItemUi.remindAt,
-                    isEnabled = state.isInEditMode
-                ) { remindTime ->
-                    onAction(AgendaItemDetailsAction.OnRemindTimeChange(remindTime))
-                }
+                    text = when (state.agendaItemUi) {
+                        is AgendaItemUi.EventUi -> {
+                            stringResource(id = if (state.agendaItemUi.isHost) R.string.delete_event else R.string.leave_event)
+                        }
 
-                HorizontalDivider(
-                    color = TaskyLight,
-                    modifier = Modifier
-                        .padding(
-                            vertical = 16.dp,
-                            horizontal = 16.dp
-                        )
+                        is AgendaItemUi.ReminderUi -> stringResource(id = R.string.delete_remainder)
+                        is AgendaItemUi.TaskUi -> stringResource(id = R.string.delete_task)
+                    },
+                    enabled = true,
+                    onClick = {
+
+                    }
                 )
 
-                if (state.agendaItemUi is AgendaItemUi.EventUi) {
-                    TaskyVisitorsList(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 16.dp
-                            ),
-                        selectedVisitorsFilterState = state.selectedVisitorsFilterState,
-                        onVisitorsFilterStateChange = {
-
-                        },
-                        visitors = state.agendaItemUi.attendees,
-                        hostUserId = "",
-                        onToggleAddModel = { /*TODO*/ },
-                        isEnabled = state.isInEditMode
-                    )
-                }
-
+                Spacer(modifier = Modifier.height(32.dp))
             }
 
         }
@@ -286,14 +337,44 @@ fun EventScreen(
 
 @Preview
 @Composable
-private fun EventScreenPreview() {
+private fun AgendaEventUiScreenPreview() {
     TaskyTheme {
         EventScreen(
             state = AgendaDetailsState(
                 agendaItemUi = FakeEventUi
             ),
             selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
-        ) {
+        ) { action ->
+
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AgendaRemainderUiScreenPreview() {
+    TaskyTheme {
+        EventScreen(
+            state = AgendaDetailsState(
+                agendaItemUi = FakeRemainderUi
+            ),
+            selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
+        ) { action ->
+
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun AgendaTaskUiScreenPreview() {
+    TaskyTheme {
+        EventScreen(
+            state = AgendaDetailsState(
+                agendaItemUi = FakeTaskUi
+            ),
+            selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
+        ) { action ->
 
         }
     }

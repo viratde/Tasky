@@ -43,13 +43,13 @@ import com.tasky.core.presentation.designsystem.ui.inter
 
 @Composable
 fun TaskyVisitorsList(
-    modifier: Modifier = Modifier,
     selectedVisitorsFilterState: VisitorsFilterState,
     onVisitorsFilterStateChange: (VisitorsFilterState) -> Unit,
     visitors: List<Attendee>,
     hostUserId: String,
     onToggleAddModel: () -> Unit,
-    isEnabled: Boolean
+    isEnabled: Boolean,
+    modifier: Modifier = Modifier,
 ) {
 
     val opacity by animateFloatAsState(targetValue = if (isEnabled) 1f else 0f, label = "")

@@ -20,7 +20,8 @@ sealed interface AgendaItemUi {
         val to: Long,
         override val remindAt: RemindTimes,
         val photos: List<AgendaPhoto>,
-        val attendees: List<Attendee>
+        val attendees: List<Attendee>,
+        val isHost: Boolean
     ) : AgendaItemUi
 
     data class TaskUi(
@@ -55,7 +56,8 @@ sealed interface AgendaItemUi {
                 to = to,
                 from = from,
                 photos = photos,
-                attendees = attendees
+                attendees = attendees,
+                isHost = isHost
             )
 
             is ReminderUi -> ReminderUi(
@@ -87,6 +89,7 @@ val FakeEventUi = AgendaItemUi.EventUi(
     to = ZonedDateTime.now().plusDays(1L).toInstant().toEpochMilli(),
     photos = listOf(),
     remindAt = RemindTimes.ONE_DAY,
+    isHost = false,
     attendees = listOf(
         FakeAttendee,
         FakeAttendee,
@@ -100,4 +103,21 @@ val FakeEventUi = AgendaItemUi.EventUi(
         FakeAttendee.copy(isGoing = false),
         FakeAttendee.copy(isGoing = false),
     )
+)
+
+val FakeRemainderUi = AgendaItemUi.ReminderUi(
+    id = null,
+    title = "New Remainder",
+    description = "This is a test description and it will be removed in the future.",
+    time = ZonedDateTime.now().toInstant().toEpochMilli(),
+    remindAt = RemindTimes.ONE_DAY,
+)
+
+val FakeTaskUi = AgendaItemUi.TaskUi(
+    id = null,
+    title = "New Remainder",
+    description = "This is a test description and it will be removed in the future.",
+    time = ZonedDateTime.now().toInstant().toEpochMilli(),
+    remindAt = RemindTimes.ONE_DAY,
+    isDone = true
 )
