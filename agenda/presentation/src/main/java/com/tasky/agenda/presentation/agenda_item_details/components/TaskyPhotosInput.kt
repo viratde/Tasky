@@ -1,5 +1,6 @@
 package com.tasky.agenda.presentation.agenda_item_details.components
 
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +51,8 @@ import com.tasky.core.presentation.designsystem.ui.TaskyLight2
 import com.tasky.core.presentation.designsystem.ui.TaskyLightBlue
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.inter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -166,11 +172,8 @@ private fun TaskyPhoto(
 ) {
     when (photo) {
         is AgendaPhoto.LocalPhoto -> {
-            val bitmap = remember(photo) {
-                BitmapFactory.decodeByteArray(photo.photo, 0, photo.photo.size)
-            }
-            Image(
-                bitmap = bitmap.asImageBitmap(),
+            AsyncImage(
+                model = photo.photo,
                 contentDescription = null,
                 modifier = modifier
                     .clickable(enabled) {
@@ -184,9 +187,7 @@ private fun TaskyPhoto(
                 model = photo.url,
                 contentDescription = null,
                 modifier = modifier
-                    .clickable(
-                        enabled
-                    ) {
+                    .clickable(enabled) {
                         onClick()
                     }
             )
@@ -208,7 +209,7 @@ private fun TaskyPhotosEmptyPreview() {
 
             },
             onOpenPhoto = {
-                
+
             }
         )
     }
