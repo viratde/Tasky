@@ -40,6 +40,7 @@ fun TaskyVisitorsAdderInput(
     email: String,
     onClose: () -> Unit,
     isValidEmail: Boolean,
+    isLoading: Boolean,
     onAdd: () -> Unit,
     onEmailChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -113,6 +114,7 @@ fun TaskyVisitorsAdderInput(
                 label = stringResource(id = R.string.add),
                 onClick = onAdd,
                 enabled = isValidEmail,
+                isLoading = isLoading,
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth()
@@ -135,6 +137,7 @@ private fun TaskyVisitorsInputPreview() {
             email = "",
             onClose = { /*TODO*/ },
             isValidEmail = true,
+            isLoading = true,
             onAdd = {},
             onEmailChange = {
 
