@@ -106,26 +106,17 @@ class AgendaDetailsViewModel : ViewModel() {
             is AgendaItemDetailsAction.OnAddAgendaPhoto -> {
                 if (state.agendaItemUi is AgendaItemUi.EventUi) {
                     state = state.copy(
-                        agendaItemUi = (state.agendaItemUi as AgendaItemUi.EventUi).copy(
-                            photos = (state.agendaItemUi as AgendaItemUi.EventUi).photos + action.photo
-                        )
+                        agendaItemUi = updateDetailsIfEvent {
+                            it.copy(
+                                photos = it.photos + action.photo
+                            )
+                        }
                     )
                 }
             }
 
             AgendaItemDetailsAction.OnAddVisitor -> {
-                viewModelScope.launch {
-                    state = state.copy(
-                        visitorState = state.visitorState?.copy(
-                            isLoading = true
-                        )
-                    )
-                    delay(2000)
-                    state = state.copy(
-                        visitorState = null
-                    )
 
-                }
             }
 
             AgendaItemDetailsAction.OnToggleVisitorsModel -> {
@@ -151,4 +142,12 @@ class AgendaDetailsViewModel : ViewModel() {
         }
     }
 
+    private fun updateDetailsIfEvent(
+        update: (AgendaItemUi.EventUi) -> AgendaItemUi.EventUi
+    ): AgendaItemUi? {
+        return when (val details = state.agendaItemUi) {
+            is AgendaItemUi.EventUi -> update(details)
+            else -> details
+        }
+    }
 }
