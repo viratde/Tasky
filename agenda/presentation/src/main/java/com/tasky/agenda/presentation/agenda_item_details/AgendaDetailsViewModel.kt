@@ -4,8 +4,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
 import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
+import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class AgendaDetailsViewModel : ViewModel() {
 
@@ -98,7 +102,52 @@ class AgendaDetailsViewModel : ViewModel() {
                     isInEditMode = !state.isInEditMode
                 )
             }
+
+            is AgendaItemDetailsAction.OnAddAgendaPhoto -> {
+                if (state.agendaItemUi is AgendaItemUi.EventUi) {
+                    state = state.copy(
+                        agendaItemUi = updateDetailsIfEvent {
+                            it.copy(
+                                photos = it.photos + action.photo
+                            )
+                        }
+                    )
+                }
+            }
+
+            AgendaItemDetailsAction.OnAddVisitor -> {
+
+            }
+
+            AgendaItemDetailsAction.OnToggleVisitorsModel -> {
+                state = state.copy(
+                    visitorState = if (state.visitorState == null) VisitorState() else null
+                )
+            }
+
+            is AgendaItemDetailsAction.OnVisitorsEmailChange -> {
+                state = state.copy(
+                    visitorState = state.visitorState?.copy(
+                        email = action.email,
+                        isValidEmail = true
+                    )
+                )
+            }
+
+            is AgendaItemDetailsAction.OnVisitorFilterChange -> {
+                state = state.copy(
+                    selectedVisitorsFilterState = action.visitorsFilterState
+                )
+            }
         }
     }
 
+    private fun updateDetailsIfEvent(
+        update: (AgendaItemUi.EventUi) -> AgendaItemUi.EventUi
+    ): AgendaItemUi? {
+        return when (val details = state.agendaItemUi) {
+            is AgendaItemUi.EventUi -> update(details)
+            else -> details
+        }
+    }
 }

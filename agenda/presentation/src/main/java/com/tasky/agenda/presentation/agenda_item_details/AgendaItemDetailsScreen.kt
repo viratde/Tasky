@@ -22,9 +22,11 @@ import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputT
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyAgendaButton
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyModeledTextField
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyPhotosInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyRemindTimeInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTitle
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTopBar
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsAdderInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsList
 import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
 import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
@@ -125,7 +127,7 @@ fun EventScreen(
                             is AgendaItemUi.EventUi -> stringResource(id = R.string.event)
                             is AgendaItemUi.ReminderUi -> stringResource(id = R.string.remainder)
                         },
-                        color = when(state.agendaItemUi){
+                        color = when (state.agendaItemUi) {
                             is AgendaItemUi.EventUi -> TaskyLightGreen
                             is AgendaItemUi.ReminderUi -> TaskyGrey
                             is AgendaItemUi.TaskUi -> TaskyGreen
@@ -152,7 +154,7 @@ fun EventScreen(
                         color = TaskyLight,
                         modifier = Modifier
                             .padding(
-                                vertical = 16.dp,
+                                vertical = 12.dp,
                                 horizontal = 16.dp
                             )
                     )
@@ -175,10 +177,38 @@ fun EventScreen(
                         color = TaskyLight,
                         modifier = Modifier
                             .padding(
-                                vertical = 16.dp,
+                                vertical = 12.dp,
                                 horizontal = 16.dp
                             )
                     )
+
+
+                    if (state.agendaItemUi is AgendaItemUi.EventUi) {
+
+                        TaskyPhotosInput(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            photos = state.agendaItemUi.photos,
+                            enabled = state.isInEditMode,
+                            onAddPhoto = { photo ->
+                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo))
+                            },
+                            onDeletePhoto = {
+
+                            }
+
+                        )
+
+                        HorizontalDivider(
+                            color = TaskyLight,
+                            modifier = Modifier
+                                .padding(
+                                    vertical = 12.dp,
+                                    horizontal = 16.dp
+                                )
+                        )
+
+                    }
 
                     when (state.agendaItemUi) {
                         is AgendaItemUi.EventUi -> {
@@ -198,7 +228,7 @@ fun EventScreen(
                                 color = TaskyLight,
                                 modifier = Modifier
                                     .padding(
-                                        vertical = 16.dp,
+                                        vertical = 12.dp,
                                         horizontal = 16.dp
                                     )
                             )
@@ -252,7 +282,7 @@ fun EventScreen(
                         color = TaskyLight,
                         modifier = Modifier
                             .padding(
-                                vertical = 16.dp,
+                                vertical = 12.dp,
                                 horizontal = 16.dp
                             )
                     )
@@ -271,7 +301,7 @@ fun EventScreen(
                         color = TaskyLight,
                         modifier = Modifier
                             .padding(
-                                vertical = 16.dp,
+                                vertical = 12.dp,
                                 horizontal = 16.dp
                             )
                     )
@@ -283,20 +313,48 @@ fun EventScreen(
                                     horizontal = 16.dp
                                 ),
                             selectedVisitorsFilterState = state.selectedVisitorsFilterState,
-                            onVisitorsFilterStateChange = {
-
+                            onVisitorsFilterStateChange = { visitorsFilterState ->
+                                onAction(
+                                    AgendaItemDetailsAction.OnVisitorFilterChange(
+                                        visitorsFilterState
+                                    )
+                                )
                             },
                             visitors = state.agendaItemUi.attendees,
                             hostUserId = "",
-                            onToggleAddModel = { /*TODO*/ },
+                            onToggleAddModel = {
+                                onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
+                            },
                             isEnabled = state.isInEditMode
                         )
+
+                        if (state.visitorState != null) {
+                            TaskyVisitorsAdderInput(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        horizontal = 16.dp
+                                    ),
+                                email = state.visitorState.email,
+                                onClose = {
+                                    onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
+                                },
+                                isValidEmail = state.visitorState.isValidEmail,
+                                onAdd = {
+                                    onAction(AgendaItemDetailsAction.OnAddVisitor)
+                                },
+                                isLoading = state.visitorState.isLoading,
+                                onEmailChange = { email ->
+                                    onAction(AgendaItemDetailsAction.OnVisitorsEmailChange(email))
+                                }
+                            )
+                        }
 
                         HorizontalDivider(
                             color = TaskyLight,
                             modifier = Modifier
                                 .padding(
-                                    vertical = 16.dp,
+                                    vertical = 12.dp,
                                     horizontal = 16.dp
                                 )
                         )
