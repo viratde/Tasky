@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.agenda_item_details.model
+package com.tasky.agenda.presentation.common.model
 
 data class VisitorState(
     val email: String = "",

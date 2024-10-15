@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.agenda_item_details.model
+package com.tasky.agenda.presentation.common.model
 
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import java.time.ZonedDateTime

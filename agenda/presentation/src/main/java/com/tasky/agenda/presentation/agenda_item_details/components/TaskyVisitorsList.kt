@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import com.tasky.agenda.presentation.R
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.VisitorsFilterState
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.asUiText
-import com.tasky.agenda.presentation.agenda_item_details.model.Attendee
-import com.tasky.agenda.presentation.agenda_item_details.model.FakeAttendee
+import com.tasky.agenda.presentation.common.model.Attendee
+import com.tasky.agenda.presentation.common.model.FakeAttendee
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyDarkGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyGrey

@@ -2,7 +2,7 @@ package com.tasky.agenda.presentation.agenda_item_details
 
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.VisitorsFilterState
-import com.tasky.agenda.presentation.agenda_item_details.model.AgendaPhoto
+import com.tasky.agenda.presentation.common.model.AgendaPhoto
 
 sealed interface AgendaItemDetailsAction {
     data class OnTitleChange(val title: String) : AgendaItemDetailsAction
