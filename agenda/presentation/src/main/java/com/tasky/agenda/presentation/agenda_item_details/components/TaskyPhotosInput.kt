@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.agenda_item_details.model.AgendaPhoto
+import com.tasky.agenda.presentation.common.model.AgendaPhoto
 import com.tasky.core.presentation.designsystem.ui.CrossIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyGrey

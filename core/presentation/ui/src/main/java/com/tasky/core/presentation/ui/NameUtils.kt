@@ -1,6 +1,7 @@
 package com.tasky.core.presentation.ui
 
 fun String.formattedUiName(): String {
+    if (this.isEmpty()) return ""
     val parts = this.split("\\s+".toRegex())
     return when (parts.size) {
         1 -> {

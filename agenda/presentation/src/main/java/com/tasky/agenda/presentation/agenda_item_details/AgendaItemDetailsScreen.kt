@@ -28,10 +28,10 @@ import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTitle
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTopBar
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsAdderInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsList
-import com.tasky.agenda.presentation.agenda_item_details.model.AgendaItemUi
-import com.tasky.agenda.presentation.agenda_item_details.model.FakeEventUi
-import com.tasky.agenda.presentation.agenda_item_details.model.FakeRemainderUi
-import com.tasky.agenda.presentation.agenda_item_details.model.FakeTaskUi
+import com.tasky.agenda.presentation.common.model.AgendaItemUi
+import com.tasky.agenda.presentation.common.model.FakeEventUi
+import com.tasky.agenda.presentation.common.model.FakeRemainderUi
+import com.tasky.agenda.presentation.common.model.FakeTaskUi
 import com.tasky.core.presentation.designsystem.components.LoadingContainer
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyGreen
