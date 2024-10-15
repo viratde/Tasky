@@ -4,12 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
-import com.tasky.agenda.presentation.common.model.VisitorState
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
 
 class AgendaDetailsViewModel : ViewModel() {
 
