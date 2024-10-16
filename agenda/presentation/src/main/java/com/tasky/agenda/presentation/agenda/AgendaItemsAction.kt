@@ -10,6 +10,10 @@ sealed interface AgendaItemsAction {
         val date: LocalDate
     ) : AgendaItemsAction
 
+    data class OnSelectSelectionStartDate(
+        val date: LocalDate
+    ) : AgendaItemsAction
+
     data object OnToggleLogOutDropDown : AgendaItemsAction
     data object OnLogOut : AgendaItemsAction
     data object OnToggleAddAgendaItemDropDown : AgendaItemsAction

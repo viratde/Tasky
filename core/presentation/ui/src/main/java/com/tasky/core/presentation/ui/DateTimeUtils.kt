@@ -1,6 +1,7 @@
 package com.tasky.core.presentation.ui
 
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -55,4 +56,16 @@ fun Long.withHourAndMinutes(hour: Int, minutes: Int): Long {
     ).withHour(hour)
         .withMinute(minutes)
     return zonedDateTime.toInstant().toEpochMilli()
+}
+
+fun LocalDate.toFormatUiDate(): String {
+    return format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+}
+
+fun Long.toFormatAgendaUiDate(): String {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.format(DateTimeFormatter.ofPattern("MMM dd, HH:mm"))
 }

@@ -31,4 +31,10 @@
     <string name="add_photos">Add photos</string>
     <string name="photos">Photos</string>
     <string name="photo">Photo</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="open">Open</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
 </resources>

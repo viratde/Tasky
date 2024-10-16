@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class AgendaItemsState(
     val agendaItems: List<AgendaItemUi> = listOf(),
+    val selectionStartDate:LocalDate = LocalDate.now(),
     val selectedDate: LocalDate = LocalDate.now(),
     val isDateSelectorModelOpen: Boolean = false,
     val isAddAgendaItemDropDownOpen: Boolean = false,
