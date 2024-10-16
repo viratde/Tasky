@@ -115,7 +115,7 @@ val FakeRemainderUi = AgendaItemUi.ReminderUi(
 
 val FakeTaskUi = AgendaItemUi.TaskUi(
     id = null,
-    title = "New Remainder",
+    title = "New Task",
     description = "This is a test description and it will be removed in the future.",
     time = ZonedDateTime.now().toInstant().toEpochMilli(),
     remindAt = RemindTimes.ONE_DAY,

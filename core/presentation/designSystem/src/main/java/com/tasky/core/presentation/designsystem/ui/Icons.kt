@@ -32,3 +32,6 @@ val EditIcon
 val DeleteIcon
     @Composable
     get() = ImageVector.vectorResource(id = R.drawable.delete)
+val ContextMenuIcon
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.context_menu_icon)
