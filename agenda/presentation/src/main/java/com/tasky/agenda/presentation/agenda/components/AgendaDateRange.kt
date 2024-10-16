@@ -32,12 +32,13 @@ import java.time.LocalDate
 fun AgendaDateRange(
     selectionStartDate: LocalDate,
     selectedDate: LocalDate,
+    noOfDaysToRender: Int,
     onSelectionDateChanged: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
-    val dates = remember(selectionStartDate) {
-        List(6) { index ->
+    val dates = remember(selectionStartDate, noOfDaysToRender) {
+        List(noOfDaysToRender) { index ->
             selectionStartDate.plusDays(index.toLong())
         }
     }
@@ -117,6 +118,7 @@ private fun AgendaDateRangePreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
+            noOfDaysToRender = 6,
             selectionStartDate = LocalDate.now(),
             selectedDate = LocalDate.now().plusDays(1L),
             onSelectionDateChanged = {

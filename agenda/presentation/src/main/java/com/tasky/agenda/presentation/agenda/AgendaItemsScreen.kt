@@ -23,6 +23,7 @@ import com.tasky.agenda.presentation.agenda.components.AgendaDateLabel
 import com.tasky.agenda.presentation.agenda.components.AgendaDateRange
 import com.tasky.agenda.presentation.agenda.components.AgendaItemUi
 import com.tasky.agenda.presentation.agenda.components.AgendaItemsTopBar
+import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
@@ -104,6 +105,7 @@ fun AgendaItemsScreen(
                         .padding(horizontal = 16.dp),
                     selectionStartDate = state.selectionStartDate,
                     selectedDate = state.selectedDate,
+                    noOfDaysToRender = state.noOfDaysToRender,
                     onSelectionDateChanged = {
 
                     }
@@ -130,7 +132,19 @@ fun AgendaItemsScreen(
                             agendaItemUi = agendaItemUi,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp)
+                                .padding(horizontal = 16.dp),
+                            onDelete = {
+                                onAction(AgendaItemsAction.OnDeleteAgendaItemUi(agendaItemUi))
+                            },
+                            onEdit = {
+                                onAction(AgendaItemsAction.OnEditAgendaItemUi(agendaItemUi))
+                            },
+                            onToggle = if (agendaItemUi is AgendaItemUi.TaskUi) ({
+                                onAction(AgendaItemsAction.OnToggleTaskUiCompletion(agendaItemUi))
+                            }) else null,
+                            onView = {
+                                onAction(AgendaItemsAction.OnOpenAgendaItemUi(agendaItemUi))
+                            }
                         )
                     }
                 }

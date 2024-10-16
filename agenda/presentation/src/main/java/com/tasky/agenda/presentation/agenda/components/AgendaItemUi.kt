@@ -57,12 +57,12 @@ import com.tasky.core.presentation.ui.toFormatAgendaUiDate
 
 @Composable
 fun AgendaItemUi(
+    onEdit: () -> Unit,
+    onView: () -> Unit,
+    onDelete: () -> Unit,
     agendaItemUi: AgendaItemUi,
     modifier: Modifier = Modifier,
-    onEdit: () -> Unit = {},
-    onView: () -> Unit = {},
-    onDelete: () -> Unit = {},
-    onToggle: () -> Unit = {},
+    onToggle: (() -> Unit)? = null,
 ) {
 
     var isDropDownMenuOpen by remember {
@@ -95,8 +95,8 @@ fun AgendaItemUi(
                 modifier = Modifier
                     .size(18.dp)
                     .clip(CircleShape)
-                    .clickable(agendaItemUi is AgendaItemUi.TaskUi) {
-                        onToggle()
+                    .clickable(agendaItemUi is AgendaItemUi.TaskUi && onToggle != null) {
+                        onToggle?.invoke()
                     }
                     .border(
                         2.dp,
@@ -271,7 +271,11 @@ private fun BasicAgendaItemUiPreview() {
             agendaItemUi = FakeEventUi,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            onDelete = {},
+            onEdit = {},
+            onToggle = {},
+            onView = {}
         )
     }
 }
@@ -286,7 +290,11 @@ private fun BasicAgendaItemTaskUiPreview() {
             agendaItemUi = FakeTaskUi,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            onDelete = {},
+            onEdit = {},
+            onToggle = {},
+            onView = {}
         )
     }
 }
@@ -301,7 +309,11 @@ private fun BasicAgendaItemRemainderUiPreview() {
             agendaItemUi = FakeRemainderUi,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            onDelete = {},
+            onEdit = {},
+            onToggle = {},
+            onView = {}
         )
     }
 }
