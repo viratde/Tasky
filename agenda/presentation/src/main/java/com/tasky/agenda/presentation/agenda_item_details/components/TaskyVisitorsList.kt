@@ -31,8 +31,8 @@ import androidx.compose.ui.unit.sp
 import com.tasky.agenda.presentation.R
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.VisitorsFilterState
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.asUiText
-import com.tasky.agenda.presentation.common.model.Attendee
-import com.tasky.agenda.presentation.common.model.FakeAttendee
+import com.tasky.agenda.domain.model.Attendee
+import com.tasky.agenda.domain.model.FakeAttendee
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyDarkGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyGrey
@@ -45,7 +45,7 @@ import com.tasky.core.presentation.designsystem.ui.inter
 fun TaskyVisitorsList(
     selectedVisitorsFilterState: VisitorsFilterState,
     onVisitorsFilterStateChange: (VisitorsFilterState) -> Unit,
-    visitors: List<Attendee>,
+    visitors: List<com.tasky.agenda.domain.model.Attendee>,
     hostUserId: String,
     onToggleAddModel: () -> Unit,
     isEnabled: Boolean,
@@ -161,10 +161,10 @@ fun TaskyVisitorsList(
 
 @Composable
 private fun TaskyVisitors(
-    visitors: List<Attendee>,
+    visitors: List<com.tasky.agenda.domain.model.Attendee>,
     creatorUserId: String,
     title: String,
-    onDelete: (Attendee) -> Unit
+    onDelete: (com.tasky.agenda.domain.model.Attendee) -> Unit
 ) {
 
     if (visitors.isNotEmpty()) {
@@ -252,13 +252,13 @@ private fun TaskyVisitorsListPreview() {
 
             },
             visitors = listOf(
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
 
                 ),
             hostUserId = "",
@@ -285,13 +285,13 @@ private fun TaskyDisabledVisitorsListPreview() {
 
             },
             visitors = listOf(
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
-                FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
+                com.tasky.agenda.domain.model.FakeAttendee,
 
                 ),
             hostUserId = "",

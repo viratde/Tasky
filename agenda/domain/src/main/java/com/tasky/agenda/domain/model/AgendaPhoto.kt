@@ -1,4 +1,4 @@
-package com.tasky.agenda.presentation.common.model
+package com.tasky.agenda.domain.model
 
 sealed interface AgendaPhoto {
     data class RemotePhoto(

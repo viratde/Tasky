@@ -2,7 +2,7 @@ package com.tasky.agenda.presentation.agenda_item_details
 
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.VisitorsFilterState
-import com.tasky.agenda.presentation.common.model.AgendaPhoto
+import com.tasky.agenda.domain.model.AgendaPhoto
 
 sealed interface AgendaItemDetailsAction {
     data class OnTitleChange(val title: String) : AgendaItemDetailsAction
@@ -12,7 +12,7 @@ sealed interface AgendaItemDetailsAction {
     data class OnAtChange(val at: Long) : AgendaItemDetailsAction
     data class OnRemindTimeChange(val remindTime: RemindTimes) : AgendaItemDetailsAction
     data object OnToggleEditMode : AgendaItemDetailsAction
-    data class OnAddAgendaPhoto(val photo: AgendaPhoto) : AgendaItemDetailsAction
+    data class OnAddAgendaPhoto(val photo: com.tasky.agenda.domain.model.AgendaPhoto) : AgendaItemDetailsAction
     data object OnToggleVisitorsModel : AgendaItemDetailsAction
     data class OnVisitorsEmailChange(val email: String) : AgendaItemDetailsAction
     data object OnAddVisitor : AgendaItemDetailsAction

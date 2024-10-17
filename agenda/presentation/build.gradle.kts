@@ -12,4 +12,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.coil.compose)
+    implementation(projects.core.domain)
+    implementation(projects.agenda.domain)
+
 }

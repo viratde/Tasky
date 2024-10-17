@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.common.model.AgendaPhoto
+import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.core.presentation.designsystem.ui.CrossIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyGrey
@@ -66,10 +66,10 @@ import java.util.UUID
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TaskyPhotosInput(
-    photos: List<AgendaPhoto>,
+    photos: List<com.tasky.agenda.domain.model.AgendaPhoto>,
     enabled: Boolean,
-    onAddPhoto: (AgendaPhoto) -> Unit,
-    onDeletePhoto: (AgendaPhoto) -> Unit,
+    onAddPhoto: (com.tasky.agenda.domain.model.AgendaPhoto) -> Unit,
+    onDeletePhoto: (com.tasky.agenda.domain.model.AgendaPhoto) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -81,7 +81,7 @@ fun TaskyPhotosInput(
         coroutineScope.launch {
             uri?.toByteArray(context)?.let { photo ->
                 onAddPhoto(
-                    AgendaPhoto.LocalPhoto(
+                    com.tasky.agenda.domain.model.AgendaPhoto.LocalPhoto(
                         photo = photo,
                         id = UUID.randomUUID().toString()
                     )
@@ -90,7 +90,7 @@ fun TaskyPhotosInput(
         }
     }
 
-    var selectedPhoto: AgendaPhoto? by remember(photos) {
+    var selectedPhoto: com.tasky.agenda.domain.model.AgendaPhoto? by remember(photos) {
         mutableStateOf(null)
     }
 
@@ -250,7 +250,7 @@ private fun TaskyPhotoAdder(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TaskySelectedPhoto(
-    selectedPhoto: AgendaPhoto,
+    selectedPhoto: com.tasky.agenda.domain.model.AgendaPhoto,
     onDelete: () -> Unit,
     onClose: () -> Unit
 ) {
@@ -334,8 +334,8 @@ private fun TaskySelectedPhoto(
 
             AsyncImage(
                 model = when (val photo = selectedPhoto!!) {
-                    is AgendaPhoto.LocalPhoto -> photo.photo
-                    is AgendaPhoto.RemotePhoto -> photo.url
+                    is com.tasky.agenda.domain.model.AgendaPhoto.LocalPhoto -> photo.photo
+                    is com.tasky.agenda.domain.model.AgendaPhoto.RemotePhoto -> photo.url
                 },
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
@@ -356,11 +356,11 @@ private fun TaskySelectedPhoto(
 @Composable
 private fun TaskyPhoto(
     onClick: () -> Unit,
-    photo: AgendaPhoto,
+    photo: com.tasky.agenda.domain.model.AgendaPhoto,
     modifier: Modifier = Modifier,
 ) {
     when (photo) {
-        is AgendaPhoto.LocalPhoto -> {
+        is com.tasky.agenda.domain.model.AgendaPhoto.LocalPhoto -> {
             AsyncImage(
                 model = photo.photo,
                 contentDescription = null,
@@ -371,7 +371,7 @@ private fun TaskyPhoto(
             )
         }
 
-        is AgendaPhoto.RemotePhoto -> {
+        is com.tasky.agenda.domain.model.AgendaPhoto.RemotePhoto -> {
             AsyncImage(
                 model = photo.url,
                 contentDescription = null,
@@ -408,7 +408,7 @@ private fun TaskyPhotosNonEmptyPreview() {
     TaskyTheme {
         TaskyPhotosInput(
             photos = List(10) {
-                AgendaPhoto.RemotePhoto(
+                com.tasky.agenda.domain.model.AgendaPhoto.RemotePhoto(
                     id = "",
                     url = ""
                 )
