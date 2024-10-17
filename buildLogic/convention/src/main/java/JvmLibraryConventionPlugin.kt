@@ -1,5 +1,6 @@
 import com.tasky.convention.addJvmTestDependency
 import com.tasky.convention.configureKotlinJvm
+import com.tasky.convention.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -26,6 +27,7 @@ class JvmLibraryConventionPlugin : Plugin<Project> {
 
             dependencies {
                 addJvmTestDependency(target)
+                "implementation"(project.libs.findLibrary("kotlinx.coroutines.core").get())
             }
         }
     }

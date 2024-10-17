@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.common.model.AgendaPhoto
+import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.core.presentation.designsystem.ui.CrossIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyGrey
@@ -63,7 +63,7 @@ import com.tasky.core.presentation.ui.toByteArray
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TaskyPhotosInput(
     photos: List<AgendaPhoto>,

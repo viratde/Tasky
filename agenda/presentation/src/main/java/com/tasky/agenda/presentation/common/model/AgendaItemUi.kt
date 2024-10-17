@@ -1,5 +1,8 @@
 package com.tasky.agenda.presentation.common.model
 
+import com.tasky.agenda.domain.model.AgendaPhoto
+import com.tasky.agenda.domain.model.Attendee
+import com.tasky.agenda.domain.model.FakeAttendee
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import java.time.ZonedDateTime
 
