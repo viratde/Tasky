@@ -12,7 +12,7 @@ sealed interface AgendaItemDetailsAction {
     data class OnAtChange(val at: Long) : AgendaItemDetailsAction
     data class OnRemindTimeChange(val remindTime: RemindTimes) : AgendaItemDetailsAction
     data object OnToggleEditMode : AgendaItemDetailsAction
-    data class OnAddAgendaPhoto(val photo: com.tasky.agenda.domain.model.AgendaPhoto) : AgendaItemDetailsAction
+    data class OnAddAgendaPhoto(val photo: AgendaPhoto) : AgendaItemDetailsAction
     data object OnToggleVisitorsModel : AgendaItemDetailsAction
     data class OnVisitorsEmailChange(val email: String) : AgendaItemDetailsAction
     data object OnAddVisitor : AgendaItemDetailsAction

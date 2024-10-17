@@ -45,7 +45,7 @@ import com.tasky.core.presentation.designsystem.ui.inter
 fun TaskyVisitorsList(
     selectedVisitorsFilterState: VisitorsFilterState,
     onVisitorsFilterStateChange: (VisitorsFilterState) -> Unit,
-    visitors: List<com.tasky.agenda.domain.model.Attendee>,
+    visitors: List<Attendee>,
     hostUserId: String,
     onToggleAddModel: () -> Unit,
     isEnabled: Boolean,
@@ -161,10 +161,10 @@ fun TaskyVisitorsList(
 
 @Composable
 private fun TaskyVisitors(
-    visitors: List<com.tasky.agenda.domain.model.Attendee>,
+    visitors: List<Attendee>,
     creatorUserId: String,
     title: String,
-    onDelete: (com.tasky.agenda.domain.model.Attendee) -> Unit
+    onDelete: (Attendee) -> Unit
 ) {
 
     if (visitors.isNotEmpty()) {
@@ -252,13 +252,13 @@ private fun TaskyVisitorsListPreview() {
 
             },
             visitors = listOf(
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
 
                 ),
             hostUserId = "",
@@ -285,13 +285,13 @@ private fun TaskyDisabledVisitorsListPreview() {
 
             },
             visitors = listOf(
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
-                com.tasky.agenda.domain.model.FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
+                FakeAttendee,
 
                 ),
             hostUserId = "",
