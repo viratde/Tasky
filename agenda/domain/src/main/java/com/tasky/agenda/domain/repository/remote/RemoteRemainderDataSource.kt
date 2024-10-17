@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 
-interface RemoteRemainderRepository {
+interface RemoteRemainderDataSource {
 
     suspend fun update(remainder: Remainder): EmptyDataResult<DataError.Network>
 

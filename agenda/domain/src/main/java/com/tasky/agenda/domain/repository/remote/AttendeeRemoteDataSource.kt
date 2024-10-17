@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 
-interface AttendeeRemoteRepository {
+interface AttendeeRemoteDataSource {
 
     suspend fun get(attendeeId: String): Result<Attendee, DataError.Network>
 

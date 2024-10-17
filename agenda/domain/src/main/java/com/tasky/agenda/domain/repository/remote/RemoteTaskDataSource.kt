@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 
-interface RemoteTaskRepository {
+interface RemoteTaskDataSource {
 
     suspend fun update(task: Task): EmptyDataResult<DataError.Network>
 

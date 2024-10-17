@@ -6,7 +6,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 
-interface AgendaRemoteRepository {
+interface AgendaRemoteDataSource {
 
     suspend fun getAgenda(time: Long): Result<Agenda, DataError.Network>
 
