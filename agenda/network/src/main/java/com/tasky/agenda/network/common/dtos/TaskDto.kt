@@ -1,4 +1,4 @@
-package com.tasky.agenda.network.task
+package com.tasky.agenda.network.common.dtos
 
 import kotlinx.serialization.Serializable
 

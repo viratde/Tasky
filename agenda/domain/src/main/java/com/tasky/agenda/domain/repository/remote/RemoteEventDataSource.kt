@@ -7,14 +7,14 @@ import com.tasky.core.domain.util.Result
 
 interface RemoteEventDataSource {
 
-    suspend fun update(event: Event): Result<Event, DataError.Network>
+    suspend fun update(
+        event: Event,
+        deletedPhotoKeys: List<String>
+    ): Result<Event, DataError.Network>
 
     suspend fun create(event: Event): Result<Event, DataError.Network>
 
-    suspend fun delete(
-        eventId: String,
-        deletedPhotoKeys: List<String>
-    ): EmptyDataResult<DataError.Network>
+    suspend fun delete(eventId: String): EmptyDataResult<DataError.Network>
 
     suspend fun get(eventId: String): Result<Event, DataError.Network>
 

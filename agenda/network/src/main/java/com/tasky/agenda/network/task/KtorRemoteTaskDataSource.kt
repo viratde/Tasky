@@ -2,6 +2,9 @@ package com.tasky.agenda.network.task
 
 import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
+import com.tasky.agenda.network.common.dtos.TaskDto
+import com.tasky.agenda.network.common.mappers.toTask
+import com.tasky.agenda.network.common.mappers.toTaskDto
 import com.tasky.core.data.networking.delete
 import com.tasky.core.data.networking.get
 import com.tasky.core.data.networking.post
