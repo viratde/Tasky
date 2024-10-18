@@ -37,6 +37,7 @@ serializationJson = "1.7.1"
 securityCryptoKtx = "1.1.0-alpha06"
 junitJunit = "4.12"
 runner = "1.6.2"
+testng = "6.9.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

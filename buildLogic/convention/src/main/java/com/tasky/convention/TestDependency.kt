@@ -12,6 +12,7 @@ fun DependencyHandlerScope.addAndroidTestDependency(project: Project) {
     "androidTestImplementation"(project.libs.findLibrary("assertk").get())
     "androidTestImplementation"(project.libs.findLibrary("turbine").get())
     "androidTestImplementation"(project(":test-utils"))
+    addJvmTestDependency(project)
 }
 
 
