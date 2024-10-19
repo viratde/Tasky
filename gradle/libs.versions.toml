@@ -5,7 +5,7 @@ assertk = "0.28.1"
 coilCompose = "2.7.0"
 jUnit5 = "5.11.1"
 jUnitGradle = "1.11.0.0"
-kotlin = "2.0.20"
+kotlin = "2.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -38,6 +38,8 @@ securityCryptoKtx = "1.1.0-alpha06"
 junitJunit = "4.12"
 runner = "1.6.2"
 testng = "6.9.6"
+room = "2.6.1"
+ksp = "2.0.21-1.0.25"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -103,6 +105,11 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 ktlint-gradlePlugin = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
+room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", version.ref = "room" }
+
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -113,6 +120,8 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "jUnitGradle" }
+room = { id = "androidx.room", version.ref = "room" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 #convention-plugins
 tasky-android-application = { id = "tasky.android.application", version = "unspecified" }
@@ -123,6 +132,7 @@ tasky-android-library-compose = { id = "tasky.android.library.compose", version 
 tasky-android-library-compose-ui = { id = "tasky.android.library.compose.ui", version = "unspecified" }
 tasky-jvm-library = { id = "tasky.jvm.library", version = "unspecified" }
 tasky-jvm-ktor = { id = "tasky.jvm.ktor", version = "unspecified" }
+tasky-android-room = { id = "tasky.android.room", version = "unspecified" }
 
 [bundles]
 compose = [

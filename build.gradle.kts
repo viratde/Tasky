@@ -8,5 +8,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.serialization) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.junit5) apply false
+    alias(libs.plugins.room) apply false
+    alias(libs.plugins.ksp) apply false
 }
 

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.tasky.android.library)
+    alias(libs.plugins.tasky.android.room)
 }
 
 android {
