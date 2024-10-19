@@ -5,12 +5,12 @@ plugins {
 group = "com.tasky.buildLogic"
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 repositories {
@@ -53,6 +53,10 @@ gradlePlugin {
             id = "tasky.ktlint"
             implementationClass = "KtlintConventionPlugin"
         }
+        register("androidRoomConventionPlugin"){
+            id = "tasky.android.room"
+            implementationClass = "AndroidRoomConventionPlugin"
+        }
     }
 }
 
@@ -61,5 +65,6 @@ dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
     compileOnly(libs.ktlint.gradlePlugin)
+    compileOnly(libs.room.gradlePlugin)
 
 }
