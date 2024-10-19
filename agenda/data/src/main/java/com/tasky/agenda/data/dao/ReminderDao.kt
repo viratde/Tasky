@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface ReminderDao {
 
     @Query("SELECT * FROM reminderEntity WHERE id=:reminderId")
-    suspend fun getReminderById(reminderId: String): ReminderEntity
+    suspend fun getReminderById(reminderId: String): ReminderEntity?
 
     @Query("SELECT * FROM reminderEntity")
     suspend fun getReminders(): Flow<List<ReminderEntity>>
