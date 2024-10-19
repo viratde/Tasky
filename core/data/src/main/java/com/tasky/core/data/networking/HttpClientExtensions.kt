@@ -6,13 +6,16 @@ import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
 import com.tasky.core.domain.util.Result
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.delete
+import io.ktor.client.request.forms.submitFormWithBinaryData
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url
+import io.ktor.http.content.PartData
 import io.ktor.util.network.UnresolvedAddressException
 import kotlinx.serialization.SerializationException
 import kotlin.coroutines.cancellation.CancellationException
@@ -67,6 +70,20 @@ suspend inline fun <reified Request, reified Response : Any> HttpClient.put(
             url(constructRoute(route))
             setBody(body)
         }
+    }
+}
+
+suspend inline fun <reified Request : List<PartData>, reified Response : Any> HttpClient.submitFormWithBinaryData(
+    route: String,
+    body: Request,
+    block: HttpRequestBuilder.() -> Unit = {}
+): Result<Response, DataError.Network> {
+    return safeCall {
+        submitFormWithBinaryData(
+            url = constructRoute(route),
+            formData = body,
+            block = block
+        )
     }
 }
 

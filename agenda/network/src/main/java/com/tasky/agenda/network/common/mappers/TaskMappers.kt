@@ -1,6 +1,7 @@
-package com.tasky.agenda.network.task
+package com.tasky.agenda.network.common.mappers
 
 import com.tasky.agenda.domain.model.Task
+import com.tasky.agenda.network.common.dtos.TaskDto
 
 fun TaskDto.toTask(): Task {
     return Task(

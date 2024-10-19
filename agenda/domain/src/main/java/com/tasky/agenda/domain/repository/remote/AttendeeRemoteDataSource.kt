@@ -7,8 +7,8 @@ import com.tasky.core.domain.util.Result
 
 interface AttendeeRemoteDataSource {
 
-    suspend fun get(attendeeId: String): Result<Attendee, DataError.Network>
+    suspend fun get(email: String): Result<Attendee, DataError.Network>
 
-    suspend fun deleteAttendeeFromAnEvent(eventId: String): EmptyDataResult<DataError.Network>
+    suspend fun deleteLocalAttendeeFromAnEvent(eventId: String): EmptyDataResult<DataError.Network>
 
 }
