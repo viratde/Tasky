@@ -1,14 +1,15 @@
 package com.tasky.agenda.data.model
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.tasky.agenda.data.utils.AttendeeEntity
 import com.tasky.agenda.data.utils.PhotoEntity
 
 @Entity(
-    tableName = "events"
+    tableName = "eventEntity"
 )
 data class EventEntity(
-    val id: String,
+    @PrimaryKey val id: String,
     val title: String,
     val description: String,
     val remindAt: Long,
