@@ -7,7 +7,7 @@ data class Attendee(
     val fullName: String,
     val userId: String,
     val eventId: String,
-    val isGoing: Boolean = true,
+    val isGoing: Boolean,
     val remindAt: Long
 )
 
@@ -16,5 +16,6 @@ val FakeAttendee = Attendee(
     fullName = "Virat Kumar",
     userId = "",
     remindAt = ZonedDateTime.now().toInstant().toEpochMilli(),
-    eventId = ""
+    eventId = "",
+    isGoing = true
 )
