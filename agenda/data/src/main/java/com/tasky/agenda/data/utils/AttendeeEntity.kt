@@ -1,5 +1,8 @@
 package com.tasky.agenda.data.utils
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class AttendeeEntity(
     val email: String,
     val fullName: String,
