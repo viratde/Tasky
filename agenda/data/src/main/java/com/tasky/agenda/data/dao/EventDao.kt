@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 interface EventDao {
 
     @Query("SELECT * FROM eventEntity WHERE id=:eventId")
-    suspend fun getEventById(eventId: String): EventEntity?
+    fun getEventById(eventId: String): EventEntity?
 
     @Query("SELECT * FROM eventEntity")
-    suspend fun getEvents(): Flow<List<EventEntity>>
+    fun getEvents(): Flow<List<EventEntity>>
 
     @Query("SELECT * FROM eventEntity WHERE `from` BETWEEN :startTime AND :endTime")
-    suspend fun getEventsByTime(startTime: Long, endTime: Long): List<EventEntity>
+    fun getEventsByTime(startTime: Long, endTime: Long): Flow<List<EventEntity>>
 
     @Upsert
     suspend fun upsertEvent(eventEntity: EventEntity)

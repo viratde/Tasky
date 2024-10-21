@@ -22,9 +22,9 @@ class RoomReminderLocalDataSource(
         return reminderDao.getReminderById(reminderId = agendaItemId)?.toReminder()
     }
 
-    override suspend fun getAgendaItemsByTime(time: Long): List<Reminder> {
+    override suspend fun getAgendaItemsByTime(time: Long): Flow<List<Reminder>> {
         return reminderDao.getRemindersByTime(time.getStartOfDay(), time.getEndOfDay())
-            .map { it.toReminder()}
+            .map { reminderEntities -> reminderEntities.map { it.toReminder() } }
     }
 
     override suspend fun upsertAgendaItem(agendaItem: Reminder): EmptyDataResult<DataError.Local> {
