@@ -9,7 +9,7 @@ interface LocalAgendaDataSource<T> {
 
     suspend fun getAgendaItemsById(agendaItemId: String): T?
 
-    suspend fun getAgendaItemsByTime(time: Long): Flow<List<T>>
+    suspend fun getAgendaItemsByTime(time: Long): List<T>
 
     suspend fun upsertAgendaItem(agendaItem: T): EmptyDataResult<DataError.Local>
 

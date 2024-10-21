@@ -22,9 +22,9 @@ class RoomEventLocalDataSource(
         return eventDao.getEventById(eventId = agendaItemId)?.toEvent()
     }
 
-    override suspend fun getAgendaItemsByTime(time: Long): Flow<List<Event>> {
+    override suspend fun getAgendaItemsByTime(time: Long): List<Event> {
         return eventDao.getEventsByTime(time.getStartOfDay(), time.getEndOfDay())
-            .map { eventEntities -> eventEntities.map { it.toEvent() } }
+            .map { it.toEvent() }
     }
 
     override suspend fun upsertAgendaItem(agendaItem: Event): EmptyDataResult<DataError.Local> {

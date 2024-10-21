@@ -6,6 +6,7 @@ import com.tasky.agenda.domain.model.TemporaryNetworkAttendee
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
 import com.tasky.agenda.network.common.dtos.AttendeeDto
 import com.tasky.agenda.network.common.dtos.EventDto
+import com.tasky.agenda.network.common.dtos.TemporaryNetworkAttendeeDto
 import com.tasky.agenda.network.common.mappers.toEvent
 import com.tasky.agenda.network.common.mappers.toTemporaryNetworkAttendee
 import com.tasky.agenda.network.event.mappers.toCreateEventDto
@@ -110,7 +111,7 @@ class KtorRemoteEventDataSource(
     }
 
     override suspend fun getAttendee(email: String): Result<TemporaryNetworkAttendee?, DataError.Network> {
-        return httpClient.get<AttendeeDto>(
+        return httpClient.get<TemporaryNetworkAttendeeDto>(
             route = "/attendee",
             queryParameters = mapOf(
                 "email" to email

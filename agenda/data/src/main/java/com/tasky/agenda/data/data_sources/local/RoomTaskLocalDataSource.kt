@@ -22,9 +22,9 @@ class RoomTaskLocalDataSource(
         return taskDao.getTaskById(taskId = agendaItemId)?.toTask()
     }
 
-    override suspend fun getAgendaItemsByTime(time: Long): Flow<List<Task>> {
+    override suspend fun getAgendaItemsByTime(time: Long): List<Task> {
         return taskDao.getTasksByTime(time.getStartOfDay(), time.getEndOfDay())
-            .map { taskEntities -> taskEntities.map { it.toTask() } }
+            .map { it.toTask() }
     }
 
     override suspend fun upsertAgendaItem(agendaItem: Task): EmptyDataResult<DataError.Local> {

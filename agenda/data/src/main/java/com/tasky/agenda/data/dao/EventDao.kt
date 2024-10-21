@@ -16,7 +16,7 @@ interface EventDao {
     suspend fun getEvents(): Flow<List<EventEntity>>
 
     @Query("SELECT * FROM eventEntity WHERE `from` BETWEEN :startTime AND :endTime")
-    suspend fun getEventsByTime(startTime: Long, endTime: Long): Flow<List<EventEntity>>
+    suspend fun getEventsByTime(startTime: Long, endTime: Long): List<EventEntity>
 
     @Upsert
     suspend fun upsertEvent(eventEntity: EventEntity)

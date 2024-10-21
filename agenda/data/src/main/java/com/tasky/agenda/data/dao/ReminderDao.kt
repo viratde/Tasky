@@ -14,7 +14,7 @@ interface ReminderDao {
     suspend fun getReminders(): Flow<List<ReminderEntity>>
 
     @Query("SELECT * FROM reminderEntity WHERE time BETWEEN :startTime and :endTime")
-    suspend fun getRemindersByTime(startTime: Long, endTime: Long): Flow<List<ReminderEntity>>
+    suspend fun getRemindersByTime(startTime: Long, endTime: Long): List<ReminderEntity>
 
     @Upsert
     suspend fun upsertReminder(reminderEntity: ReminderEntity)
