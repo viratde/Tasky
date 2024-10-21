@@ -1,10 +1,10 @@
 package com.tasky.agenda.data.mappers
 
 import com.tasky.agenda.data.model.ReminderEntity
-import com.tasky.agenda.domain.model.Remainder
+import com.tasky.agenda.domain.model.Reminder
 
-fun ReminderEntity.toReminder(): Remainder {
-    return Remainder(
+fun ReminderEntity.toReminder(): Reminder {
+    return Reminder(
         id = id,
         title = title,
         description = description,
@@ -13,7 +13,7 @@ fun ReminderEntity.toReminder(): Remainder {
     )
 }
 
-fun Remainder.toReminderEntity(): ReminderEntity {
+fun Reminder.toReminderEntity(): ReminderEntity {
     return ReminderEntity(
         id = id,
         title = title,

@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 
-interface RemoteRemainderDataSource {
+interface RemoteReminderDataSource {
 
     suspend fun update(reminder: Reminder): EmptyDataResult<DataError.Network>
 

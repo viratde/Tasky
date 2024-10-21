@@ -1,7 +1,7 @@
 package com.tasky.agenda.network.reminder
 
-import com.tasky.agenda.domain.model.Remainder
-import com.tasky.agenda.domain.repository.remote.RemoteRemainderDataSource
+import com.tasky.agenda.domain.model.Reminder
+import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
 import com.tasky.agenda.network.common.dtos.ReminderDto
 import com.tasky.agenda.network.common.mappers.toReminder
 import com.tasky.agenda.network.common.mappers.toReminderDto
@@ -17,19 +17,19 @@ import io.ktor.client.HttpClient
 
 class KtorReminderRemoteDataSource(
     private val httpClient: HttpClient
-) : RemoteRemainderDataSource {
+) : RemoteReminderDataSource {
 
-    override suspend fun update(remainder: Remainder): EmptyDataResult<DataError.Network> {
+    override suspend fun update(reminder: Reminder): EmptyDataResult<DataError.Network> {
         return httpClient.put(
             route = "/reminder",
-            body = remainder.toReminderDto()
+            body = reminder.toReminderDto()
         )
     }
 
-    override suspend fun create(remainder: Remainder): EmptyDataResult<DataError.Network> {
+    override suspend fun create(reminder: Reminder): EmptyDataResult<DataError.Network> {
         return httpClient.post(
             route = "/reminder",
-            body = remainder.toReminderDto()
+            body = reminder.toReminderDto()
         )
     }
 
@@ -42,7 +42,7 @@ class KtorReminderRemoteDataSource(
         )
     }
 
-    override suspend fun get(remainderId: String): Result<Remainder, DataError.Network> {
+    override suspend fun get(remainderId: String): Result<Reminder, DataError.Network> {
         return httpClient.get<ReminderDto>(
             route = "/reminder",
             queryParameters = mapOf(

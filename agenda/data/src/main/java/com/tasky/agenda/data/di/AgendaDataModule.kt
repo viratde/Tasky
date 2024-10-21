@@ -6,11 +6,10 @@ import com.tasky.agenda.data.data_sources.local.RoomEventLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomReminderLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomTaskLocalDataSource
 import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.model.Remainder
+import com.tasky.agenda.domain.model.Reminder
 import com.tasky.agenda.domain.model.Task
-import com.tasky.agenda.domain.repository.local.LocalAgendaRepository
+import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
 import org.koin.android.ext.koin.androidApplication
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val agendaDataModule = module {
@@ -35,15 +34,15 @@ val agendaDataModule = module {
         get<AgendaItemsDatabase>().reminderDao
     }
 
-    single<LocalAgendaRepository<Event>> {
+    single<LocalAgendaDataSource<Event>> {
         RoomEventLocalDataSource(get())
     }
 
-    single<LocalAgendaRepository<Task>> {
+    single<LocalAgendaDataSource<Task>> {
         RoomTaskLocalDataSource(get())
     }
 
-    single<LocalAgendaRepository<Remainder>> {
+    single<LocalAgendaDataSource<Reminder>> {
         RoomReminderLocalDataSource(get())
     }
 

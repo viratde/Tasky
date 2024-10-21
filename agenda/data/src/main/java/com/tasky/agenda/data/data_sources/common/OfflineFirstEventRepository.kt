@@ -1,64 +1,77 @@
 package com.tasky.agenda.data.data_sources.common
 
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.common.ReminderRepository
+import com.tasky.agenda.domain.model.Event
+import com.tasky.agenda.domain.model.TemporaryNetworkAttendee
+import com.tasky.agenda.domain.repository.common.EventRepository
 import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteRemainderDataSource
+import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
-class OfflineFirstReminderRepository(
-    private val localReminderDataSource: LocalAgendaDataSource<Reminder>,
-    private val remoteRemainderDataSource: RemoteRemainderDataSource
-) : ReminderRepository {
+class OfflineFirstEventRepository(
+    private val localEventDataSource: LocalAgendaDataSource<Event>,
+    private val remoteEventDataSource: RemoteEventDataSource
+) : EventRepository {
 
-    override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
-        if (localReminderResult !is Result.Success) {
-            return localReminderResult.asEmptyDataResult()
+    override suspend fun addEvent(event: Event): EmptyDataResult<DataError> {
+        val localEventResult = localEventDataSource.upsertAgendaItem(event)
+        if (localEventResult !is Result.Success) {
+            return localEventResult.asEmptyDataResult()
         }
-        return when (val remoteReminderResult = remoteRemainderDataSource.create(reminder)) {
+        return when (val remoteEventResult = remoteEventDataSource.create(event)) {
             is Result.Error -> {
                 // @todo - i need to store that it has been yet created in remote data source
                 Result.Success(Unit)
             }
 
             is Result.Success -> {
-                remoteReminderResult.asEmptyDataResult()
+                remoteEventResult.asEmptyDataResult()
             }
         }
     }
 
-    override suspend fun updateReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
-        if (localReminderResult !is Result.Success) {
-            return localReminderResult.asEmptyDataResult()
+    override suspend fun updateEvent(
+        event: Event,
+        deletedPhotoKeys: List<String>
+    ): EmptyDataResult<DataError> {
+        val localEventResult = localEventDataSource.upsertAgendaItem(event)
+        if (localEventResult !is Result.Success) {
+            return localEventResult.asEmptyDataResult()
         }
-        return when (val remoteReminderResult =
-            remoteRemainderDataSource.update(reminder)) {
+        return when (val remoteEventResult =
+            remoteEventDataSource.update(event, deletedPhotoKeys)) {
             is Result.Error -> {
-                // @todo - i need to store that as it has been yet updated in remote data source
+                // @todo - i need to store that it has been yet updated in remote data source
                 Result.Success(Unit)
             }
 
             is Result.Success -> {
-                remoteReminderResult.asEmptyDataResult()
+                remoteEventResult.asEmptyDataResult()
             }
         }
     }
 
-    override suspend fun getRemindersByTime(time: Long): Flow<List<Reminder>> {
-        return localReminderDataSource.getAgendaItemsByTime(time)
+    override suspend fun getEventsByTime(time: Long): Flow<List<Event>> {
+        return localEventDataSource.getAgendaItemsByTime(time)
     }
 
-    override suspend fun deleteRemindersById(reminderId: String) {
-        localReminderDataSource.deleteAgendaItem(reminderId)
+    override suspend fun deleteEventById(eventId: String) {
+        localEventDataSource.deleteAgendaItem(eventId)
 
         // @todo - I need to check whether it was created remotely or not
-        remoteRemainderDataSource.delete(reminderId)
+        remoteEventDataSource.delete(eventId)
+    }
+
+
+    override suspend fun getAttendee(email: String): Result<TemporaryNetworkAttendee?, DataError.Network> {
+        return remoteEventDataSource.getAttendee(email)
+    }
+
+    override suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network> {
+        return remoteEventDataSource.deleteLocalAttendeeFromAnEvent(eventId)
     }
 
 }

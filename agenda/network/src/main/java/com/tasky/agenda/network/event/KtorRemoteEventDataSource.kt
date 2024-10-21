@@ -2,9 +2,12 @@ package com.tasky.agenda.network.event
 
 import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.model.Event
+import com.tasky.agenda.domain.model.TemporaryNetworkAttendee
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
+import com.tasky.agenda.network.common.dtos.AttendeeDto
 import com.tasky.agenda.network.common.dtos.EventDto
 import com.tasky.agenda.network.common.mappers.toEvent
+import com.tasky.agenda.network.common.mappers.toTemporaryNetworkAttendee
 import com.tasky.agenda.network.event.mappers.toCreateEventDto
 import com.tasky.agenda.network.event.mappers.toUpdateEventDto
 import com.tasky.core.data.networking.delete
@@ -104,6 +107,24 @@ class KtorRemoteEventDataSource(
                 "eventId" to eventId
             )
         ).mapData { it.toEvent() }
+    }
+
+    override suspend fun getAttendee(email: String): Result<TemporaryNetworkAttendee?, DataError.Network> {
+        return httpClient.get<AttendeeDto>(
+            route = "/attendee",
+            queryParameters = mapOf(
+                "email" to email
+            )
+        ).mapData { it.attendee?.toTemporaryNetworkAttendee() }
+    }
+
+    override suspend fun deleteLocalAttendeeFromAnEvent(eventId: String): EmptyDataResult<DataError.Network> {
+        return httpClient.delete(
+            route = "/attendee",
+            queryParameters = mapOf(
+                "eventId" to eventId
+            )
+        )
     }
 
 }

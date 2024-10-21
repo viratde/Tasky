@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.EmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 
-interface LocalAgendaRepository<T> {
+interface LocalAgendaDataSource<T> {
 
     suspend fun getAgendaItemsById(agendaItemId: String): T?
 

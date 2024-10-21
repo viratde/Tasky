@@ -5,7 +5,7 @@ import com.tasky.agenda.data.dao.EventDao
 import com.tasky.agenda.data.mappers.toEvent
 import com.tasky.agenda.data.mappers.toEventEntity
 import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.repository.local.LocalAgendaRepository
+import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
 import com.tasky.core.data.utils.getEndOfDay
 import com.tasky.core.data.utils.getStartOfDay
 import com.tasky.core.domain.util.DataError
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 
 class RoomEventLocalDataSource(
     private val eventDao: EventDao
-) : LocalAgendaRepository<Event> {
+) : LocalAgendaDataSource<Event> {
 
     override suspend fun getAgendaItemsById(agendaItemId: String): Event? {
         return eventDao.getEventById(eventId = agendaItemId)?.toEvent()

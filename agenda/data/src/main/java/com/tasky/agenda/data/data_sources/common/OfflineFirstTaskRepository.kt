@@ -1,64 +1,65 @@
 package com.tasky.agenda.data.data_sources.common
 
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.common.ReminderRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaRepository
-import com.tasky.agenda.domain.repository.remote.RemoteRemainderDataSource
+import com.tasky.agenda.domain.model.Task
+import com.tasky.agenda.domain.repository.common.TaskRepository
+import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
-class OfflineFirstReminderRepository(
-    private val localReminderDataSource: LocalAgendaRepository<Reminder>,
-    private val remoteRemainderDataSource: RemoteRemainderDataSource
-) : ReminderRepository {
+class OfflineFirstTaskRepository(
+    private val localTaskDataSource: LocalAgendaDataSource<Task>,
+    private val remoteTaskDataSource: RemoteTaskDataSource
+) : TaskRepository {
 
-    override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
-        if (localReminderResult !is Result.Success) {
-            return localReminderResult.asEmptyDataResult()
+
+    override suspend fun addTask(task: Task): EmptyDataResult<DataError> {
+        val localTaskResult = localTaskDataSource.upsertAgendaItem(task)
+        if (localTaskResult !is Result.Success) {
+            return localTaskResult.asEmptyDataResult()
         }
-        return when (val remoteReminderResult = remoteRemainderDataSource.create(reminder)) {
+        return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
                 // @todo - i need to store that it has been yet created in remote data source
                 Result.Success(Unit)
             }
 
             is Result.Success -> {
-                remoteReminderResult.asEmptyDataResult()
+                remoteTaskResult.asEmptyDataResult()
             }
         }
     }
 
-    override suspend fun updateReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
-        if (localReminderResult !is Result.Success) {
-            return localReminderResult.asEmptyDataResult()
+    override suspend fun updateTask(task: Task): EmptyDataResult<DataError> {
+        val localTaskResult = localTaskDataSource.upsertAgendaItem(task)
+        if (localTaskResult !is Result.Success) {
+            return localTaskResult.asEmptyDataResult()
         }
-        return when (val remoteReminderResult =
-            remoteRemainderDataSource.update(reminder)) {
+        return when (val remoteTaskResult =
+            remoteTaskDataSource.update(task)) {
             is Result.Error -> {
                 // @todo - i need to store that as it has been yet updated in remote data source
                 Result.Success(Unit)
             }
 
             is Result.Success -> {
-                remoteReminderResult.asEmptyDataResult()
+                remoteTaskResult.asEmptyDataResult()
             }
         }
     }
 
-    override suspend fun getRemindersByTime(time: Long): Flow<List<Reminder>> {
-        return localReminderDataSource.getAgendaItemsByTime(time)
+    override suspend fun getTasksByTime(time: Long): Flow<List<Task>> {
+        return localTaskDataSource.getAgendaItemsByTime(time)
     }
 
-    override suspend fun deleteRemindersById(reminderId: String) {
-        localReminderDataSource.deleteAgendaItem(reminderId)
+    override suspend fun deleteTaskById(taskId: String) {
+        localTaskDataSource.deleteAgendaItem(taskId)
 
         // @todo - I need to check whether it was created remotely or not
-        remoteRemainderDataSource.delete(reminderId)
+        remoteTaskDataSource.delete(taskId)
     }
 
 }
