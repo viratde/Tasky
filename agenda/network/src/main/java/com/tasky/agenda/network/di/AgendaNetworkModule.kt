@@ -1,9 +1,8 @@
 package com.tasky.agenda.network.di
 
 import com.tasky.agenda.domain.repository.remote.AgendaRemoteDataSource
-import com.tasky.agenda.domain.repository.remote.AttendeeRemoteDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteRemainderDataSource
+import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
 import com.tasky.agenda.network.agenda.KtorAgendaRemoteDataSource
 import com.tasky.agenda.network.attendee.KtorAttendeeRemoteDataSource
@@ -20,7 +19,7 @@ val agendaNetworkModule = module {
 
     singleOf(::KtorRemoteTaskDataSource).bind(RemoteTaskDataSource::class)
 
-    singleOf(::KtorReminderRemoteDataSource).bind(RemoteRemainderDataSource::class)
+    singleOf(::KtorReminderRemoteDataSource).bind(RemoteReminderDataSource::class)
 
     singleOf(::KtorAttendeeRemoteDataSource).bind(AttendeeRemoteDataSource::class)
 

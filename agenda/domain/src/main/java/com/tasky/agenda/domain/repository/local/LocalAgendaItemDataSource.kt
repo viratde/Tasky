@@ -5,12 +5,20 @@ import com.tasky.core.domain.util.EmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 
-interface LocalAgendaRepository<T> {
+interface LocalAgendaDataSource<T> {
+
+    suspend fun getAgendaItemsById(agendaItemId: String): T?
+
+    suspend fun getAgendaItemsByTime(time: Long): Flow<List<T>>
 
     suspend fun upsertAgendaItem(agendaItem: T): EmptyDataResult<DataError.Local>
 
-    suspend fun deleteAgendaItem(agendaItemId: String): EmptyDataResult<DataError.Local>
+    suspend fun upsertAgendaItems(agendaItems: List<T>): EmptyDataResult<DataError.Local>
+
+    suspend fun deleteAgendaItem(agendaItemId: String)
 
     suspend fun getAgendaItems(): Flow<List<T>>
+
+    suspend fun deleteAllAgendaItems()
 
 }
