@@ -39,7 +39,9 @@ fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
 ) {
 
-    AgendaItemsScreen(state = viewModel.state) { action ->
+    AgendaItemsScreen(
+        state = viewModel.state
+    ) { action ->
         viewModel.onAction(action)
     }
 
@@ -89,12 +91,16 @@ fun AgendaItemsScreen(
                     onAction(AgendaItemsAction.OnToggleDateSelectorModel)
                 },
                 isDateSelectorModelOpen = state.isDateSelectorModelOpen,
+                onSelectedDateChange = { date ->
+                    onAction(AgendaItemsAction.OnSelectSelectionStartDate(date))
+                },
                 name = state.fullName,
                 onToggleLogoutDropDown = {
                     onAction(AgendaItemsAction.OnToggleLogOutDropDown)
                 },
-                onSelectedDateChange = { date ->
-                    onAction(AgendaItemsAction.OnSelectSelectionStartDate(date))
+                isLogOutDropDownOpen = state.isLogOutDropDownOpen,
+                onLogout = {
+                    onAction(AgendaItemsAction.OnLogOut)
                 }
             )
 

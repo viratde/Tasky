@@ -53,13 +53,17 @@ class AgendaItemsViewModel(
             AgendaItemsAction.OnAddTask -> TODO()
             is AgendaItemsAction.OnDeleteAgendaItemUi -> TODO()
             is AgendaItemsAction.OnEditAgendaItemUi -> TODO()
-            AgendaItemsAction.OnLogOut -> TODO()
+            AgendaItemsAction.OnLogOut -> {
+                // $todo - Needs to implement logout feature
+            }
+
             is AgendaItemsAction.OnOpenAgendaItemUi -> TODO()
             is AgendaItemsAction.OnSelectDate -> {
                 state = state.copy(
                     selectedDate = action.date
                 )
             }
+
             is AgendaItemsAction.OnSelectSelectionStartDate -> {
                 state = state.copy(
                     selectionStartDate = action.date,
@@ -67,18 +71,26 @@ class AgendaItemsViewModel(
                     isDateSelectorModelOpen = false
                 )
             }
-            AgendaItemsAction.OnToggleAddAgendaItemDropDown -> TODO()
+
+            AgendaItemsAction.OnToggleAddAgendaItemDropDown -> {
+                state = state.copy(
+                    isAddAgendaItemDropDownOpen = !state.isAddAgendaItemDropDownOpen
+                )
+            }
+
             AgendaItemsAction.OnToggleDateSelectorModel -> {
                 state = state.copy(
                     isDateSelectorModelOpen = !state.isDateSelectorModelOpen
                 )
             }
+
             AgendaItemsAction.OnToggleLogOutDropDown -> {
                 state = state.copy(
                     isLogOutDropDownOpen = !state.isLogOutDropDownOpen
                 )
             }
-            is AgendaItemsAction.OnToggleSelectedAgendaItemUi -> TODO()
+
+            is AgendaItemsAction.OnSelectAgendaItemUi -> TODO()
             is AgendaItemsAction.OnToggleTaskUiCompletion -> TODO()
         }
     }

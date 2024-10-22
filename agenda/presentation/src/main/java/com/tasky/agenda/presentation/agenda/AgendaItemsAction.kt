@@ -1,7 +1,6 @@
 package com.tasky.agenda.presentation.agenda
 
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
-import java.time.LocalDate
 
 sealed interface AgendaItemsAction {
 
@@ -25,7 +24,7 @@ sealed interface AgendaItemsAction {
 
     data class OnToggleTaskUiCompletion(val taskUi: AgendaItemUi.TaskUi) : AgendaItemsAction
 
-    data class OnToggleSelectedAgendaItemUi(val agendaItemUi: AgendaItemUi?) : AgendaItemsAction
+    data class OnSelectAgendaItemUi(val agendaItemUi: AgendaItemUi?) : AgendaItemsAction
 
     data class OnOpenAgendaItemUi(val agendaItemUi: AgendaItemUi) : AgendaItemsAction
     data class OnEditAgendaItemUi(val agendaItemUi: AgendaItemUi) : AgendaItemsAction

@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +21,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.tasky.core.presentation.designsystem.components.TaskyDatePicker
+import androidx.compose.ui.window.PopupProperties
+import com.tasky.agenda.presentation.R
+import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenuItem
 import com.tasky.core.presentation.designsystem.components.TaskyDatePickerDialog
+import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenu
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightBlue
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
@@ -32,7 +38,6 @@ import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
 import com.tasky.core.presentation.ui.formattedUiName
 import com.tasky.core.presentation.ui.toMonthName
-import java.time.LocalDate
 import java.time.ZonedDateTime
 
 @Composable
@@ -42,7 +47,9 @@ fun AgendaItemsTopBar(
     onToggleDateSelector: () -> Unit,
     onSelectedDateChange: (Long) -> Unit,
     name: String?,
+    isLogOutDropDownOpen: Boolean,
     onToggleLogoutDropDown: () -> Unit,
+    onLogout: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -68,6 +75,11 @@ fun AgendaItemsTopBar(
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clip(RoundedCornerShape(10.dp))
+                .clickable {
+                    onToggleDateSelector()
+                }
         ) {
 
             Text(
@@ -110,7 +122,15 @@ fun AgendaItemsTopBar(
                     fontWeight = FontWeight.SemiBold
                 )
             )
-
+            TaskyDropDownMenu(
+                expanded = isLogOutDropDownOpen,
+                onClose = { onToggleLogoutDropDown() },
+            ) {
+                TaskyDropDownMenuItem(
+                    label = stringResource(id = R.string.logout),
+                    onClick = onLogout
+                )
+            }
         }
 
     }
@@ -139,7 +159,11 @@ private fun AgendaItemsTopBarPreview() {
             },
             onSelectedDateChange = {
 
-            }
+            },
+            onLogout = {
+
+            },
+            isLogOutDropDownOpen = false
         )
     }
 }
