@@ -14,12 +14,12 @@ import org.koin.dsl.module
 
 val agendaNetworkModule = module {
 
-    singleOf(::KtorRemoteEventDataSource).bind(RemoteEventDataSource::class)
+    singleOf(::KtorRemoteEventDataSource).bind<RemoteEventDataSource>()
 
-    singleOf(::KtorRemoteTaskDataSource).bind(RemoteTaskDataSource::class)
+    singleOf(::KtorRemoteTaskDataSource).bind<RemoteTaskDataSource>()
 
-    singleOf(::KtorReminderRemoteDataSource).bind(RemoteReminderDataSource::class)
+    singleOf(::KtorReminderRemoteDataSource).bind<RemoteReminderDataSource>()
 
-    singleOf(::KtorAgendaRemoteDataSource).bind(AgendaRemoteDataSource::class)
+    singleOf(::KtorAgendaRemoteDataSource).bind<AgendaRemoteDataSource>()
 
 }

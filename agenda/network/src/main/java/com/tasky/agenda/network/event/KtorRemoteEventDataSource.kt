@@ -2,25 +2,22 @@ package com.tasky.agenda.network.event
 
 import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.model.TemporaryNetworkAttendee
+import com.tasky.agenda.domain.model.AttendeeExistence
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
-import com.tasky.agenda.network.common.dtos.AttendeeDto
 import com.tasky.agenda.network.common.dtos.EventDto
-import com.tasky.agenda.network.common.dtos.TemporaryNetworkAttendeeDto
+import com.tasky.agenda.network.common.dtos.AttendeeExistenceDto
 import com.tasky.agenda.network.common.mappers.toEvent
-import com.tasky.agenda.network.common.mappers.toTemporaryNetworkAttendee
+import com.tasky.agenda.network.common.mappers.toAttendeeExistence
 import com.tasky.agenda.network.event.mappers.toCreateEventDto
 import com.tasky.agenda.network.event.mappers.toUpdateEventDto
 import com.tasky.core.data.networking.delete
 import com.tasky.core.data.networking.get
-import com.tasky.core.data.networking.put
 import com.tasky.core.data.networking.submitFormWithBinaryData
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.mapData
 import io.ktor.client.HttpClient
-import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
@@ -110,13 +107,13 @@ class KtorRemoteEventDataSource(
         ).mapData { it.toEvent() }
     }
 
-    override suspend fun getAttendee(email: String): Result<TemporaryNetworkAttendee?, DataError.Network> {
-        return httpClient.get<TemporaryNetworkAttendeeDto>(
+    override suspend fun getAttendee(email: String): Result<AttendeeExistence?, DataError.Network> {
+        return httpClient.get<AttendeeExistenceDto>(
             route = "/attendee",
             queryParameters = mapOf(
                 "email" to email
             )
-        ).mapData { it.attendee?.toTemporaryNetworkAttendee() }
+        ).mapData { it.attendeeExistence?.toAttendeeExistence() }
     }
 
     override suspend fun deleteLocalAttendeeFromAnEvent(eventId: String): EmptyDataResult<DataError.Network> {

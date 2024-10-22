@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 interface EventDao {
 
     @Query("SELECT * FROM eventEntity WHERE id=:eventId")
-    fun getEventById(eventId: String): EventEntity?
+    suspend fun getEventById(eventId: String): EventEntity?
 
     @Query("SELECT * FROM eventEntity")
     fun getEvents(): Flow<List<EventEntity>>

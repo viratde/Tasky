@@ -1,7 +1,7 @@
 package com.tasky.agenda.data.data_sources.common
 
 import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.model.TemporaryNetworkAttendee
+import com.tasky.agenda.domain.model.AttendeeExistence
 import com.tasky.agenda.domain.repository.common.EventRepository
 import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
@@ -66,7 +66,7 @@ class OfflineFirstEventRepository(
     }
 
 
-    override suspend fun getAttendee(email: String): Result<TemporaryNetworkAttendee?, DataError.Network> {
+    override suspend fun getAttendee(email: String): Result<AttendeeExistence?, DataError.Network> {
         return remoteEventDataSource.getAttendee(email)
     }
 
