@@ -12,21 +12,27 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class MainActivity : ComponentActivity() {
 
     private val authViewModel by viewModel<AuthViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         installSplashScreen().apply {
             setKeepOnScreenCondition {
                 authViewModel.state.isCheckingAuth
             }
         }
+
+        enableEdgeToEdge()
+
         setContent {
-            TaskyTheme {
-                val navController = rememberNavController()
-                NavigationRoot(
-                    navController = navController,
-                    isLoggedIn = authViewModel.state.isLoggedIn
-                )
+            if(!authViewModel.state.isCheckingAuth){
+                TaskyTheme {
+                    val navController = rememberNavController()
+                    NavigationRoot(
+                        navController = navController,
+                        isLoggedIn = authViewModel.state.isLoggedIn
+                    )
+                }
             }
         }
 

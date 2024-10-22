@@ -32,7 +32,18 @@ import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import org.koin.androidx.compose.koinViewModel
 
+@Composable
+fun AgendaItemsScreenRoot(
+    viewModel: AgendaItemsViewModel = koinViewModel(),
+) {
+
+    AgendaItemsScreen(state = viewModel.state) { action ->
+
+    }
+
+}
 
 @Composable
 fun AgendaItemsScreen(

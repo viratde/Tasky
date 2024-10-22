@@ -40,11 +40,12 @@ import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import org.koin.androidx.compose.koinViewModel
 import java.time.ZonedDateTime
 
 @Composable
-fun EventScreenRoot(
-    viewModel: AgendaDetailsViewModel,
+fun AgendaItemDetailsRoot(
+    viewModel: AgendaDetailsViewModel = koinViewModel(),
     selectedDate: Long
 ) {
 
@@ -53,7 +54,7 @@ fun EventScreenRoot(
             .fillMaxSize(),
         isLoading = viewModel.state.agendaItemUi == null
     ) {
-        EventScreen(
+        AgendaItemDetailsScreen(
             state = viewModel.state,
             selectedDate = selectedDate,
             onAction = { action ->
@@ -66,7 +67,7 @@ fun EventScreenRoot(
 }
 
 @Composable
-fun EventScreen(
+fun AgendaItemDetailsScreen(
     state: AgendaDetailsState,
     selectedDate: Long,
     onAction: (AgendaItemDetailsAction) -> Unit
@@ -397,7 +398,7 @@ fun EventScreen(
 @Composable
 private fun AgendaEventUiScreenPreview() {
     TaskyTheme {
-        EventScreen(
+        AgendaItemDetailsScreen(
             state = AgendaDetailsState(
                 agendaItemUi = FakeEventUi
             ),
@@ -412,7 +413,7 @@ private fun AgendaEventUiScreenPreview() {
 @Composable
 private fun AgendaRemainderUiScreenPreview() {
     TaskyTheme {
-        EventScreen(
+        AgendaItemDetailsScreen(
             state = AgendaDetailsState(
                 agendaItemUi = FakeRemainderUi
             ),
@@ -427,7 +428,7 @@ private fun AgendaRemainderUiScreenPreview() {
 @Composable
 private fun AgendaTaskUiScreenPreview() {
     TaskyTheme {
-        EventScreen(
+        AgendaItemDetailsScreen(
             state = AgendaDetailsState(
                 agendaItemUi = FakeTaskUi
             ),
