@@ -2,6 +2,7 @@ package com.tasky.agenda.presentation.agenda
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tasky.agenda.presentation.agenda.components.AgendaDateLabel
 import com.tasky.agenda.presentation.agenda.components.AgendaDateRange
+import com.tasky.agenda.presentation.agenda.components.AgendaFloatingContextMenu
 import com.tasky.agenda.presentation.agenda.components.AgendaItemUi
 import com.tasky.agenda.presentation.agenda.components.AgendaItemsTopBar
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
@@ -56,19 +58,35 @@ fun AgendaItemsScreen(
 
     TaskyScaffold(
         floatingActionButton = {
-            TaskyFloatingActionButton(
-                onClick = {
-                    onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
-                },
-                containerColor = TaskyBlack
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = TaskyWhite
+            Box {
+                TaskyFloatingActionButton(
+                    onClick = {
+                        onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
+                    },
+                    containerColor = TaskyBlack
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = TaskyWhite
+                    )
+                }
+                AgendaFloatingContextMenu(
+                    expanded = state.isAddAgendaItemDropDownOpen,
+                    onClose = {
+                        onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
+                    },
+                    onAddEvent = {
+                        onAction(AgendaItemsAction.OnAddEvent)
+                    },
+                    onAddTask = {
+                        onAction(AgendaItemsAction.OnAddTask)
+                    },
+                    onAddReminder = {
+                        onAction(AgendaItemsAction.OnAddRemainder)
+                    }
                 )
             }
-
         }
     ) { innerPadding ->
 

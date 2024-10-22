@@ -18,19 +18,7 @@ class AgendaItemsViewModel(
 ) : ViewModel() {
 
     var state by mutableStateOf(
-        AgendaItemsState(
-            agendaItems = listOf(
-                FakeEventUi,
-                FakeRemainderUi,
-                FakeTaskUi,
-                FakeEventUi,
-                FakeRemainderUi,
-                FakeTaskUi,
-                FakeEventUi,
-                FakeRemainderUi,
-                FakeTaskUi,
-            )
-        )
+        AgendaItemsState()
     )
         private set
 
