@@ -1,20 +1,22 @@
 package com.tasky.agenda.data.dao
 
+import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import com.tasky.agenda.data.model.ReminderEntity
 import kotlinx.coroutines.flow.Flow
 
+@Dao
 interface ReminderDao {
 
     @Query("SELECT * FROM reminderEntity WHERE id=:reminderId")
     suspend fun getReminderById(reminderId: String): ReminderEntity?
 
     @Query("SELECT * FROM reminderEntity")
-    suspend fun getReminders(): Flow<List<ReminderEntity>>
+    fun getReminders(): Flow<List<ReminderEntity>>
 
     @Query("SELECT * FROM reminderEntity WHERE time BETWEEN :startTime and :endTime")
-    suspend fun getRemindersByTime(startTime: Long, endTime: Long): Flow<List<ReminderEntity>>
+    fun getRemindersByTime(startTime: Long, endTime: Long): Flow<List<ReminderEntity>>
 
     @Upsert
     suspend fun upsertReminder(reminderEntity: ReminderEntity)

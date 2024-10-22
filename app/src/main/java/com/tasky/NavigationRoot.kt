@@ -7,17 +7,25 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.tasky.agenda.presentation.AgendaScreen
+import com.tasky.agenda.presentation.agenda.AgendaItemsScreen
+import com.tasky.agenda.presentation.agenda.AgendaItemsScreenRoot
+import com.tasky.agenda.presentation.agenda_item_details.AgendaItemDetailsRoot
 import com.tasky.auth.presentation.login.LoginScreenRoot
 import com.tasky.auth.presentation.signup.SignUpScreenRoot
 import com.tasky.screens.AgendaGraph
+import com.tasky.screens.AgendaItemUiScreen
 import com.tasky.screens.AgendaScreen
 import com.tasky.screens.AuthGraph
 import com.tasky.screens.LoginScreen
 import com.tasky.screens.SignUpScreen
+import java.time.LocalDate
 
 @Composable
-fun NavigationRoot(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = AgendaGraph) {
+fun NavigationRoot(navController: NavHostController, isLoggedIn: Boolean) {
+    NavHost(
+        navController = navController,
+        startDestination = if (isLoggedIn) AgendaGraph else AuthGraph
+    ) {
         authGraph(navController)
         agendaGraph(navController)
     }
@@ -26,7 +34,12 @@ fun NavigationRoot(navController: NavHostController) {
 fun NavGraphBuilder.agendaGraph(navController: NavHostController) {
     navigation<AgendaGraph>(startDestination = AgendaScreen) {
         composable<AgendaScreen> {
-            AgendaScreen()
+            AgendaItemsScreenRoot()
+        }
+        composable<AgendaItemUiScreen> {
+            AgendaItemDetailsRoot(
+                selectedDate = System.currentTimeMillis()
+            )
         }
     }
 }

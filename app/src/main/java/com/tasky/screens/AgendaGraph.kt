@@ -7,3 +7,6 @@ data object AgendaGraph
 
 @Serializable
 data object AgendaScreen
+
+@Serializable
+data object AgendaItemUiScreen

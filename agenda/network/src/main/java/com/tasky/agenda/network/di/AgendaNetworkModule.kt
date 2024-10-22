@@ -5,7 +5,6 @@ import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
 import com.tasky.agenda.network.agenda.KtorAgendaRemoteDataSource
-import com.tasky.agenda.network.attendee.KtorAttendeeRemoteDataSource
 import com.tasky.agenda.network.event.KtorRemoteEventDataSource
 import com.tasky.agenda.network.reminder.KtorReminderRemoteDataSource
 import com.tasky.agenda.network.task.KtorRemoteTaskDataSource
@@ -15,14 +14,12 @@ import org.koin.dsl.module
 
 val agendaNetworkModule = module {
 
-    singleOf(::KtorRemoteEventDataSource).bind(RemoteEventDataSource::class)
+    singleOf(::KtorRemoteEventDataSource).bind<RemoteEventDataSource>()
 
-    singleOf(::KtorRemoteTaskDataSource).bind(RemoteTaskDataSource::class)
+    singleOf(::KtorRemoteTaskDataSource).bind<RemoteTaskDataSource>()
 
-    singleOf(::KtorReminderRemoteDataSource).bind(RemoteReminderDataSource::class)
+    singleOf(::KtorReminderRemoteDataSource).bind<RemoteReminderDataSource>()
 
-    singleOf(::KtorAttendeeRemoteDataSource).bind(AttendeeRemoteDataSource::class)
-
-    singleOf(::KtorAgendaRemoteDataSource).bind(AgendaRemoteDataSource::class)
+    singleOf(::KtorAgendaRemoteDataSource).bind<AgendaRemoteDataSource>()
 
 }

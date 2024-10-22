@@ -4,16 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AttendeeDto(
-    val doesUserExist: Boolean,
-    val attendee: Attendee?
-) {
-
-    @Serializable
-    data class Attendee(
-        val email: String,
-        val fullName: String,
-        val userId: String,
-    )
-
-}
+    val email: String,
+    val fullName: String,
+    val userId: String,
+    val eventId: String,
+    val isGoing: Boolean,
+    val remindAt: Long
+)
 
