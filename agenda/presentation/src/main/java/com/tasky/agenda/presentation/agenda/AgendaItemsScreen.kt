@@ -40,7 +40,7 @@ fun AgendaItemsScreenRoot(
 ) {
 
     AgendaItemsScreen(state = viewModel.state) { action ->
-
+        viewModel.onAction(action)
     }
 
 }
@@ -88,9 +88,13 @@ fun AgendaItemsScreen(
                 onToggleDateSelector = {
                     onAction(AgendaItemsAction.OnToggleDateSelectorModel)
                 },
+                isDateSelectorModelOpen = state.isDateSelectorModelOpen,
                 name = state.fullName,
                 onToggleLogoutDropDown = {
                     onAction(AgendaItemsAction.OnToggleLogOutDropDown)
+                },
+                onSelectedDateChange = { date ->
+                    onAction(AgendaItemsAction.OnSelectSelectionStartDate(date))
                 }
             )
 
@@ -116,9 +120,9 @@ fun AgendaItemsScreen(
                         .padding(horizontal = 16.dp),
                     selectionStartDate = state.selectionStartDate,
                     selectedDate = state.selectedDate,
-                    noOfDaysToRender = state.noOfDaysToRender,
-                    onSelectionDateChanged = {
-
+                    noOfDaysToRender = AgendaItemsViewModel.NO_OF_DAYS_TO_RENDER,
+                    onSelectionDateChanged = { selectedDate ->
+                        onAction(AgendaItemsAction.OnSelectDate(selectedDate))
                     }
                 )
 

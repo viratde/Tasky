@@ -23,22 +23,42 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.tasky.core.presentation.designsystem.components.TaskyDatePicker
+import com.tasky.core.presentation.designsystem.components.TaskyDatePickerDialog
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightBlue
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
 import com.tasky.core.presentation.designsystem.ui.inter
 import com.tasky.core.presentation.ui.formattedUiName
+import com.tasky.core.presentation.ui.toMonthName
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Composable
 fun AgendaItemsTopBar(
-    selectedDate: LocalDate,
+    selectedDate: Long,
+    isDateSelectorModelOpen: Boolean,
     onToggleDateSelector: () -> Unit,
-    name: String,
+    onSelectedDateChange: (Long) -> Unit,
+    name: String?,
     onToggleLogoutDropDown: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    if (isDateSelectorModelOpen) {
+
+        TaskyDatePickerDialog(
+            selectedDateUtcTimeMillis = selectedDate,
+            onSelectionChange = { date ->
+                onSelectedDateChange(date)
+            },
+            onClose = {
+                onToggleDateSelector()
+            }
+        )
+
+    }
 
     Row(
         modifier = modifier,
@@ -51,7 +71,7 @@ fun AgendaItemsTopBar(
         ) {
 
             Text(
-                text = selectedDate.month.name,
+                text = selectedDate.toMonthName(),
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = TaskyWhite,
                     fontFamily = inter,
@@ -82,7 +102,7 @@ fun AgendaItemsTopBar(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = name.formattedUiName(),
+                text = name?.formattedUiName() ?: "",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = TaskyLightBlue,
                     fontFamily = inter,
@@ -108,12 +128,16 @@ private fun AgendaItemsTopBarPreview() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            selectedDate = LocalDate.now(),
+            selectedDate = ZonedDateTime.now().toInstant().toEpochMilli(),
             onToggleDateSelector = {
 
             },
             name = "Virat Kumar",
+            isDateSelectorModelOpen = false,
             onToggleLogoutDropDown = {
+
+            },
+            onSelectedDateChange = {
 
             }
         )

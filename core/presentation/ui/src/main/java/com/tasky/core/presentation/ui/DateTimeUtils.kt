@@ -69,3 +69,43 @@ fun Long.toFormatAgendaUiDate(): String {
     )
     return zonedDateTime.format(DateTimeFormatter.ofPattern("MMM dd, HH:mm"))
 }
+
+fun Long.toMonthName(): String {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.month.name
+}
+
+fun Long.toDayOfWeekName(): String {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.dayOfWeek.name
+}
+
+fun Long.toDayOfMonth(): Int {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.dayOfMonth
+}
+
+fun Long.plusDays(days: Long): Long {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.plusDays(days).toInstant().toEpochMilli()
+}
+
+fun Long.toLocalDate(): LocalDate {
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+    return zonedDateTime.toLocalDate()
+}
