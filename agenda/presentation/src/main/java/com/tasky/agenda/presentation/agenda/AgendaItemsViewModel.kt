@@ -1,15 +1,14 @@
 package com.tasky.agenda.presentation.agenda
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tasky.agenda.domain.repository.common.AgendaRepository
-import com.tasky.agenda.presentation.common.model.FakeEventUi
-import com.tasky.agenda.presentation.common.model.FakeRemainderUi
-import com.tasky.agenda.presentation.common.model.FakeTaskUi
 import com.tasky.core.domain.AuthInfoStorage
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class AgendaItemsViewModel(
@@ -17,21 +16,15 @@ class AgendaItemsViewModel(
     private val authInfoStorage: AuthInfoStorage
 ) : ViewModel() {
 
-    var state by mutableStateOf(
-        AgendaItemsState()
-    )
-        private set
-
-
-    init {
-
-        viewModelScope.launch {
-            state = state.copy(
-                fullName = authInfoStorage.get()?.fullName
-            )
-        }
-
-    }
+    private val _state = MutableStateFlow(AgendaItemsState())
+    val state = _state
+        .onStart {
+            loadFullName()
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000L),
+            AgendaItemsState()
+        )
 
 
     fun onAction(action: AgendaItemsAction) {
@@ -47,35 +40,45 @@ class AgendaItemsViewModel(
 
             is AgendaItemsAction.OnOpenAgendaItemUi -> TODO()
             is AgendaItemsAction.OnSelectDate -> {
-                state = state.copy(
-                    selectedDate = action.date
-                )
+                _state.update {
+                    it.copy(
+                        selectedDate = action.date
+                    )
+                }
             }
 
             is AgendaItemsAction.OnSelectSelectionStartDate -> {
-                state = state.copy(
-                    selectionStartDate = action.date,
-                    selectedDate = action.date,
-                    isDateSelectorModelOpen = false
-                )
+                _state.update {
+                    it.copy(
+                        selectionStartDate = action.date,
+                        selectedDate = action.date,
+                        isDateSelectorModelOpen = false
+                    )
+                }
             }
 
             AgendaItemsAction.OnToggleAddAgendaItemDropDown -> {
-                state = state.copy(
-                    isAddAgendaItemDropDownOpen = !state.isAddAgendaItemDropDownOpen
-                )
+                _state.update {
+                    it.copy(
+                        isAddAgendaItemDropDownOpen = !it.isAddAgendaItemDropDownOpen
+                    )
+                }
             }
 
             AgendaItemsAction.OnToggleDateSelectorModel -> {
-                state = state.copy(
-                    isDateSelectorModelOpen = !state.isDateSelectorModelOpen
-                )
+                _state.update {
+                    it.copy(
+                        isDateSelectorModelOpen = !it.isDateSelectorModelOpen
+                    )
+                }
             }
 
             AgendaItemsAction.OnToggleLogOutDropDown -> {
-                state = state.copy(
-                    isLogOutDropDownOpen = !state.isLogOutDropDownOpen
-                )
+                _state.update {
+                    it.copy(
+                        isLogOutDropDownOpen = !it.isLogOutDropDownOpen
+                    )
+                }
             }
 
             is AgendaItemsAction.OnSelectAgendaItemUi -> TODO()
@@ -83,6 +86,16 @@ class AgendaItemsViewModel(
         }
     }
 
+
+    private fun loadFullName() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    fullName = authInfoStorage.get()?.fullName
+                )
+            }
+        }
+    }
 
     companion object {
         const val NO_OF_DAYS_TO_RENDER = 6

@@ -12,11 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tasky.agenda.presentation.R
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputType
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
@@ -49,13 +51,14 @@ fun AgendaItemDetailsRoot(
     selectedDate: Long
 ) {
 
+    val state by viewModel.state.collectAsStateWithLifecycle()
     LoadingContainer(
         modifier = Modifier
             .fillMaxSize(),
-        isLoading = viewModel.state.agendaItemUi == null
+        isLoading = state.agendaItemUi == null
     ) {
         AgendaItemDetailsScreen(
-            state = viewModel.state,
+            state = state,
             selectedDate = selectedDate,
             onAction = { action ->
                 viewModel.onAction(action)
