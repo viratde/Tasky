@@ -30,7 +30,7 @@ fun TaskyDatePickerDialog(
     minUtcTimeMillis: Long? = null,
     maxUtcTimeMillis: Long? = null,
     selectedDateUtcTimeMillis: Long? = null,
-    onSelectionChange: (selectedDateTimeUtcMillis: Long?) -> Unit,
+    onSelectionChange: (selectedDateTimeUtcMillis: Long) -> Unit,
     onClose: () -> Unit
 ) {
 
@@ -55,7 +55,13 @@ fun TaskyDatePickerDialog(
                 maxUtcTimeMillis = maxUtcTimeMillis,
                 minUtcTimeMillis = minUtcTimeMillis,
                 selectedDateUtcTimeMillis = selectedDateUtcTimeMillis,
-                onSelectionChange = onSelectionChange,
+                onSelectionChange = {
+                    if (it == null) {
+                        onClose()
+                    } else {
+                        onSelectionChange(it)
+                    }
+                },
                 modifier = modifier
             )
         }

@@ -15,21 +15,24 @@ import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.inter
 import com.tasky.core.presentation.ui.UiText
 import com.tasky.core.presentation.ui.toFormatUiDate
+import com.tasky.core.presentation.ui.toLocalDate
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 
 @Composable
 fun AgendaDateLabel(
-    selectedDate: LocalDate,
+    selectedDate: Long,
     modifier: Modifier = Modifier
 ) {
 
     val label = remember(selectedDate) {
-        when (selectedDate) {
+        val date = selectedDate.toLocalDate()
+        when (date) {
             LocalDate.now() -> UiText.StringResource(R.string.today)
             LocalDate.now().plusDays(1L) -> UiText.StringResource(R.string.tomorrow)
             LocalDate.now().minusDays(1) -> UiText.StringResource(R.string.yesterday)
-            else -> UiText.DynamicString(selectedDate.toFormatUiDate())
+            else -> UiText.DynamicString(date.toFormatUiDate())
         }
     }
 
@@ -53,6 +56,6 @@ fun AgendaDateLabel(
 @Composable
 private fun AgendaDateLabelPreview() {
     TaskyTheme {
-        AgendaDateLabel(selectedDate = LocalDate.now())
+        AgendaDateLabel(selectedDate = ZonedDateTime.now().toInstant().toEpochMilli())
     }
 }

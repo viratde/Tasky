@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -18,19 +20,20 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen().apply {
             setKeepOnScreenCondition {
-                authViewModel.state.isCheckingAuth
+                authViewModel.state.value.isCheckingAuth
             }
         }
 
         enableEdgeToEdge()
 
         setContent {
-            if(!authViewModel.state.isCheckingAuth){
+            val state by authViewModel.state.collectAsStateWithLifecycle()
+            if (!state.isCheckingAuth) {
                 TaskyTheme {
                     val navController = rememberNavController()
                     NavigationRoot(
                         navController = navController,
-                        isLoggedIn = authViewModel.state.isLoggedIn
+                        isLoggedIn = state.isLoggedIn
                     )
                 }
             }

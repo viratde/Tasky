@@ -26,14 +26,18 @@ import com.tasky.core.presentation.designsystem.ui.TaskyGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyOrange
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.inter
+import com.tasky.core.presentation.ui.plusDays
+import com.tasky.core.presentation.ui.toDayOfMonth
+import com.tasky.core.presentation.ui.toDayOfWeekName
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Composable
 fun AgendaDateRange(
-    selectionStartDate: LocalDate,
-    selectedDate: LocalDate,
+    selectionStartDate: Long,
+    selectedDate: Long,
     noOfDaysToRender: Int,
-    onSelectionDateChanged: (LocalDate) -> Unit,
+    onSelectionDateChanged: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -62,7 +66,7 @@ fun AgendaDateRange(
 
 @Composable
 private fun AgendaDate(
-    date: LocalDate,
+    date: Long,
     selected: Boolean,
     onSelect: () -> Unit
 ) {
@@ -86,7 +90,7 @@ private fun AgendaDate(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = date.dayOfWeek.name.first().toString().uppercase(),
+            text = date.toDayOfWeekName().first().toString().uppercase(),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = if (selected) TaskyDarkGrey else TaskyGrey,
                 fontFamily = inter,
@@ -95,7 +99,7 @@ private fun AgendaDate(
             )
         )
         Text(
-            text = date.dayOfMonth.toString(),
+            text = date.toDayOfMonth().toString(),
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = if (selected) TaskyDarkGrey else TaskyGrey,
                 fontFamily = inter,
@@ -119,8 +123,8 @@ private fun AgendaDateRangePreview() {
                 .fillMaxWidth()
                 .padding(16.dp),
             noOfDaysToRender = 6,
-            selectionStartDate = LocalDate.now(),
-            selectedDate = LocalDate.now().plusDays(1L),
+            selectionStartDate = ZonedDateTime.now().toInstant().toEpochMilli(),
+            selectedDate = ZonedDateTime.now().toInstant().toEpochMilli(),
             onSelectionDateChanged = {
 
             }

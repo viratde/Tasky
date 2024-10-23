@@ -167,10 +167,8 @@ fun TaskyDateTimePicker(
         TaskyDatePickerDialog(
             selectedDateUtcTimeMillis = dateTime,
             onSelectionChange = { date ->
-                date?.let {
-                    onChange(it)
-                    isDatePickerOpen = false
-                }
+                onChange(date)
+                isDatePickerOpen = false
             },
             onClose = {
                 isDatePickerOpen = false

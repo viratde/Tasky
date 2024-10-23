@@ -2,6 +2,7 @@ package com.tasky.agenda.presentation.agenda
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,12 +16,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tasky.agenda.presentation.agenda.components.AgendaDateLabel
 import com.tasky.agenda.presentation.agenda.components.AgendaDateRange
+import com.tasky.agenda.presentation.agenda.components.AgendaFloatingContextMenu
 import com.tasky.agenda.presentation.agenda.components.AgendaItemUi
 import com.tasky.agenda.presentation.agenda.components.AgendaItemsTopBar
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
@@ -39,8 +43,11 @@ fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
 ) {
 
-    AgendaItemsScreen(state = viewModel.state) { action ->
-
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    AgendaItemsScreen(
+        state = state
+    ) { action ->
+        viewModel.onAction(action)
     }
 
 }
@@ -54,19 +61,35 @@ fun AgendaItemsScreen(
 
     TaskyScaffold(
         floatingActionButton = {
-            TaskyFloatingActionButton(
-                onClick = {
-                    onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
-                },
-                containerColor = TaskyBlack
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = null,
-                    tint = TaskyWhite
+            Box {
+                TaskyFloatingActionButton(
+                    onClick = {
+                        onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
+                    },
+                    containerColor = TaskyBlack
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = TaskyWhite
+                    )
+                }
+                AgendaFloatingContextMenu(
+                    expanded = state.isAddAgendaItemDropDownOpen,
+                    onClose = {
+                        onAction(AgendaItemsAction.OnToggleAddAgendaItemDropDown)
+                    },
+                    onAddEvent = {
+                        onAction(AgendaItemsAction.OnAddEvent)
+                    },
+                    onAddTask = {
+                        onAction(AgendaItemsAction.OnAddTask)
+                    },
+                    onAddReminder = {
+                        onAction(AgendaItemsAction.OnAddRemainder)
+                    }
                 )
             }
-
         }
     ) { innerPadding ->
 
@@ -88,9 +111,17 @@ fun AgendaItemsScreen(
                 onToggleDateSelector = {
                     onAction(AgendaItemsAction.OnToggleDateSelectorModel)
                 },
+                isDateSelectorModelOpen = state.isDateSelectorModelOpen,
+                onSelectedDateChange = { date ->
+                    onAction(AgendaItemsAction.OnSelectSelectionStartDate(date))
+                },
                 name = state.fullName,
                 onToggleLogoutDropDown = {
                     onAction(AgendaItemsAction.OnToggleLogOutDropDown)
+                },
+                isLogOutDropDownOpen = state.isLogOutDropDownOpen,
+                onLogout = {
+                    onAction(AgendaItemsAction.OnLogOut)
                 }
             )
 
@@ -116,9 +147,9 @@ fun AgendaItemsScreen(
                         .padding(horizontal = 16.dp),
                     selectionStartDate = state.selectionStartDate,
                     selectedDate = state.selectedDate,
-                    noOfDaysToRender = state.noOfDaysToRender,
-                    onSelectionDateChanged = {
-
+                    noOfDaysToRender = AgendaItemsViewModel.NO_OF_DAYS_TO_RENDER,
+                    onSelectionDateChanged = { selectedDate ->
+                        onAction(AgendaItemsAction.OnSelectDate(selectedDate))
                     }
                 )
 

@@ -2,7 +2,7 @@ package com.tasky.core.presentation.ui
 
 fun String.formattedUiName(): String {
     if (this.isEmpty()) return ""
-    val parts = this.split("\\s+".toRegex())
+    val parts = this.split("\\s+".toRegex()).filter { it.isNotEmpty() }
     return when (parts.size) {
         1 -> {
             parts.first().slice(0..1).uppercase()

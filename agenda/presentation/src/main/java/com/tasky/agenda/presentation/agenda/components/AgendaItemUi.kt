@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,12 +38,12 @@ import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
+import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenu
+import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenuItem
 import com.tasky.core.presentation.designsystem.ui.ContextMenuIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
-import com.tasky.core.presentation.designsystem.ui.TaskyBlue
 import com.tasky.core.presentation.designsystem.ui.TaskyDarkGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyGreen
-import com.tasky.core.presentation.designsystem.ui.TaskyGrey
 import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLight2
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
@@ -207,14 +205,12 @@ private fun AgendaItemUiContextMenu(
     onDelete: () -> Unit
 ) {
 
-    DropdownMenu(
+    TaskyDropDownMenu(
         expanded = expanded,
-        onDismissRequest = onClose,
-        containerColor = TaskyWhite,
-        shape = RoundedCornerShape(10.dp),
+        onClose = onClose
     ) {
 
-        AgendaItemUiContextMenuItem(
+        TaskyDropDownMenuItem(
             label = stringResource(id = R.string.open),
             onClick = onView
         )
@@ -222,14 +218,14 @@ private fun AgendaItemUiContextMenu(
         HorizontalDivider(
             color = TaskyLight
         )
-        AgendaItemUiContextMenuItem(
+        TaskyDropDownMenuItem(
             label = stringResource(id = R.string.edit),
             onClick = onEdit
         )
         HorizontalDivider(
             color = TaskyLight
         )
-        AgendaItemUiContextMenuItem(
+        TaskyDropDownMenuItem(
             label = stringResource(id = R.string.delete),
             onClick = onDelete
         )
@@ -238,28 +234,6 @@ private fun AgendaItemUiContextMenu(
 
 }
 
-@Composable
-private fun AgendaItemUiContextMenuItem(
-    label: String,
-    onClick: () -> Unit
-) {
-
-    DropdownMenuItem(
-        text = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = TaskyBlack,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = inter
-                )
-            )
-        },
-        onClick = onClick
-    )
-
-}
 
 @Preview(
     showBackground = true
