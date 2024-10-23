@@ -2,7 +2,7 @@ package com.tasky.agenda.data.data_sources.common
 
 import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.common.TaskRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalTaskDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
@@ -11,7 +11,7 @@ import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstTaskRepository(
-    private val localTaskDataSource: LocalAgendaDataSource<Task>,
+    private val localTaskDataSource: LocalTaskDataSource,
     private val remoteTaskDataSource: RemoteTaskDataSource
 ) : TaskRepository {
 
@@ -24,7 +24,7 @@ class OfflineFirstTaskRepository(
         return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
                 // @todo - i need to store that it has been yet created in remote data source
-                Result.Success(Unit)
+                Result.Error(remoteTaskResult.error)
             }
 
             is Result.Success -> {

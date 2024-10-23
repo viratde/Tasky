@@ -5,7 +5,7 @@ import com.tasky.agenda.data.dao.ReminderDao
 import com.tasky.agenda.data.mappers.toReminder
 import com.tasky.agenda.data.mappers.toReminderEntity
 import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
 import com.tasky.core.data.utils.getEndOfDay
 import com.tasky.core.data.utils.getStartOfDay
 import com.tasky.core.domain.util.DataError
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 
 class RoomReminderLocalDataSource(
     private val reminderDao: ReminderDao
-) : LocalAgendaDataSource<Reminder> {
+) : LocalReminderDataSource {
 
     override suspend fun getAgendaItemsById(agendaItemId: String): Reminder? {
         return reminderDao.getReminderById(reminderId = agendaItemId)?.toReminder()

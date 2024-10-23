@@ -1,9 +1,9 @@
 package com.tasky.agenda.data.data_sources.common
 
-import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.model.AttendeeExistence
+import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.repository.common.EventRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalEventDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
@@ -12,7 +12,7 @@ import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstEventRepository(
-    private val localEventDataSource: LocalAgendaDataSource<Event>,
+    private val localEventDataSource: LocalEventDataSource,
     private val remoteEventDataSource: RemoteEventDataSource
 ) : EventRepository {
 

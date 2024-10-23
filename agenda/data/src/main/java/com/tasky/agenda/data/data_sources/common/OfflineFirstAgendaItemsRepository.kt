@@ -2,15 +2,11 @@ package com.tasky.agenda.data.data_sources.common
 
 import androidx.room.withTransaction
 import com.tasky.agenda.data.AgendaItemsDatabase
-import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.common.AgendaRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalEventDataSource
+import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
+import com.tasky.agenda.domain.repository.local.LocalTaskDataSource
 import com.tasky.agenda.domain.repository.remote.AgendaRemoteDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -19,9 +15,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 
 class OfflineFirstAgendaItemsRepository(
-    private val localEventRepository: LocalAgendaDataSource<Event>,
-    private val localTaskRepository: LocalAgendaDataSource<Task>,
-    private val localReminderRepository: LocalAgendaDataSource<Reminder>,
+    private val localEventRepository: LocalEventDataSource,
+    private val localTaskRepository: LocalTaskDataSource,
+    private val localReminderRepository: LocalReminderDataSource,
     private val db: AgendaItemsDatabase,
     private val agendaRemoteDataSource: AgendaRemoteDataSource,
     private val applicationScope: CoroutineScope

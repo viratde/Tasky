@@ -31,6 +31,7 @@ import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
+import com.tasky.agenda.presentation.common.util.AgendaItemUiType
 import com.tasky.core.presentation.designsystem.components.TaskyFloatingActionButton
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
@@ -41,13 +42,30 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
+    onNavigate: (AgendaItemUiType, Long, String?) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     AgendaItemsScreen(
         state = state
     ) { action ->
         viewModel.onAction(action)
+        when (action) {
+            AgendaItemsAction.OnAddEvent -> {
+                onNavigate(AgendaItemUiType.Event, state.selectedDate, null)
+            }
+
+            AgendaItemsAction.OnAddRemainder -> {
+                onNavigate(AgendaItemUiType.Reminder, state.selectedDate, null)
+            }
+
+            AgendaItemsAction.OnAddTask -> {
+                onNavigate(AgendaItemUiType.Task, state.selectedDate, null)
+            }
+
+            else -> Unit
+        }
     }
 
 }

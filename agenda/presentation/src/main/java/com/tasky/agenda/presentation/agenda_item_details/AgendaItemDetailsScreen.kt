@@ -93,12 +93,14 @@ fun AgendaItemDetailsScreen(
                     ),
                 date = selectedDate,
                 isInEditMode = state.isInEditMode,
-                onCancel = { /*TODO*/ },
+                onCancel = {
+
+                },
                 onEnableEditing = {
                     onAction(AgendaItemDetailsAction.OnToggleEditMode)
                 },
                 onSave = {
-
+                    onAction(AgendaItemDetailsAction.OnSaveAgendaItem)
                 }
             )
 

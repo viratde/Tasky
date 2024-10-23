@@ -29,9 +29,24 @@ class AgendaItemsViewModel(
 
     fun onAction(action: AgendaItemsAction) {
         when (action) {
-            AgendaItemsAction.OnAddEvent -> TODO()
-            AgendaItemsAction.OnAddRemainder -> TODO()
-            AgendaItemsAction.OnAddTask -> TODO()
+            AgendaItemsAction.OnAddEvent -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
+            AgendaItemsAction.OnAddRemainder -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
+            AgendaItemsAction.OnAddTask -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
             is AgendaItemsAction.OnDeleteAgendaItemUi -> TODO()
             is AgendaItemsAction.OnEditAgendaItemUi -> TODO()
             AgendaItemsAction.OnLogOut -> {

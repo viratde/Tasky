@@ -5,18 +5,19 @@ import com.tasky.agenda.domain.model.Attendee
 import com.tasky.agenda.domain.model.FakeAttendee
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import java.time.ZonedDateTime
+import java.util.UUID
 
 
 sealed interface AgendaItemUi {
 
-    val id: String?
+    val id: String
     val title: String
     val description: String
     val remindAt: RemindTimes
 
 
     data class EventUi(
-        override val id: String? = null,
+        override val id: String ,
         override val title: String,
         override val description: String,
         val from: Long,
@@ -28,7 +29,7 @@ sealed interface AgendaItemUi {
     ) : AgendaItemUi
 
     data class TaskUi(
-        override val id: String? = null,
+        override val id: String,
         override val title: String,
         override val description: String,
         val time: Long,
@@ -37,7 +38,7 @@ sealed interface AgendaItemUi {
     ) : AgendaItemUi
 
     data class ReminderUi(
-        override val id: String? = null,
+        override val id: String,
         override val title: String,
         override val description: String,
         val time: Long,
@@ -45,7 +46,7 @@ sealed interface AgendaItemUi {
     ) : AgendaItemUi
 
     fun copy(
-        id: String? = this.id,
+        id: String = this.id,
         title: String = this.title,
         description: String = this.description,
         remindAt: RemindTimes = this.remindAt
@@ -85,7 +86,7 @@ sealed interface AgendaItemUi {
 
 
 val FakeEventUi = AgendaItemUi.EventUi(
-    id = null,
+    id = UUID.randomUUID().toString(),
     title = "New Task",
     description = "This is a test description and it will be removed in the future.",
     from = ZonedDateTime.now().toInstant().toEpochMilli(),
@@ -109,7 +110,7 @@ val FakeEventUi = AgendaItemUi.EventUi(
 )
 
 val FakeRemainderUi = AgendaItemUi.ReminderUi(
-    id = null,
+    id = UUID.randomUUID().toString(),
     title = "New Remainder",
     description = "This is a test description and it will be removed in the future.",
     time = ZonedDateTime.now().toInstant().toEpochMilli(),
@@ -117,7 +118,7 @@ val FakeRemainderUi = AgendaItemUi.ReminderUi(
 )
 
 val FakeTaskUi = AgendaItemUi.TaskUi(
-    id = null,
+    id = UUID.randomUUID().toString(),
     title = "New Task",
     description = "This is a test description and it will be removed in the future.",
     time = ZonedDateTime.now().toInstant().toEpochMilli(),

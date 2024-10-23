@@ -2,7 +2,7 @@ package com.tasky.agenda.data.data_sources.common
 
 import com.tasky.agenda.domain.model.Reminder
 import com.tasky.agenda.domain.repository.common.ReminderRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
 import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
@@ -11,7 +11,7 @@ import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstReminderRepository(
-    private val localReminderDataSource: LocalAgendaDataSource<Reminder>,
+    private val localReminderDataSource: LocalReminderDataSource,
     private val remoteReminderDataSource: RemoteReminderDataSource
 ) : ReminderRepository {
 

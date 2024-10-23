@@ -6,8 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.tasky.agenda.presentation.AgendaScreen
-import com.tasky.agenda.presentation.agenda.AgendaItemsScreen
+import androidx.navigation.toRoute
 import com.tasky.agenda.presentation.agenda.AgendaItemsScreenRoot
 import com.tasky.agenda.presentation.agenda_item_details.AgendaItemDetailsRoot
 import com.tasky.auth.presentation.login.LoginScreenRoot
@@ -18,7 +17,6 @@ import com.tasky.screens.AgendaScreen
 import com.tasky.screens.AuthGraph
 import com.tasky.screens.LoginScreen
 import com.tasky.screens.SignUpScreen
-import java.time.LocalDate
 
 @Composable
 fun NavigationRoot(navController: NavHostController, isLoggedIn: Boolean) {
@@ -34,11 +32,22 @@ fun NavigationRoot(navController: NavHostController, isLoggedIn: Boolean) {
 fun NavGraphBuilder.agendaGraph(navController: NavHostController) {
     navigation<AgendaGraph>(startDestination = AgendaScreen) {
         composable<AgendaScreen> {
-            AgendaItemsScreenRoot()
+            AgendaItemsScreenRoot(
+                onNavigate = { agendaItemUiType, selectedDate, agendaItemUiId ->
+                    navController.navigate(
+                        AgendaItemUiScreen(
+                            agendaItemId = agendaItemUiId,
+                            agendaItemUiType = agendaItemUiType,
+                            selectedDate = selectedDate
+                        )
+                    )
+                }
+            )
         }
         composable<AgendaItemUiScreen> {
+            val agendaItemsUiScreen = it.toRoute<AgendaItemUiScreen>()
             AgendaItemDetailsRoot(
-                selectedDate = System.currentTimeMillis()
+                selectedDate = agendaItemsUiScreen.selectedDate
             )
         }
     }

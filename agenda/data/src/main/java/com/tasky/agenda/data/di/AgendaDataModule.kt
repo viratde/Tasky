@@ -9,14 +9,13 @@ import com.tasky.agenda.data.data_sources.common.OfflineFirstTaskRepository
 import com.tasky.agenda.data.data_sources.local.RoomEventLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomReminderLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomTaskLocalDataSource
-import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.common.AgendaRepository
 import com.tasky.agenda.domain.repository.common.EventRepository
 import com.tasky.agenda.domain.repository.common.ReminderRepository
 import com.tasky.agenda.domain.repository.common.TaskRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
+import com.tasky.agenda.domain.repository.local.LocalEventDataSource
+import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
+import com.tasky.agenda.domain.repository.local.LocalTaskDataSource
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -44,11 +43,11 @@ val agendaDataModule = module {
         get<AgendaItemsDatabase>().reminderDao
     }
 
-    singleOf(::RoomEventLocalDataSource).bind<LocalAgendaDataSource<Event>>()
+    singleOf(::RoomEventLocalDataSource).bind<LocalEventDataSource>()
 
-    singleOf(::RoomTaskLocalDataSource).bind<LocalAgendaDataSource<Task>>()
+    singleOf(::RoomTaskLocalDataSource).bind<LocalTaskDataSource>()
 
-    singleOf(::RoomReminderLocalDataSource).bind<LocalAgendaDataSource<Reminder>>()
+    singleOf(::RoomReminderLocalDataSource).bind<LocalReminderDataSource>()
 
     singleOf(::OfflineFirstAgendaItemsRepository).bind<AgendaRepository>()
 

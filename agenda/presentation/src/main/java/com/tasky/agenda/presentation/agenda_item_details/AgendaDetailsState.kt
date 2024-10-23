@@ -6,6 +6,7 @@ import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
 
 
 data class AgendaDetailsState(
+    val editingAgendaItemUi: AgendaItemUi? = null,
     val agendaItemUi: AgendaItemUi? = null,
     val isLoading: Boolean = false,
     val isInEditMode: Boolean = false,
