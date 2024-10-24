@@ -2,7 +2,7 @@ package com.tasky.agenda.presentation.agenda
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tasky.agenda.domain.repository.common.AgendaRepository
+import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.core.domain.AuthInfoStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

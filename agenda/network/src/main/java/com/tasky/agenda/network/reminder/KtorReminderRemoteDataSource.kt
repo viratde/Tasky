@@ -1,7 +1,7 @@
 package com.tasky.agenda.network.reminder
 
 import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
 import com.tasky.agenda.network.common.dtos.ReminderDto
 import com.tasky.agenda.network.common.mappers.toReminder
 import com.tasky.agenda.network.common.mappers.toReminderDto

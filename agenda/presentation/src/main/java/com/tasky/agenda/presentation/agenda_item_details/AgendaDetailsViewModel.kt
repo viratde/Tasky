@@ -3,22 +3,18 @@ package com.tasky.agenda.presentation.agenda_item_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tasky.agenda.domain.repository.common.TaskRepository
+import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import com.tasky.agenda.presentation.agenda_item_details.mappers.toTask
 import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
-import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.util.AgendaItemUiType
-import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.onError
 import com.tasky.core.domain.util.onSuccess
 import com.tasky.core.presentation.ui.asUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -211,7 +207,7 @@ class AgendaDetailsViewModel(
             val agendaItemUiType = savedStateHandle.get<AgendaItemUiType>(AGENDA_ITEM_UI_TYPE)
             val agendaItemUiId = savedStateHandle.get<String>(AGENDA_ITEM_UI_ID)
             val selectedDate =
-                savedStateHandle.get<Long>(SELECTED_DATE) ?: Instant.now().toEpochMilli()
+                savedStateHandle[SELECTED_DATE] ?: Instant.now().toEpochMilli()
 
             if (agendaItemUiId == null) {
                 when (agendaItemUiType) {

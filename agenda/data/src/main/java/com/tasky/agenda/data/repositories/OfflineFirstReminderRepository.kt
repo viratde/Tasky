@@ -1,9 +1,9 @@
-package com.tasky.agenda.data.data_sources.common
+package com.tasky.agenda.data.repositories
 
 import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.common.ReminderRepository
-import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.repository.ReminderRepository
+import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -16,7 +16,7 @@ class OfflineFirstReminderRepository(
 ) : ReminderRepository {
 
     override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
+        val localReminderResult = localReminderDataSource.upsertReminder(reminder)
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
@@ -33,7 +33,7 @@ class OfflineFirstReminderRepository(
     }
 
     override suspend fun updateReminder(reminder: Reminder): EmptyDataResult<DataError> {
-        val localReminderResult = localReminderDataSource.upsertAgendaItem(reminder)
+        val localReminderResult = localReminderDataSource.upsertReminder(reminder)
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
@@ -51,11 +51,11 @@ class OfflineFirstReminderRepository(
     }
 
     override suspend fun getRemindersByTime(time: Long): Flow<List<Reminder>> {
-        return localReminderDataSource.getAgendaItemsByTime(time)
+        return localReminderDataSource.getRemindersByTime(time)
     }
 
     override suspend fun deleteRemindersById(reminderId: String) {
-        localReminderDataSource.deleteAgendaItem(reminderId)
+        localReminderDataSource.deleteReminder(reminderId)
 
         // @todo - I need to check whether it was created remotely or not
         remoteReminderDataSource.delete(reminderId)

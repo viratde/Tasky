@@ -1,4 +1,4 @@
-package com.tasky.agenda.domain.repository.local
+package com.tasky.agenda.domain.data_sources.local
 
 import com.tasky.agenda.domain.model.Reminder
 import com.tasky.core.domain.util.DataError
@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalReminderDataSource {
 
-    suspend fun getAgendaItemsById(agendaItemId: String): Reminder?
+    suspend fun getRemindersById(agendaItemId: String): Reminder?
 
-    suspend fun getAgendaItemsByTime(time: Long): Flow<List<Reminder>>
+    fun getRemindersByTime(time: Long): Flow<List<Reminder>>
 
-    suspend fun upsertAgendaItem(agendaItem: Reminder): EmptyDataResult<DataError.Local>
+    suspend fun upsertReminder(agendaItem: Reminder): EmptyDataResult<DataError.Local>
 
-    suspend fun upsertAgendaItems(agendaItems: List<Reminder>): EmptyDataResult<DataError.Local>
+    suspend fun upsertReminders(agendaItems: List<Reminder>): EmptyDataResult<DataError.Local>
 
-    suspend fun deleteAgendaItem(agendaItemId: String)
+    suspend fun deleteReminder(agendaItemId: String)
 
-    suspend fun getAgendaItems(): Flow<List<Reminder>>
+    fun getReminders(): Flow<List<Reminder>>
 
-    suspend fun deleteAllAgendaItems()
+    suspend fun deleteAllReminders()
 
 }

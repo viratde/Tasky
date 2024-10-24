@@ -1,4 +1,4 @@
-package com.tasky.agenda.domain.repository.remote
+package com.tasky.agenda.domain.data_sources.remote
 
 import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.model.AttendeeExistence

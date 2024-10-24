@@ -1,12 +1,12 @@
-package com.tasky.agenda.data.data_sources.common
+package com.tasky.agenda.data.repositories
 
 import androidx.room.withTransaction
 import com.tasky.agenda.data.AgendaItemsDatabase
-import com.tasky.agenda.domain.repository.common.AgendaRepository
-import com.tasky.agenda.domain.repository.local.LocalEventDataSource
-import com.tasky.agenda.domain.repository.local.LocalReminderDataSource
-import com.tasky.agenda.domain.repository.local.LocalTaskDataSource
-import com.tasky.agenda.domain.repository.remote.AgendaRemoteDataSource
+import com.tasky.agenda.domain.repository.AgendaRepository
+import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
+import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
+import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
+import com.tasky.agenda.domain.data_sources.remote.AgendaRemoteDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -29,9 +29,9 @@ class OfflineFirstAgendaItemsRepository(
             is Result.Success -> {
                 applicationScope.async {
                     db.withTransaction {
-                        localTaskRepository.upsertAgendaItems(result.data.tasks)
-                        localReminderRepository.upsertAgendaItems(result.data.reminders)
-                        localEventRepository.upsertAgendaItems(result.data.events)
+                        localTaskRepository.upsertTasks(result.data.tasks)
+                        localReminderRepository.upsertReminders(result.data.reminders)
+                        localEventRepository.upsertEvents(result.data.events)
                     }
                 }.await()
             }
@@ -44,9 +44,9 @@ class OfflineFirstAgendaItemsRepository(
             is Result.Success -> {
                 applicationScope.async {
                     db.withTransaction {
-                        localTaskRepository.upsertAgendaItems(result.data.tasks)
-                        localReminderRepository.upsertAgendaItems(result.data.reminders)
-                        localEventRepository.upsertAgendaItems(result.data.events)
+                        localTaskRepository.upsertTasks(result.data.tasks)
+                        localReminderRepository.upsertReminders(result.data.reminders)
+                        localEventRepository.upsertEvents(result.data.events)
                     }
                 }.await()
             }

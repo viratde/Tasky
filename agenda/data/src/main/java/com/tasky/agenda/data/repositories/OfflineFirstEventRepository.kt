@@ -1,10 +1,10 @@
-package com.tasky.agenda.data.data_sources.common
+package com.tasky.agenda.data.repositories
 
 import com.tasky.agenda.domain.model.AttendeeExistence
 import com.tasky.agenda.domain.model.Event
-import com.tasky.agenda.domain.repository.common.EventRepository
-import com.tasky.agenda.domain.repository.local.LocalEventDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.repository.EventRepository
+import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -17,7 +17,7 @@ class OfflineFirstEventRepository(
 ) : EventRepository {
 
     override suspend fun addEvent(event: Event): EmptyDataResult<DataError> {
-        val localEventResult = localEventDataSource.upsertAgendaItem(event)
+        val localEventResult = localEventDataSource.upsertEvent(event)
         if (localEventResult !is Result.Success) {
             return localEventResult.asEmptyDataResult()
         }
@@ -37,7 +37,7 @@ class OfflineFirstEventRepository(
         event: Event,
         deletedPhotoKeys: List<String>
     ): EmptyDataResult<DataError> {
-        val localEventResult = localEventDataSource.upsertAgendaItem(event)
+        val localEventResult = localEventDataSource.upsertEvent(event)
         if (localEventResult !is Result.Success) {
             return localEventResult.asEmptyDataResult()
         }
@@ -55,11 +55,11 @@ class OfflineFirstEventRepository(
     }
 
     override suspend fun getEventsByTime(time: Long): Flow<List<Event>> {
-        return localEventDataSource.getAgendaItemsByTime(time)
+        return localEventDataSource.getEventsByTime(time)
     }
 
     override suspend fun deleteEventById(eventId: String) {
-        localEventDataSource.deleteAgendaItem(eventId)
+        localEventDataSource.deleteEvent(eventId)
 
         // @todo - I need to check whether it was created remotely or not
         remoteEventDataSource.delete(eventId)

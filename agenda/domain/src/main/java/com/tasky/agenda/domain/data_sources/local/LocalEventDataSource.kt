@@ -1,4 +1,4 @@
-package com.tasky.agenda.domain.repository.local
+package com.tasky.agenda.domain.data_sources.local
 
 import com.tasky.agenda.domain.model.Event
 import com.tasky.core.domain.util.DataError
@@ -7,18 +7,18 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalEventDataSource {
 
-    suspend fun getAgendaItemsById(agendaItemId: String): Event?
+    suspend fun getEventsById(agendaItemId: String): Event?
 
-    suspend fun getAgendaItemsByTime(time: Long): Flow<List<Event>>
+    fun getEventsByTime(time: Long): Flow<List<Event>>
 
-    suspend fun upsertAgendaItem(agendaItem: Event): EmptyDataResult<DataError.Local>
+    suspend fun upsertEvent(agendaItem: Event): EmptyDataResult<DataError.Local>
 
-    suspend fun upsertAgendaItems(agendaItems: List<Event>): EmptyDataResult<DataError.Local>
+    suspend fun upsertEvents(agendaItems: List<Event>): EmptyDataResult<DataError.Local>
 
-    suspend fun deleteAgendaItem(agendaItemId: String)
+    suspend fun deleteEvent(agendaItemId: String)
 
-    suspend fun getAgendaItems(): Flow<List<Event>>
+    fun getEvents(): Flow<List<Event>>
 
-    suspend fun deleteAllAgendaItems()
+    suspend fun deleteAllEvents()
 
 }

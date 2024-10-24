@@ -3,7 +3,7 @@ package com.tasky.agenda.network.event
 import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.model.AttendeeExistence
-import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
 import com.tasky.agenda.network.common.dtos.EventDto
 import com.tasky.agenda.network.common.dtos.AttendeeExistenceDto
 import com.tasky.agenda.network.common.mappers.toEvent

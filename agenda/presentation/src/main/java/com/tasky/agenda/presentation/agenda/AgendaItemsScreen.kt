@@ -42,7 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
-    onNavigate: (AgendaItemUiType, Long, String?) -> Unit
+    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
