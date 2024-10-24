@@ -2,7 +2,7 @@ package com.tasky.agenda.network.agenda
 
 import com.tasky.agenda.domain.model.Agenda
 import com.tasky.agenda.domain.model.AgendaSync
-import com.tasky.agenda.domain.repository.remote.AgendaRemoteDataSource
+import com.tasky.agenda.domain.data_sources.remote.AgendaRemoteDataSource
 import com.tasky.agenda.network.agenda.dtos.AgendaDto
 import com.tasky.agenda.network.agenda.mappers.toAgenda
 import com.tasky.agenda.network.agenda.mappers.toAgendaSyncDto

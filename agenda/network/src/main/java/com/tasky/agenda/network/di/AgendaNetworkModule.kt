@@ -1,9 +1,9 @@
 package com.tasky.agenda.network.di
 
-import com.tasky.agenda.domain.repository.remote.AgendaRemoteDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteEventDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteReminderDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.data_sources.remote.AgendaRemoteDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
 import com.tasky.agenda.network.agenda.KtorAgendaRemoteDataSource
 import com.tasky.agenda.network.event.KtorRemoteEventDataSource
 import com.tasky.agenda.network.reminder.KtorReminderRemoteDataSource

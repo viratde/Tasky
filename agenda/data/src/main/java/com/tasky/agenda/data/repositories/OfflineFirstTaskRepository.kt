@@ -1,9 +1,9 @@
-package com.tasky.agenda.data.data_sources.common
+package com.tasky.agenda.data.repositories
 
 import com.tasky.agenda.domain.model.Task
-import com.tasky.agenda.domain.repository.common.TaskRepository
-import com.tasky.agenda.domain.repository.local.LocalAgendaDataSource
-import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.repository.TaskRepository
+import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -11,20 +11,20 @@ import com.tasky.core.domain.util.asEmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstTaskRepository(
-    private val localTaskDataSource: LocalAgendaDataSource<Task>,
+    private val localTaskDataSource: LocalTaskDataSource,
     private val remoteTaskDataSource: RemoteTaskDataSource
 ) : TaskRepository {
 
 
     override suspend fun addTask(task: Task): EmptyDataResult<DataError> {
-        val localTaskResult = localTaskDataSource.upsertAgendaItem(task)
+        val localTaskResult = localTaskDataSource.upsertTask(task)
         if (localTaskResult !is Result.Success) {
             return localTaskResult.asEmptyDataResult()
         }
         return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
                 // @todo - i need to store that it has been yet created in remote data source
-                Result.Success(Unit)
+                Result.Error(remoteTaskResult.error)
             }
 
             is Result.Success -> {
@@ -34,7 +34,7 @@ class OfflineFirstTaskRepository(
     }
 
     override suspend fun updateTask(task: Task): EmptyDataResult<DataError> {
-        val localTaskResult = localTaskDataSource.upsertAgendaItem(task)
+        val localTaskResult = localTaskDataSource.upsertTask(task)
         if (localTaskResult !is Result.Success) {
             return localTaskResult.asEmptyDataResult()
         }
@@ -52,11 +52,11 @@ class OfflineFirstTaskRepository(
     }
 
     override suspend fun getTasksByTime(time: Long): Flow<List<Task>> {
-        return localTaskDataSource.getAgendaItemsByTime(time)
+        return localTaskDataSource.getTasksByTime(time)
     }
 
     override suspend fun deleteTaskById(taskId: String) {
-        localTaskDataSource.deleteAgendaItem(taskId)
+        localTaskDataSource.deleteTask(taskId)
 
         // @todo - I need to check whether it was created remotely or not
         remoteTaskDataSource.delete(taskId)

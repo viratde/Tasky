@@ -2,7 +2,7 @@ package com.tasky.agenda.presentation.agenda
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.tasky.agenda.domain.repository.common.AgendaRepository
+import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.core.domain.AuthInfoStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,9 +29,24 @@ class AgendaItemsViewModel(
 
     fun onAction(action: AgendaItemsAction) {
         when (action) {
-            AgendaItemsAction.OnAddEvent -> TODO()
-            AgendaItemsAction.OnAddRemainder -> TODO()
-            AgendaItemsAction.OnAddTask -> TODO()
+            AgendaItemsAction.OnAddEvent -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
+            AgendaItemsAction.OnAddRemainder -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
+            AgendaItemsAction.OnAddTask -> {
+                _state.update {
+                    it.copy(isAddAgendaItemDropDownOpen = false)
+                }
+            }
+
             is AgendaItemsAction.OnDeleteAgendaItemUi -> TODO()
             is AgendaItemsAction.OnEditAgendaItemUi -> TODO()
             AgendaItemsAction.OnLogOut -> {

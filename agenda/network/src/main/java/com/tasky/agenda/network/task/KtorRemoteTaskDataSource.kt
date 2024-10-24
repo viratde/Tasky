@@ -1,7 +1,7 @@
 package com.tasky.agenda.network.task
 
 import com.tasky.agenda.domain.model.Task
-import com.tasky.agenda.domain.repository.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
 import com.tasky.agenda.network.common.dtos.TaskDto
 import com.tasky.agenda.network.common.mappers.toTask
 import com.tasky.agenda.network.common.mappers.toTaskDto

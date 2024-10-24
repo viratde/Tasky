@@ -1,4 +1,4 @@
-package com.tasky.agenda.domain.repository.common
+package com.tasky.agenda.domain.repository
 
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult

@@ -16,5 +16,8 @@ sealed interface AgendaItemDetailsAction {
     data object OnToggleVisitorsModel : AgendaItemDetailsAction
     data class OnVisitorsEmailChange(val email: String) : AgendaItemDetailsAction
     data object OnAddVisitor : AgendaItemDetailsAction
-    data class OnVisitorFilterChange(val visitorsFilterState: VisitorsFilterState):AgendaItemDetailsAction
+    data class OnVisitorFilterChange(val visitorsFilterState: VisitorsFilterState) :
+        AgendaItemDetailsAction
+
+    data object OnSaveAgendaItem : AgendaItemDetailsAction
 }
