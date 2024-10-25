@@ -18,6 +18,7 @@ sealed interface AgendaItemDetailsAction {
     data object OnAddVisitor : AgendaItemDetailsAction
     data class OnVisitorFilterChange(val visitorsFilterState: VisitorsFilterState) :
         AgendaItemDetailsAction
+    data class OnDeleteAgendaPhoto(val agendaPhoto: AgendaPhoto):AgendaItemDetailsAction
 
     data object OnSaveAgendaItem : AgendaItemDetailsAction
 }

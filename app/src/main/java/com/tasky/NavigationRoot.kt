@@ -50,7 +50,10 @@ fun NavGraphBuilder.agendaGraph(
         composable<AgendaItemUiScreen> {
             val agendaItemsUiScreen = it.toRoute<AgendaItemUiScreen>()
             AgendaItemDetailsRoot(
-                selectedDate = agendaItemsUiScreen.selectedDate
+                selectedDate = agendaItemsUiScreen.selectedDate,
+                onNavigateUp = {
+                    navController.navigateUp()
+                }
             )
         }
     }

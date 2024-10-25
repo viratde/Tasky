@@ -42,16 +42,31 @@ import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import com.tasky.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 import java.time.ZonedDateTime
 
 @Composable
 fun AgendaItemDetailsRoot(
     viewModel: AgendaDetailsViewModel = koinViewModel(),
-    selectedDate: Long
+    selectedDate: Long,
+    onNavigateUp: () -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserverAsEvents(viewModel.events) { event ->
+        when (event) {
+            is AgendaItemDetailsEvent.OnError -> {
+
+            }
+
+            AgendaItemDetailsEvent.OnNavigateUp -> {
+                onNavigateUp()
+            }
+        }
+    }
+
     LoadingContainer(
         modifier = Modifier
             .fillMaxSize(),
@@ -199,10 +214,9 @@ fun AgendaItemDetailsScreen(
                             onAddPhoto = { photo ->
                                 onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo))
                             },
-                            onDeletePhoto = {
-
+                            onDeletePhoto = { photo ->
+                                onAction(AgendaItemDetailsAction.OnDeleteAgendaPhoto(photo))
                             }
-
                         )
 
                         HorizontalDivider(
@@ -327,7 +341,7 @@ fun AgendaItemDetailsScreen(
                                 )
                             },
                             visitors = state.agendaItemUi.attendees,
-                            hostUserId = "",
+                            hostUserId =state.agendaItemUi.hostId,
                             onToggleAddModel = {
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },

@@ -4,4 +4,5 @@ import com.tasky.core.presentation.ui.UiText
 
 sealed interface AgendaItemDetailsEvent {
     data class OnError(val uiText: UiText) : AgendaItemDetailsEvent
+    data object OnNavigateUp:AgendaItemDetailsEvent
 }

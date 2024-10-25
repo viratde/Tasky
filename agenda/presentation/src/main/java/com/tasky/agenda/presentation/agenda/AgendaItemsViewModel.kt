@@ -4,8 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tasky.agenda.domain.repository.AgendaRepository
+import com.tasky.agenda.domain.repository.EventRepository
+import com.tasky.agenda.domain.repository.ReminderRepository
+import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemUiList
+import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.util.AgendaItemUiType
+import com.tasky.agenda.presentation.common.util.ifEventUi
+import com.tasky.agenda.presentation.common.util.ifReminderUi
+import com.tasky.agenda.presentation.common.util.ifTaskUi
+import com.tasky.agenda.presentation.common.util.toAgendaItemUiType
 import com.tasky.core.domain.AuthInfoStorage
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -20,6 +28,9 @@ import kotlinx.coroutines.launch
 class AgendaItemsViewModel(
     private val agendaRepository: AgendaRepository,
     private val authInfoStorage: AuthInfoStorage,
+    private val eventRepository: EventRepository,
+    private val taskRepository: TaskRepository,
+    private val reminderRepository: ReminderRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -62,21 +73,21 @@ class AgendaItemsViewModel(
             }
 
             is AgendaItemsAction.OnDeleteAgendaItemUi -> {
-
+                deleteAgendaItem(action.agendaItemUi)
             }
 
             is AgendaItemsAction.OnEditAgendaItemUi -> {
                 _state.update {
                     it.copy(selectedAgendaItemUi = null)
                 }
-                navigateToDetailsScreen(AgendaItemUiType.Task, action.agendaItemUi.id, true)
+                navigateToDetailsScreen(action.agendaItemUi.toAgendaItemUiType(), action.agendaItemUi.id, true)
             }
 
             is AgendaItemsAction.OnOpenAgendaItemUi -> {
                 _state.update {
                     it.copy(selectedAgendaItemUi = null)
                 }
-                navigateToDetailsScreen(AgendaItemUiType.Task, action.agendaItemUi.id)
+                navigateToDetailsScreen(action.agendaItemUi.toAgendaItemUiType(), action.agendaItemUi.id)
             }
 
             AgendaItemsAction.OnLogOut -> {
@@ -135,7 +146,9 @@ class AgendaItemsViewModel(
                 }
             }
 
-            is AgendaItemsAction.OnToggleTaskUiCompletion -> TODO()
+            is AgendaItemsAction.OnToggleTaskUiCompletion -> {
+
+            }
         }
     }
 
@@ -188,6 +201,21 @@ class AgendaItemsViewModel(
                     isInEditMode = isInEditMode
                 )
             )
+        }
+    }
+
+    private fun deleteAgendaItem(agendaItemUi: AgendaItemUi) {
+        viewModelScope.launch {
+            agendaItemUi
+                .ifEventUi {
+                    eventRepository.deleteEventById(it.id)
+                }
+                .ifTaskUi {
+                    reminderRepository.deleteRemindersById(it.id)
+                }
+                .ifReminderUi {
+                    taskRepository.deleteTaskById(it.id)
+                }
         }
     }
 

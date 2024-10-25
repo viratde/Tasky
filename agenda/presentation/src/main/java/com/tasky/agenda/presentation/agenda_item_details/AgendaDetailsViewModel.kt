@@ -3,17 +3,23 @@ package com.tasky.agenda.presentation.agenda_item_details
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
-import com.tasky.agenda.presentation.common.mappers.toTask
 import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemEventUi
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemReminderUi
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemTaskUi
+import com.tasky.agenda.presentation.common.mappers.toReminder
+import com.tasky.agenda.presentation.common.mappers.toTask
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.util.AgendaItemUiType
+import com.tasky.agenda.presentation.common.util.ifEventUi
+import com.tasky.agenda.presentation.common.util.ifReminderUi
+import com.tasky.agenda.presentation.common.util.ifTaskUi
+import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.onError
 import com.tasky.core.domain.util.onSuccess
 import com.tasky.core.presentation.ui.asUiText
@@ -34,7 +40,8 @@ class AgendaDetailsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val taskRepository: TaskRepository,
     private val eventRepository: EventRepository,
-    private val reminderRepository: ReminderRepository
+    private val reminderRepository: ReminderRepository,
+    private val authInfoStorage: AuthInfoStorage
 ) : ViewModel() {
 
 
@@ -55,31 +62,25 @@ class AgendaDetailsViewModel(
     fun onAction(action: AgendaItemDetailsAction) {
         when (action) {
             is AgendaItemDetailsAction.OnAtChange -> {
-                when (val item = _state.value.agendaItemUi) {
-                    is AgendaItemUi.ReminderUi -> {
-                        println("The change in value of at is${action.at}")
+                _state.value.agendaItemUi
+                    ?.ifTaskUi { taskUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = item.copy(
+                                agendaItemUi = taskUi.copy(
                                     time = action.at
                                 )
                             )
                         }
                     }
-
-                    is AgendaItemUi.TaskUi -> {
-                        println("The change in value of at is${action.at}")
+                    ?.ifReminderUi { reminderUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = item.copy(
+                                agendaItemUi = reminderUi.copy(
                                     time = action.at
                                 )
                             )
                         }
                     }
-
-                    else -> Unit
-                }
             }
 
             is AgendaItemDetailsAction.OnDescriptionChange -> {
@@ -93,19 +94,16 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnFromChange -> {
-                when (val item = state.value.agendaItemUi) {
-                    is AgendaItemUi.EventUi -> {
+                _state.value.agendaItemUi
+                    ?.ifEventUi { eventUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = item.copy(
+                                agendaItemUi = eventUi.copy(
                                     from = action.from
                                 )
                             )
                         }
                     }
-
-                    else -> Unit
-                }
             }
 
             is AgendaItemDetailsAction.OnRemindTimeChange -> {
@@ -129,19 +127,16 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnToChange -> {
-                when (val item = state.value.agendaItemUi) {
-                    is AgendaItemUi.EventUi -> {
+                _state.value.agendaItemUi
+                    ?.ifEventUi { eventUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = item.copy(
+                                agendaItemUi = eventUi.copy(
                                     to = action.to
                                 )
                             )
                         }
                     }
-
-                    else -> Unit
-                }
             }
 
             AgendaItemDetailsAction.OnToggleEditMode -> {
@@ -153,17 +148,16 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnAddAgendaPhoto -> {
-                if (state.value.agendaItemUi is AgendaItemUi.EventUi) {
-                    _state.update {
-                        it.copy(
-                            agendaItemUi = updateDetailsIfEvent { item ->
-                                item.copy(
-                                    photos = item.photos + action.photo
+                _state.value.agendaItemUi
+                    ?.ifEventUi { eventUi ->
+                        _state.update {
+                            it.copy(
+                                agendaItemUi = eventUi.copy(
+                                    photos = eventUi.photos + action.photo
                                 )
-                            }
-                        )
+                            )
+                        }
                     }
-                }
             }
 
             AgendaItemDetailsAction.OnAddVisitor -> {
@@ -200,17 +194,35 @@ class AgendaDetailsViewModel(
             AgendaItemDetailsAction.OnSaveAgendaItem -> {
                 saveAgendaItems()
             }
+
+            is AgendaItemDetailsAction.OnDeleteAgendaPhoto -> {
+                _state.value.agendaItemUi
+                    ?.ifEventUi { eventUi ->
+                        _state.update {
+                            when (action.agendaPhoto) {
+                                is AgendaPhoto.LocalPhoto -> {
+                                    it.copy(
+                                        agendaItemUi = eventUi.copy(
+                                            photos = eventUi.photos.filter { it.id != action.agendaPhoto.id }
+                                        )
+                                    )
+                                }
+
+                                is AgendaPhoto.RemotePhoto -> {
+                                    it.copy(
+                                        agendaItemUi = eventUi.copy(
+                                            photos = eventUi.photos.filter { it.id != action.agendaPhoto.id }
+                                        ),
+                                        deletedPhotoKeys = it.deletedPhotoKeys + action.agendaPhoto.id
+                                    )
+                                }
+                            }
+                        }
+                    }
+            }
         }
     }
 
-    private fun updateDetailsIfEvent(
-        update: (AgendaItemUi.EventUi) -> AgendaItemUi.EventUi
-    ): AgendaItemUi? {
-        return when (val details = state.value.agendaItemUi) {
-            is AgendaItemUi.EventUi -> update(details)
-            else -> details
-        }
-    }
 
     private fun loadAgendaItem() {
 
@@ -220,7 +232,6 @@ class AgendaDetailsViewModel(
             savedStateHandle.get<Long?>(SELECTED_DATE)?.withCurrentTimeHourAndMinutes()
                 ?: Instant.now().toEpochMilli()
         val isInEditMode = savedStateHandle[IS_IN_EDIT_MODE] ?: false
-
         if (agendaItemUiId == null) {
             when (agendaItemUiType) {
                 AgendaItemUiType.Reminder -> {
@@ -239,21 +250,26 @@ class AgendaDetailsViewModel(
                 }
 
                 AgendaItemUiType.Event -> {
-                    _state.update {
-                        it.copy(
-                            agendaItemUi = AgendaItemUi.EventUi(
-                                id = UUID.randomUUID().toString(),
-                                title = "New Event",
-                                description = "Event Description",
-                                remindAt = RemindTimes.TEN_MINUTES,
-                                from = selectedDate,
-                                to = Instant.ofEpochMilli(selectedDate).plus(10, ChronoUnit.MINUTES).toEpochMilli(),
-                                attendees = listOf(),
-                                photos = listOf(),
-                                isHost = true
-                            ),
-                            isInEditMode = true
-                        )
+                    viewModelScope.launch {
+                        _state.update {
+                            it.copy(
+                                agendaItemUi = AgendaItemUi.EventUi(
+                                    id = UUID.randomUUID().toString(),
+                                    title = "New Event",
+                                    description = "Event Description",
+                                    remindAt = RemindTimes.TEN_MINUTES,
+                                    from = selectedDate,
+                                    to = Instant.ofEpochMilli(selectedDate)
+                                        .plus(10, ChronoUnit.MINUTES)
+                                        .toEpochMilli(),
+                                    attendees = listOf(),
+                                    photos = listOf(),
+                                    isHost = true,
+                                    hostId = authInfoStorage.get()?.userId ?: ""
+                                ),
+                                isInEditMode = true
+                            )
+                        }
                     }
                 }
 
@@ -284,7 +300,7 @@ class AgendaDetailsViewModel(
                             ?.toAgendaItemReminderUi() ?: return@launch
                         _state.update {
                             it.copy(
-                                editingAgendaItemUi = agendaItem,
+                                isEditing = true,
                                 agendaItemUi = agendaItem,
                                 isInEditMode = isInEditMode
                             )
@@ -297,7 +313,7 @@ class AgendaDetailsViewModel(
                                 ?: return@launch
                         _state.update {
                             it.copy(
-                                editingAgendaItemUi = agendaItem,
+                                isEditing = true,
                                 agendaItemUi = agendaItem,
                                 isInEditMode = isInEditMode
                             )
@@ -310,7 +326,7 @@ class AgendaDetailsViewModel(
                                 ?: return@launch
                         _state.update {
                             it.copy(
-                                editingAgendaItemUi = agendaItem,
+                                isEditing = true,
                                 agendaItemUi = agendaItem,
                                 isInEditMode = isInEditMode
                             )
@@ -327,31 +343,35 @@ class AgendaDetailsViewModel(
 
     private fun saveAgendaItems() {
         viewModelScope.launch {
-
-            when (val item = state.value.agendaItemUi) {
-                is AgendaItemUi.EventUi -> {
-
-                }
-
-                is AgendaItemUi.ReminderUi -> {
+            state.value.agendaItemUi
+                ?.ifEventUi {
 
                 }
-
-                is AgendaItemUi.TaskUi -> {
-                    taskRepository.addTask(item.toTask())
+                ?.ifTaskUi {
+                    taskRepository.addTask(it.toTask())
                         .onSuccess {
                             // @todo - implement success case handling
+                            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
                         }
                         .onError { error ->
                             _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
                         }
                 }
+                ?.ifReminderUi {
+                    reminderRepository.addReminder(it.toReminder())
+                        .onSuccess {
+                            // @todo - implement success case handling
+                            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                        }
+                        .onError { error ->
+                            _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                        }
 
-                null -> Unit
-            }
+                }
 
         }
     }
+
 
     companion object {
 
