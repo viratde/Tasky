@@ -37,35 +37,38 @@ import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import com.tasky.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
-    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?) -> Unit
+    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?, isInEditMode: Boolean) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserverAsEvents(flow = viewModel.events) { event ->
+        when (event) {
+            is AgendaItemsEvent.OnError -> {
+
+            }
+
+            is AgendaItemsEvent.OnNavigate -> {
+                onNavigate(
+                    event.itemUiType,
+                    event.selectedDate,
+                    event.agendaItemUiId,
+                    event.isInEditMode
+                )
+            }
+        }
+    }
 
     AgendaItemsScreen(
         state = state
     ) { action ->
         viewModel.onAction(action)
-        when (action) {
-            AgendaItemsAction.OnAddEvent -> {
-                onNavigate(AgendaItemUiType.Event, state.selectedDate, null)
-            }
-
-            AgendaItemsAction.OnAddRemainder -> {
-                onNavigate(AgendaItemUiType.Reminder, state.selectedDate, null)
-            }
-
-            AgendaItemsAction.OnAddTask -> {
-                onNavigate(AgendaItemUiType.Task, state.selectedDate, null)
-            }
-
-            else -> Unit
-        }
     }
 
 }
@@ -204,6 +207,12 @@ fun AgendaItemsScreen(
                             }) else null,
                             onView = {
                                 onAction(AgendaItemsAction.OnOpenAgendaItemUi(agendaItemUi))
+                            },
+                            isContextMenuOpen = state.selectedAgendaItemUi == agendaItemUi.id,
+                            onToggleContextMenu = {
+                                onAction(
+                                    AgendaItemsAction.OnToggleAgendaItemUi(agendaItemUi.id)
+                                )
                             }
                         )
                     }

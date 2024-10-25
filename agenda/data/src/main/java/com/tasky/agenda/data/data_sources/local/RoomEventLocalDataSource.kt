@@ -18,7 +18,7 @@ class RoomEventLocalDataSource(
     private val eventDao: EventDao
 ) : LocalEventDataSource {
 
-    override suspend fun getEventsById(agendaItemId: String): Event? {
+    override suspend fun getEventById(agendaItemId: String): Event? {
         return eventDao.getEventById(eventId = agendaItemId)?.toEvent()
     }
 

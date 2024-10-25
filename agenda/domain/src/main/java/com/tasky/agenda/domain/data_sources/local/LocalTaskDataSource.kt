@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalTaskDataSource {
 
-    suspend fun getTasksById(agendaItemId: String): Task?
+    suspend fun getTaskById(agendaItemId: String): Task?
 
     fun getTasksByTime(time: Long): Flow<List<Task>>
 

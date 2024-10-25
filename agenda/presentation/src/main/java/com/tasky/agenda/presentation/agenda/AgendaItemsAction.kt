@@ -24,7 +24,7 @@ sealed interface AgendaItemsAction {
 
     data class OnToggleTaskUiCompletion(val taskUi: AgendaItemUi.TaskUi) : AgendaItemsAction
 
-    data class OnSelectAgendaItemUi(val agendaItemUi: AgendaItemUi?) : AgendaItemsAction
+    data class OnToggleAgendaItemUi(val agendaItemUiId: String) : AgendaItemsAction
 
     data class OnOpenAgendaItemUi(val agendaItemUi: AgendaItemUi) : AgendaItemsAction
     data class OnEditAgendaItemUi(val agendaItemUi: AgendaItemUi) : AgendaItemsAction

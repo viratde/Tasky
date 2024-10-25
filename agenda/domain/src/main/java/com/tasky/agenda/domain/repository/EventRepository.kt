@@ -24,4 +24,5 @@ interface EventRepository {
 
     suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network>
 
+    suspend fun getEventById(eventId: String): Event?
 }

@@ -59,14 +59,13 @@ fun AgendaItemUi(
     onView: () -> Unit,
     onDelete: () -> Unit,
     agendaItemUi: AgendaItemUi,
+    isContextMenuOpen: Boolean,
     modifier: Modifier = Modifier,
     onToggle: (() -> Unit)? = null,
+    onToggleContextMenu: () -> Unit
 ) {
 
-    var isDropDownMenuOpen by remember {
-        mutableStateOf(false)
-    }
-
+    
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
@@ -127,7 +126,7 @@ fun AgendaItemUi(
 
             Box {
                 IconButton(
-                    onClick = { isDropDownMenuOpen = !isDropDownMenuOpen }
+                    onClick = onToggleContextMenu
                 ) {
                     Icon(
                         imageVector = ContextMenuIcon,
@@ -140,10 +139,8 @@ fun AgendaItemUi(
                     )
                 }
                 AgendaItemUiContextMenu(
-                    expanded = isDropDownMenuOpen,
-                    onClose = {
-                        isDropDownMenuOpen = false
-                    },
+                    expanded = isContextMenuOpen,
+                    onClose = onToggleContextMenu,
                     onEdit = onEdit,
                     onView = onView,
                     onDelete = onDelete
@@ -249,7 +246,11 @@ private fun BasicAgendaItemUiPreview() {
             onDelete = {},
             onEdit = {},
             onToggle = {},
-            onView = {}
+            onView = {},
+            isContextMenuOpen = false,
+            onToggleContextMenu = {
+
+            }
         )
     }
 }
@@ -268,7 +269,11 @@ private fun BasicAgendaItemTaskUiPreview() {
             onDelete = {},
             onEdit = {},
             onToggle = {},
-            onView = {}
+            onView = {},
+            isContextMenuOpen = false,
+            onToggleContextMenu = {
+
+            }
         )
     }
 }
@@ -287,7 +292,11 @@ private fun BasicAgendaItemRemainderUiPreview() {
             onDelete = {},
             onEdit = {},
             onToggle = {},
-            onView = {}
+            onView = {},
+            isContextMenuOpen = false,
+            onToggleContextMenu = {
+
+            }
         )
     }
 }

@@ -18,7 +18,7 @@ class RoomReminderLocalDataSource(
     private val reminderDao: ReminderDao
 ) : LocalReminderDataSource {
 
-    override suspend fun getRemindersById(agendaItemId: String): Reminder? {
+    override suspend fun getReminderById(agendaItemId: String): Reminder? {
         return reminderDao.getReminderById(reminderId = agendaItemId)?.toReminder()
     }
 

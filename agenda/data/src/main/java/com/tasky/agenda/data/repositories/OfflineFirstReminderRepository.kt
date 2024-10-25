@@ -61,4 +61,8 @@ class OfflineFirstReminderRepository(
         remoteReminderDataSource.delete(reminderId)
     }
 
+    override suspend fun getReminderById(reminderId: String): Reminder? {
+        return localReminderDataSource.getReminderById(reminderId)
+    }
+
 }

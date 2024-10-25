@@ -167,7 +167,7 @@ fun TaskyDateTimePicker(
         TaskyDatePickerDialog(
             selectedDateUtcTimeMillis = dateTime,
             onSelectionChange = { date ->
-                onChange(date)
+                onChange(date.withHourAndMinutes(dateTime.getHour(), dateTime.getMinute()))
                 isDatePickerOpen = false
             },
             onClose = {

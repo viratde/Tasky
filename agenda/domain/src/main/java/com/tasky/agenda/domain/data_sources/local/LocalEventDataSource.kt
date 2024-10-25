@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalEventDataSource {
 
-    suspend fun getEventsById(agendaItemId: String): Event?
+    suspend fun getEventById(agendaItemId: String): Event?
 
     fun getEventsByTime(time: Long): Flow<List<Event>>
 
