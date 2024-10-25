@@ -43,7 +43,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
-    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?,isInEditMode:Boolean) -> Unit
+    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?, isInEditMode: Boolean) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -55,7 +55,12 @@ fun AgendaItemsScreenRoot(
             }
 
             is AgendaItemsEvent.OnNavigate -> {
-                onNavigate(event.itemUiType, event.selectedDate, event.agendaItemUiId,event.isInEditMode)
+                onNavigate(
+                    event.itemUiType,
+                    event.selectedDate,
+                    event.agendaItemUiId,
+                    event.isInEditMode
+                )
             }
         }
     }
@@ -202,6 +207,12 @@ fun AgendaItemsScreen(
                             }) else null,
                             onView = {
                                 onAction(AgendaItemsAction.OnOpenAgendaItemUi(agendaItemUi))
+                            },
+                            isContextMenuOpen = state.selectedAgendaItemUi == agendaItemUi.id,
+                            onToggleContextMenu = {
+                                onAction(
+                                    AgendaItemsAction.OnToggleAgendaItemUi(agendaItemUi.id)
+                                )
                             }
                         )
                     }

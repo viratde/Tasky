@@ -42,21 +42,21 @@ class AgendaItemsViewModel(
         when (action) {
             AgendaItemsAction.OnAddEvent -> {
                 _state.update {
-                    it.copy(isAddAgendaItemDropDownOpen = !it.isAddAgendaItemDropDownOpen)
+                    it.copy(isAddAgendaItemDropDownOpen = false)
                 }
                 navigateToDetailsScreen(AgendaItemUiType.Event)
             }
 
             AgendaItemsAction.OnAddRemainder -> {
                 _state.update {
-                    it.copy(isAddAgendaItemDropDownOpen = !it.isAddAgendaItemDropDownOpen)
+                    it.copy(isAddAgendaItemDropDownOpen = false)
                 }
                 navigateToDetailsScreen(AgendaItemUiType.Reminder)
             }
 
             AgendaItemsAction.OnAddTask -> {
                 _state.update {
-                    it.copy(isAddAgendaItemDropDownOpen = !it.isAddAgendaItemDropDownOpen)
+                    it.copy(isAddAgendaItemDropDownOpen = false)
                 }
                 navigateToDetailsScreen(AgendaItemUiType.Task)
             }
@@ -64,12 +64,21 @@ class AgendaItemsViewModel(
             is AgendaItemsAction.OnDeleteAgendaItemUi -> {
 
             }
+
             is AgendaItemsAction.OnEditAgendaItemUi -> {
-                navigateToDetailsScreen(AgendaItemUiType.Task,action.agendaItemUi.id,true)
+                _state.update {
+                    it.copy(selectedAgendaItemUi = null)
+                }
+                navigateToDetailsScreen(AgendaItemUiType.Task, action.agendaItemUi.id, true)
             }
+
             is AgendaItemsAction.OnOpenAgendaItemUi -> {
-                navigateToDetailsScreen(AgendaItemUiType.Task,action.agendaItemUi.id)
+                _state.update {
+                    it.copy(selectedAgendaItemUi = null)
+                }
+                navigateToDetailsScreen(AgendaItemUiType.Task, action.agendaItemUi.id)
             }
+
             AgendaItemsAction.OnLogOut -> {
                 // $todo - Needs to implement logout feature
             }
@@ -118,7 +127,14 @@ class AgendaItemsViewModel(
                 }
             }
 
-            is AgendaItemsAction.OnSelectAgendaItemUi -> TODO()
+            is AgendaItemsAction.OnToggleAgendaItemUi -> {
+                _state.update {
+                    it.copy(
+                        selectedAgendaItemUi = if (it.selectedAgendaItemUi == action.agendaItemUiId) null else action.agendaItemUiId
+                    )
+                }
+            }
+
             is AgendaItemsAction.OnToggleTaskUiCompletion -> TODO()
         }
     }
@@ -160,10 +176,10 @@ class AgendaItemsViewModel(
     private fun navigateToDetailsScreen(
         itemUiType: AgendaItemUiType,
         agendaItemUiId: String? = null,
-        isInEditMode:Boolean = false
+        isInEditMode: Boolean = false
     ) {
         viewModelScope.launch {
-            delay(25)
+            delay(25) // Added Artificial Delay Due to Dropdown issue
             _events.send(
                 AgendaItemsEvent.OnNavigate(
                     itemUiType = itemUiType,

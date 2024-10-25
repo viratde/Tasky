@@ -11,6 +11,6 @@ data class AgendaItemsState(
     val isDateSelectorModelOpen: Boolean = false,
     val isAddAgendaItemDropDownOpen: Boolean = false,
     val isLogOutDropDownOpen: Boolean = false,
-    val selectedAgendaItemUi: AgendaItemUi? = null,
+    val selectedAgendaItemUi: String? = null,
     val fullName: String? = null
 )
