@@ -5,7 +5,7 @@ import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import kotlinx.coroutines.flow.Flow
 
-interface ReminderRepository  {
+interface ReminderRepository {
 
     suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError>
 
@@ -14,5 +14,7 @@ interface ReminderRepository  {
     suspend fun getRemindersByTime(time: Long): Flow<List<Reminder>>
 
     suspend fun deleteRemindersById(reminderId: String)
+
+    suspend fun getReminderById(reminderId: String): Reminder?
 
 }

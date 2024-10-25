@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalReminderDataSource {
 
-    suspend fun getRemindersById(agendaItemId: String): Reminder?
+    suspend fun getReminderById(agendaItemId: String): Reminder?
 
     fun getRemindersByTime(time: Long): Flow<List<Reminder>>
 

@@ -53,8 +53,7 @@ fun Long.withHourAndMinutes(hour: Int, minutes: Int): Long {
     val zonedDateTime = ZonedDateTime.ofInstant(
         Instant.ofEpochMilli(this),
         ZoneId.systemDefault()
-    ).withHour(hour)
-        .withMinute(minutes)
+    ).withHour(hour).withMinute(minutes)
     return zonedDateTime.toInstant().toEpochMilli()
 }
 
@@ -108,4 +107,18 @@ fun Long.toLocalDate(): LocalDate {
         ZoneId.systemDefault()
     )
     return zonedDateTime.toLocalDate()
+}
+
+fun Long.withCurrentTimeHourAndMinutes():Long {
+    val currentTime = ZonedDateTime.now()
+    val zonedDateTime = ZonedDateTime.ofInstant(
+        Instant.ofEpochMilli(this),
+        ZoneId.systemDefault()
+    )
+        .withHour(currentTime.hour)
+        .withMinute(currentTime.minute)
+        .withSecond(currentTime.second)
+        .withNano(currentTime.nano)
+
+    return zonedDateTime.toInstant().toEpochMilli()
 }

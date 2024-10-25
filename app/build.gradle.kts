@@ -9,6 +9,11 @@ android {
     defaultConfig {
         testInstrumentationRunner = "com.tasky.common.InstrumentationTestRunner"
     }
+    buildTypes {
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("debug")
+        }
+    }
 }
 
 dependencies {

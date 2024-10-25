@@ -62,4 +62,7 @@ class OfflineFirstTaskRepository(
         remoteTaskDataSource.delete(taskId)
     }
 
+    override suspend fun getTaskById(taskId: String): Task? {
+        return localTaskDataSource.getTaskById(taskId)
+    }
 }

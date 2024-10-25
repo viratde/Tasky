@@ -29,16 +29,19 @@ fun NavigationRoot(navController: NavHostController, isLoggedIn: Boolean) {
     }
 }
 
-fun NavGraphBuilder.agendaGraph(navController: NavHostController) {
-    navigation<AgendaGraph>(startDestination = AgendaScreen) {
+fun NavGraphBuilder.agendaGraph(
+    navController: NavHostController
+) {
+    navigation<AgendaGraph>(startDestination = AgendaScreen()) {
         composable<AgendaScreen> {
             AgendaItemsScreenRoot(
-                onNavigate = { agendaItemUiType, selectedDate, agendaItemUiId ->
+                onNavigate = { agendaItemUiType, selectedDate, agendaItemUiId,isInEditMode ->
                     navController.navigate(
                         AgendaItemUiScreen(
                             agendaItemId = agendaItemUiId,
                             agendaItemUiType = agendaItemUiType,
-                            selectedDate = selectedDate
+                            selectedDate = selectedDate,
+                            isInEditMode = isInEditMode
                         )
                     )
                 }
@@ -61,7 +64,7 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     navController.navigate(SignUpScreen)
                 },
                 onLoginSuccess = {
-                    navController.navigate(AgendaGraph) {
+                    navController.navigate(AgendaScreen(isComingFromLoginScreen = true)) {
                         popUpTo<AuthGraph> {
                             inclusive = true
                         }

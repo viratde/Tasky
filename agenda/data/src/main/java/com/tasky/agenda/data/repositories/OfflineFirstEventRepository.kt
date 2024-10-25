@@ -74,4 +74,8 @@ class OfflineFirstEventRepository(
         return remoteEventDataSource.deleteLocalAttendeeFromAnEvent(eventId)
     }
 
+    override suspend fun getEventById(eventId: String): Event? {
+        return localEventDataSource.getEventById(eventId)
+    }
+
 }

@@ -18,7 +18,7 @@ class RoomTaskLocalDataSource(
     private val taskDao: TaskDao
 ) : LocalTaskDataSource {
 
-    override suspend fun getTasksById(agendaItemId: String): Task? {
+    override suspend fun getTaskById(agendaItemId: String): Task? {
         return taskDao.getTaskById(taskId = agendaItemId)?.toTask()
     }
 
