@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-suspend fun Uri.toByteArray(context: Context): ByteArray? {
+suspend fun Uri.toByteArray(context: Context): Pair<ByteArray,String?>? {
     return withContext(Dispatchers.IO) {
         val contentResolver: ContentResolver = context.contentResolver
         val inputStream: InputStream? = contentResolver.openInputStream(this@toByteArray)
@@ -22,7 +22,7 @@ suspend fun Uri.toByteArray(context: Context): ByteArray? {
                 byteArrayOutputStream.write(buffer, 0, length)
             }
 
-            byteArrayOutputStream.toByteArray()
+            byteArrayOutputStream.toByteArray() to context.contentResolver.getType(this@toByteArray)
         }
     }
 }

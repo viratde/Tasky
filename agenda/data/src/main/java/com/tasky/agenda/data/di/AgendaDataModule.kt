@@ -9,6 +9,7 @@ import com.tasky.agenda.data.repositories.OfflineFirstTaskRepository
 import com.tasky.agenda.data.data_sources.local.RoomEventLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomReminderLocalDataSource
 import com.tasky.agenda.data.data_sources.local.RoomTaskLocalDataSource
+import com.tasky.agenda.data.utils.ImageCompressorImpl
 import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
@@ -16,6 +17,7 @@ import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
 import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
 import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
+import com.tasky.agenda.domain.utils.ImageCompressor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -57,4 +59,5 @@ val agendaDataModule = module {
 
     singleOf(::OfflineFirstReminderRepository).bind<ReminderRepository>()
 
+    singleOf(::ImageCompressorImpl).bind<ImageCompressor>()
 }

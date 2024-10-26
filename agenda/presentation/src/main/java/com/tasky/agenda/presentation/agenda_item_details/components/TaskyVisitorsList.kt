@@ -50,6 +50,7 @@ fun TaskyVisitorsList(
     onToggleAddModel: () -> Unit,
     isEnabled: Boolean,
     modifier: Modifier = Modifier,
+    onDelete: (Attendee) -> Unit
 ) {
 
     val opacity by animateFloatAsState(targetValue = if (isEnabled) 1f else 0f, label = "")
@@ -118,17 +119,13 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.going),
-                    onDelete = {
-
-                    }
+                    onDelete = onDelete
                 )
                 TaskyVisitors(
                     visitors = visitors.filter { !it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.not_going),
-                    onDelete = {
-
-                    }
+                    onDelete = onDelete
                 )
             }
 
@@ -137,9 +134,7 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.going),
-                    onDelete = {
-
-                    }
+                    onDelete = onDelete
                 )
             }
 
@@ -148,9 +143,7 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { !it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.not_going),
-                    onDelete = {
-
-                    }
+                    onDelete = onDelete
                 )
             }
         }
@@ -265,7 +258,10 @@ private fun TaskyVisitorsListPreview() {
             onToggleAddModel = {
 
             },
-            isEnabled = true
+            isEnabled = true,
+            onDelete = {
+
+            }
         )
     }
 }
@@ -298,7 +294,10 @@ private fun TaskyDisabledVisitorsListPreview() {
             onToggleAddModel = {
 
             },
-            isEnabled = false
+            isEnabled = false,
+            onDelete = {
+
+            }
         )
     }
 }

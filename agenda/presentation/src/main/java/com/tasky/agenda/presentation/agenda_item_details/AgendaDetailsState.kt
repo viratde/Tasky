@@ -7,7 +7,7 @@ import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
 
 @Immutable
 data class AgendaDetailsState(
-    val isEditing: Boolean = false,
+    val isEditingPreAgendaItem: Boolean = false,
     val agendaItemUi: AgendaItemUi? = null,
     val isLoading: Boolean = false,
     val isInEditMode: Boolean = false,

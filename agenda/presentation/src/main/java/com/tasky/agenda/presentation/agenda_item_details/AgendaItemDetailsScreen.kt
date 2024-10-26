@@ -211,8 +211,8 @@ fun AgendaItemDetailsScreen(
                                 .fillMaxWidth(),
                             photos = state.agendaItemUi.photos,
                             enabled = state.isInEditMode,
-                            onAddPhoto = { photo ->
-                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo))
+                            onAddPhoto = { photo,mimeType ->
+                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo,mimeType))
                             },
                             onDeletePhoto = { photo ->
                                 onAction(AgendaItemDetailsAction.OnDeleteAgendaPhoto(photo))
@@ -341,11 +341,14 @@ fun AgendaItemDetailsScreen(
                                 )
                             },
                             visitors = state.agendaItemUi.attendees,
-                            hostUserId =state.agendaItemUi.hostId,
+                            hostUserId = state.agendaItemUi.hostId,
                             onToggleAddModel = {
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },
-                            isEnabled = state.isInEditMode
+                            isEnabled = state.isInEditMode,
+                            onDelete = {attendee ->
+                                onAction(AgendaItemDetailsAction.OnDeleteVisitor(attendee))
+                            }
                         )
 
                         if (state.visitorState != null) {
@@ -361,7 +364,7 @@ fun AgendaItemDetailsScreen(
                                 },
                                 isValidEmail = state.visitorState.isValidEmail,
                                 onAdd = {
-                                    onAction(AgendaItemDetailsAction.OnAddVisitor)
+                                    onAction(AgendaItemDetailsAction.OnAddVisitor(state.visitorState.email))
                                 },
                                 isLoading = state.visitorState.isLoading,
                                 onEmailChange = { email ->
