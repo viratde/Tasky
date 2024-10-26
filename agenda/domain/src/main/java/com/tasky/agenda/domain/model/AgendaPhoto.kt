@@ -1,14 +1,17 @@
 package com.tasky.agenda.domain.model
 
 sealed interface AgendaPhoto {
+
+    val id: String
+
     data class RemotePhoto(
-        val id: String,
+        override val id: String,
         val url: String
     ) : AgendaPhoto
 
     data class LocalPhoto(
         val photo: ByteArray,
-        val id: String
+        override val id: String
     ) : AgendaPhoto {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true

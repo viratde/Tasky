@@ -42,16 +42,31 @@ import com.tasky.core.presentation.designsystem.ui.TaskyLight
 import com.tasky.core.presentation.designsystem.ui.TaskyLightGreen
 import com.tasky.core.presentation.designsystem.ui.TaskyTheme
 import com.tasky.core.presentation.designsystem.ui.TaskyWhite
+import com.tasky.core.presentation.ui.ObserverAsEvents
 import org.koin.androidx.compose.koinViewModel
 import java.time.ZonedDateTime
 
 @Composable
 fun AgendaItemDetailsRoot(
     viewModel: AgendaDetailsViewModel = koinViewModel(),
-    selectedDate: Long
+    selectedDate: Long,
+    onNavigateUp: () -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserverAsEvents(viewModel.events) { event ->
+        when (event) {
+            is AgendaItemDetailsEvent.OnError -> {
+
+            }
+
+            AgendaItemDetailsEvent.OnNavigateUp -> {
+                onNavigateUp()
+            }
+        }
+    }
+
     LoadingContainer(
         modifier = Modifier
             .fillMaxSize(),
@@ -196,13 +211,12 @@ fun AgendaItemDetailsScreen(
                                 .fillMaxWidth(),
                             photos = state.agendaItemUi.photos,
                             enabled = state.isInEditMode,
-                            onAddPhoto = { photo ->
-                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo))
+                            onAddPhoto = { photo,mimeType ->
+                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo,mimeType))
                             },
-                            onDeletePhoto = {
-
+                            onDeletePhoto = { photo ->
+                                onAction(AgendaItemDetailsAction.OnDeleteAgendaPhoto(photo))
                             }
-
                         )
 
                         HorizontalDivider(
@@ -327,11 +341,14 @@ fun AgendaItemDetailsScreen(
                                 )
                             },
                             visitors = state.agendaItemUi.attendees,
-                            hostUserId = "",
+                            hostUserId = state.agendaItemUi.hostId,
                             onToggleAddModel = {
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },
-                            isEnabled = state.isInEditMode
+                            isEnabled = state.isInEditMode,
+                            onDelete = {attendee ->
+                                onAction(AgendaItemDetailsAction.OnDeleteVisitor(attendee))
+                            }
                         )
 
                         if (state.visitorState != null) {
@@ -347,7 +364,7 @@ fun AgendaItemDetailsScreen(
                                 },
                                 isValidEmail = state.visitorState.isValidEmail,
                                 onAdd = {
-                                    onAction(AgendaItemDetailsAction.OnAddVisitor)
+                                    onAction(AgendaItemDetailsAction.OnAddVisitor(state.visitorState.email))
                                 },
                                 isLoading = state.visitorState.isLoading,
                                 onEmailChange = { email ->

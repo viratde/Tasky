@@ -113,7 +113,7 @@ class KtorRemoteEventDataSource(
             queryParameters = mapOf(
                 "email" to email
             )
-        ).mapData { it.attendeeExistence?.toAttendeeExistence() }
+        ).mapData { it.attendee?.toAttendeeExistence() }
     }
 
     override suspend fun deleteLocalAttendeeFromAnEvent(eventId: String): EmptyDataResult<DataError.Network> {

@@ -68,7 +68,7 @@ import java.util.UUID
 fun TaskyPhotosInput(
     photos: List<AgendaPhoto>,
     enabled: Boolean,
-    onAddPhoto: (AgendaPhoto) -> Unit,
+    onAddPhoto: (photo: AgendaPhoto.LocalPhoto, mimeType: String?) -> Unit,
     onDeletePhoto: (AgendaPhoto) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,9 +82,10 @@ fun TaskyPhotosInput(
             uri?.toByteArray(context)?.let { photo ->
                 onAddPhoto(
                     AgendaPhoto.LocalPhoto(
-                        photo = photo,
+                        photo = photo.first,
                         id = UUID.randomUUID().toString()
-                    )
+                    ),
+                    photo.second
                 )
             }
         }
@@ -391,7 +392,7 @@ private fun TaskyPhotosEmptyPreview() {
     TaskyTheme {
         TaskyPhotosInput(
             photos = listOf(),
-            onAddPhoto = {
+            onAddPhoto = { photo: AgendaPhoto, mimeType: String? ->
 
             },
             onDeletePhoto = {
@@ -413,7 +414,7 @@ private fun TaskyPhotosNonEmptyPreview() {
                     url = ""
                 )
             },
-            onAddPhoto = {
+            onAddPhoto = { a, b ->
 
             },
             onDeletePhoto = {

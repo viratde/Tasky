@@ -17,9 +17,7 @@ fun AgendaItemUi.TaskUi.toTask(): Task {
     )
 }
 
-fun AgendaItemUi.EventUi.toEvent(
-    host: String
-): Event {
+fun AgendaItemUi.EventUi.toEvent(): Event {
     return Event(
         id = id,
         title = title,
@@ -30,13 +28,11 @@ fun AgendaItemUi.EventUi.toEvent(
         remindAt = to - remindAt.getTimeInMilliseconds(),
         attendees = attendees,
         photos = photos,
-        host = host
+        host = hostId
     )
 }
 
-fun AgendaItemUi.ReminderUi.toReminder(
-    host: String
-): Reminder {
+fun AgendaItemUi.ReminderUi.toReminder(): Reminder {
     return Reminder(
         id = id,
         title = title,
@@ -56,7 +52,8 @@ fun Event.toAgendaItemEventUi(): AgendaItemUi.EventUi {
         remindAt = RemindTimes.getByTimeInMilliseconds(to, remindAt),
         photos = photos,
         attendees = attendees,
-        isHost = isUserEventCreator
+        isHost = isUserEventCreator,
+        hostId = host
     )
 }
 

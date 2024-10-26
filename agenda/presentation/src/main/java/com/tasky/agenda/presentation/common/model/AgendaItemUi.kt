@@ -25,7 +25,8 @@ sealed interface AgendaItemUi {
         override val remindAt: RemindTimes,
         val photos: List<AgendaPhoto>,
         val attendees: List<Attendee>,
-        val isHost: Boolean
+        val isHost: Boolean,
+        val hostId:String
     ) : AgendaItemUi
 
     data class TaskUi(
@@ -49,7 +50,7 @@ sealed interface AgendaItemUi {
         id: String = this.id,
         title: String = this.title,
         description: String = this.description,
-        remindAt: RemindTimes = this.remindAt
+        remindAt: RemindTimes = this.remindAt,
     ): AgendaItemUi {
         return when (this) {
             is EventUi -> EventUi(
@@ -61,7 +62,8 @@ sealed interface AgendaItemUi {
                 from = from,
                 photos = photos,
                 attendees = attendees,
-                isHost = isHost
+                isHost = isHost,
+                hostId = hostId
             )
 
             is ReminderUi -> ReminderUi(
@@ -94,6 +96,7 @@ val FakeEventUi = AgendaItemUi.EventUi(
     photos = listOf(),
     remindAt = RemindTimes.ONE_DAY,
     isHost = false,
+    hostId = "",
     attendees = listOf(
         FakeAttendee,
         FakeAttendee,
