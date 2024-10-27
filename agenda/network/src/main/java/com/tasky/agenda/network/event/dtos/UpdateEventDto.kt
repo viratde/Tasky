@@ -11,5 +11,6 @@ data class UpdateEventDto(
     val to: Long,
     val remindAt: Long,
     val attendeeIds: List<String>,
-    val deletedPhotoKeys: List<String>
+    val deletedPhotoKeys: List<String>,
+    val isGoing:Boolean
 )

@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,9 +29,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +44,7 @@ import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
 import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenu
 import com.tasky.core.presentation.designsystem.components.TaskyDropDownMenuItem
+import com.tasky.core.presentation.designsystem.ui.CheckedIcon
 import com.tasky.core.presentation.designsystem.ui.ContextMenuIcon
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
 import com.tasky.core.presentation.designsystem.ui.TaskyDarkGrey
@@ -65,7 +70,7 @@ fun AgendaItemUi(
     onToggleContextMenu: () -> Unit
 ) {
 
-    
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
@@ -103,8 +108,19 @@ fun AgendaItemUi(
                             is AgendaItemUi.TaskUi -> TaskyWhite
                         },
                         CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (agendaItemUi is AgendaItemUi.TaskUi && agendaItemUi.isDone) {
+                    Icon(
+                        imageVector = CheckedIcon,
+                        contentDescription = null,
+                        tint = TaskyWhite,
+                        modifier = Modifier
+                            .size(10.dp)
                     )
-            )
+                }
+            }
 
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -118,7 +134,8 @@ fun AgendaItemUi(
                     },
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    fontFamily = inter
+                    fontFamily = inter,
+                    textDecoration = if (agendaItemUi is AgendaItemUi.TaskUi && agendaItemUi.isDone) TextDecoration.LineThrough else null
                 )
             )
 
@@ -263,6 +280,31 @@ private fun BasicAgendaItemTaskUiPreview() {
     TaskyTheme {
         AgendaItemUi(
             agendaItemUi = FakeTaskUi,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            onDelete = {},
+            onEdit = {},
+            onToggle = {},
+            onView = {},
+            isContextMenuOpen = false,
+            onToggleContextMenu = {
+
+            }
+        )
+    }
+}
+
+@Preview(
+    showBackground = true
+)
+@Composable
+private fun BasicAgendaItemTaskUiDonePreview() {
+    TaskyTheme {
+        AgendaItemUi(
+            agendaItemUi = FakeTaskUi.copy(
+                isDone = true
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),

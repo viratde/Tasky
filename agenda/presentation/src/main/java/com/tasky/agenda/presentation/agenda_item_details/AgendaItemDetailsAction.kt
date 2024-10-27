@@ -4,6 +4,7 @@ import com.tasky.agenda.presentation.agenda_item_details.components.utils.Remind
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.VisitorsFilterState
 import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.model.Attendee
+import com.tasky.agenda.presentation.common.model.AgendaItemUi
 
 sealed interface AgendaItemDetailsAction {
     data class OnTitleChange(val title: String) : AgendaItemDetailsAction
@@ -28,4 +29,12 @@ sealed interface AgendaItemDetailsAction {
     data class OnDeleteAgendaPhoto(val agendaPhoto: AgendaPhoto) : AgendaItemDetailsAction
 
     data object OnSaveAgendaItem : AgendaItemDetailsAction
+
+    data class OnDeleteAgendaItem(
+        val agendaItemUi: AgendaItemUi
+    ) : AgendaItemDetailsAction
+
+    data class OnLeaveAgendaItemEventIi(
+        val eventUi: AgendaItemUi.EventUi
+    ) : AgendaItemDetailsAction
 }

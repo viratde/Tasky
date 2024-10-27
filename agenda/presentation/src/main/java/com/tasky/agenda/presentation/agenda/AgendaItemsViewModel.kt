@@ -8,6 +8,7 @@ import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemUiList
+import com.tasky.agenda.presentation.common.mappers.toTask
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.util.AgendaItemUiType
 import com.tasky.agenda.presentation.common.util.ifEventUi
@@ -15,6 +16,8 @@ import com.tasky.agenda.presentation.common.util.ifReminderUi
 import com.tasky.agenda.presentation.common.util.ifTaskUi
 import com.tasky.agenda.presentation.common.util.toAgendaItemUiType
 import com.tasky.core.domain.AuthInfoStorage
+import com.tasky.core.domain.util.Result
+import com.tasky.core.presentation.ui.asUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,14 +83,21 @@ class AgendaItemsViewModel(
                 _state.update {
                     it.copy(selectedAgendaItemUi = null)
                 }
-                navigateToDetailsScreen(action.agendaItemUi.toAgendaItemUiType(), action.agendaItemUi.id, true)
+                navigateToDetailsScreen(
+                    action.agendaItemUi.toAgendaItemUiType(),
+                    action.agendaItemUi.id,
+                    true
+                )
             }
 
             is AgendaItemsAction.OnOpenAgendaItemUi -> {
                 _state.update {
                     it.copy(selectedAgendaItemUi = null)
                 }
-                navigateToDetailsScreen(action.agendaItemUi.toAgendaItemUiType(), action.agendaItemUi.id)
+                navigateToDetailsScreen(
+                    action.agendaItemUi.toAgendaItemUiType(),
+                    action.agendaItemUi.id
+                )
             }
 
             AgendaItemsAction.OnLogOut -> {
@@ -147,7 +157,7 @@ class AgendaItemsViewModel(
             }
 
             is AgendaItemsAction.OnToggleTaskUiCompletion -> {
-
+                toggleTaskUiAgendaItem(action.taskUi)
             }
         }
     }
@@ -216,6 +226,19 @@ class AgendaItemsViewModel(
                 .ifReminderUi {
                     taskRepository.deleteTaskById(it.id)
                 }
+        }
+    }
+
+    private fun toggleTaskUiAgendaItem(taskUi: AgendaItemUi.TaskUi) {
+        viewModelScope.launch {
+            val result = taskRepository.updateTask(taskUi.copy(isDone = !taskUi.isDone).toTask())
+            when (result) {
+                is Result.Error -> {
+                    _events.send(AgendaItemsEvent.OnError(result.error.asUiText()))
+                }
+
+                is Result.Success -> Unit
+            }
         }
     }
 

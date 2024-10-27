@@ -27,6 +27,7 @@ fun Event.toUpdateEventDto(
         to = to,
         remindAt = remindAt,
         attendeeIds = attendees.map { it.userId },
-        deletedPhotoKeys = deletedPhotoKeys
+        deletedPhotoKeys = deletedPhotoKeys,
+        isGoing = true
     )
 }

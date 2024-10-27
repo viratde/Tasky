@@ -126,5 +126,5 @@ val FakeTaskUi = AgendaItemUi.TaskUi(
     description = "This is a test description and it will be removed in the future.",
     time = ZonedDateTime.now().toInstant().toEpochMilli(),
     remindAt = RemindTimes.ONE_DAY,
-    isDone = true
+    isDone = false
 )
