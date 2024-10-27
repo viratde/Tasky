@@ -209,7 +209,7 @@ class AgendaDetailsViewModel(
                 _state.value.agendaItemUi
                     ?.ifEventUi { eventUi ->
                         _state.update {
-                            // @todo need to handle the situation where a user wants to delete himself from event
+                            // @todo need to handle the situation where a user wants to delete himself from event (handled in leave event action)
                             it.copy(
                                 agendaItemUi = eventUi.copy(
                                     attendees = eventUi.attendees.filter {
@@ -249,6 +249,14 @@ class AgendaDetailsViewModel(
                             }
                         }
                     }
+            }
+
+            is AgendaItemDetailsAction.OnDeleteAgendaItem -> {
+                deleteAgendaItemUi(action.agendaItemUi)
+            }
+
+            is AgendaItemDetailsAction.OnLeaveAgendaItemEventIi -> {
+
             }
         }
     }
@@ -413,42 +421,88 @@ class AgendaDetailsViewModel(
 
     private fun saveAgendaItems() {
         viewModelScope.launch {
-            state.value.agendaItemUi
-                ?.ifEventUi {
-                    eventRepository.addEvent(it.toEvent())
-                        .onSuccess {
-                            // @todo - implement success case handling
-                            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
-                        }
-                        .onError { error ->
-                            _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
-                        }
-                }
-                ?.ifTaskUi {
-                    taskRepository.addTask(it.toTask())
-                        .onSuccess {
-                            // @todo - implement success case handling
-                            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
-                        }
-                        .onError { error ->
-                            _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
-                        }
-                }
-                ?.ifReminderUi {
-                    reminderRepository.addReminder(it.toReminder())
-                        .onSuccess {
-                            // @todo - implement success case handling
-                            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
-                        }
-                        .onError { error ->
-                            _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
-                        }
+            if (_state.value.isEditingPreAgendaItem) {
+                _state.value.agendaItemUi
+                    ?.ifEventUi {
+                        eventRepository.updateEvent(it.toEvent(), _state.value.deletedPhotoKeys)
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
+                    }
+                    ?.ifTaskUi {
+                        taskRepository.updateTask(it.toTask())
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
+                    }
+                    ?.ifReminderUi {
+                        reminderRepository.updateReminder(it.toReminder())
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
 
+                    }
+            } else {
+                _state.value.agendaItemUi
+                    ?.ifEventUi {
+                        eventRepository.addEvent(it.toEvent())
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
+                    }
+                    ?.ifTaskUi {
+                        taskRepository.addTask(it.toTask())
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
+                    }
+                    ?.ifReminderUi {
+                        reminderRepository.addReminder(it.toReminder())
+                            .onSuccess {
+                                _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                            }
+                            .onError { error ->
+                                _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                            }
+
+                    }
+            }
+        }
+    }
+
+
+    private fun deleteAgendaItemUi(
+        agendaItemUi: AgendaItemUi
+    ) {
+        viewModelScope.launch {
+            agendaItemUi
+                .ifEventUi {
+                    eventRepository.deleteEventById(agendaItemUi.id)
+                }
+                .ifTaskUi {
+                    taskRepository.deleteTaskById(agendaItemUi.id)
+                }
+                .ifReminderUi {
+                    reminderRepository.deleteRemindersById(agendaItemUi.id)
                 }
 
         }
     }
-
 
     companion object {
 
