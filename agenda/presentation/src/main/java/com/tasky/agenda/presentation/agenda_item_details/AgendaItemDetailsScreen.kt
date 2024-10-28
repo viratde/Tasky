@@ -77,6 +77,13 @@ fun AgendaItemDetailsRoot(
             selectedDate = selectedDate,
             onAction = { action ->
                 viewModel.onAction(action)
+                when (action) {
+                    AgendaItemDetailsAction.OnNavigateUp -> {
+                        onNavigateUp()
+                    }
+
+                    else -> Unit
+                }
             }
         )
     }
@@ -109,14 +116,15 @@ fun AgendaItemDetailsScreen(
                 date = selectedDate,
                 isInEditMode = state.isInEditMode,
                 onCancel = {
-
+                    onAction(AgendaItemDetailsAction.OnNavigateUp)
                 },
                 onEnableEditing = {
                     onAction(AgendaItemDetailsAction.OnToggleEditMode)
                 },
                 onSave = {
                     onAction(AgendaItemDetailsAction.OnSaveAgendaItem)
-                }
+                },
+                isLoading = state.isSaving
             )
 
             Column(
@@ -211,8 +219,8 @@ fun AgendaItemDetailsScreen(
                                 .fillMaxWidth(),
                             photos = state.agendaItemUi.photos,
                             enabled = state.isInEditMode,
-                            onAddPhoto = { photo,mimeType ->
-                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo,mimeType))
+                            onAddPhoto = { photo, mimeType ->
+                                onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo, mimeType))
                             },
                             onDeletePhoto = { photo ->
                                 onAction(AgendaItemDetailsAction.OnDeleteAgendaPhoto(photo))
@@ -346,7 +354,7 @@ fun AgendaItemDetailsScreen(
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },
                             isEnabled = state.isInEditMode,
-                            onDelete = {attendee ->
+                            onDelete = { attendee ->
                                 onAction(AgendaItemDetailsAction.OnDeleteVisitor(attendee))
                             }
                         )

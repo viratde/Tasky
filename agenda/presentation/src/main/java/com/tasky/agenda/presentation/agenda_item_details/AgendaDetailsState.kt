@@ -13,5 +13,6 @@ data class AgendaDetailsState(
     val isInEditMode: Boolean = false,
     val selectedVisitorsFilterState: VisitorsFilterState = VisitorsFilterState.ALL,
     val visitorState: VisitorState? = null,
-    val deletedPhotoKeys: List<String> = listOf()
+    val deletedPhotoKeys: List<String> = listOf(),
+    val isSaving:Boolean = false
 )

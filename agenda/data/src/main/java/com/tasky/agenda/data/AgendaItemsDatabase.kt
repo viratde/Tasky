@@ -7,13 +7,29 @@ import com.tasky.agenda.data.converters.EventTypeConverters
 import com.tasky.agenda.data.dao.EventDao
 import com.tasky.agenda.data.dao.ReminderDao
 import com.tasky.agenda.data.dao.TaskDao
+import com.tasky.agenda.data.model.EventDeleteSyncEntity
 import com.tasky.agenda.data.model.EventEntity
+import com.tasky.agenda.data.model.EventSyncEntity
+import com.tasky.agenda.data.model.ReminderDeleteSyncEntity
 import com.tasky.agenda.data.model.ReminderEntity
+import com.tasky.agenda.data.model.ReminderSyncEntity
+import com.tasky.agenda.data.model.TaskDeleteSyncEntity
 import com.tasky.agenda.data.model.TaskEntity
+import com.tasky.agenda.data.model.TaskSyncEntity
 
 @Database(
-    entities = [EventEntity::class, TaskEntity::class, ReminderEntity::class],
-    version = 1,
+    entities = [
+        EventEntity::class,
+        TaskEntity::class,
+        ReminderEntity::class,
+        EventSyncEntity::class,
+        TaskSyncEntity::class,
+        ReminderSyncEntity::class,
+        EventDeleteSyncEntity::class,
+        TaskDeleteSyncEntity::class,
+        ReminderDeleteSyncEntity::class
+    ],
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(
