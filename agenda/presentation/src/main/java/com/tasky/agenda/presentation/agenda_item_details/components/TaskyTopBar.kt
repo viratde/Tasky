@@ -2,9 +2,16 @@ package com.tasky.agenda.presentation.agenda_item_details.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +20,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,6 +40,7 @@ fun TaskyTopBar(
     modifier: Modifier = Modifier,
     date: Long,
     isInEditMode: Boolean,
+    isLoading: Boolean,
     onCancel: () -> Unit,
     onEnableEditing: () -> Unit,
     onSave: () -> Unit
@@ -47,7 +56,10 @@ fun TaskyTopBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            IconButton(onClick = onCancel) {
+            IconButton(
+                onClick = onCancel,
+                enabled = !isLoading
+            ) {
                 Icon(
                     imageVector = CrossIcon,
                     contentDescription = null,
@@ -64,17 +76,32 @@ fun TaskyTopBar(
                     )
                 }
             } else {
-                TextButton(onClick = onSave) {
-                    Text(
-                        text = stringResource(id = R.string.save),
-                        style = MaterialTheme.typography.bodyLarge.copy(
+                TextButton(
+                    onClick = onSave,
+                    enabled = !isLoading,
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .height(IntrinsicSize.Min)
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
                             color = TaskyWhite,
-                            fontFamily = inter,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
+                            modifier = Modifier
+                                .size(24.dp)
                         )
-                    )
+                    } else {
+                        Text(
+                            text = stringResource(id = R.string.save),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TaskyWhite,
+                                fontFamily = inter,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+                        )
+                    }
                 }
+
             }
 
         }
@@ -115,6 +142,7 @@ private fun TaskyTopBarPreview() {
             date = ZonedDateTime.now().toInstant().toEpochMilli(),
             isInEditMode = false,
             onEnableEditing = { /*TODO*/ },
+            isLoading = false,
             onSave = {
 
             },
@@ -136,6 +164,7 @@ private fun TaskyTopBarPreview2() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
+            isLoading = false,
             date = ZonedDateTime.now().toInstant().toEpochMilli(),
             isInEditMode = true,
             onEnableEditing = { /*TODO*/ },

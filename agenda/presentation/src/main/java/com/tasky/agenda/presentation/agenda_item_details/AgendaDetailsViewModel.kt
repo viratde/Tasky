@@ -258,6 +258,8 @@ class AgendaDetailsViewModel(
             is AgendaItemDetailsAction.OnLeaveAgendaItemEventIi -> {
 
             }
+
+            AgendaItemDetailsAction.OnNavigateUp -> Unit
         }
     }
 
@@ -424,60 +426,78 @@ class AgendaDetailsViewModel(
             if (_state.value.isEditingPreAgendaItem) {
                 _state.value.agendaItemUi
                     ?.ifEventUi {
+                        _state.update { it.copy(isSaving = true) }
                         eventRepository.updateEvent(it.toEvent(), _state.value.deletedPhotoKeys)
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
                     }
                     ?.ifTaskUi {
+                        _state.update { it.copy(isSaving = true) }
                         taskRepository.updateTask(it.toTask())
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
                     }
                     ?.ifReminderUi {
+                        _state.update { it.copy(isSaving = true) }
                         reminderRepository.updateReminder(it.toReminder())
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
 
                     }
             } else {
                 _state.value.agendaItemUi
                     ?.ifEventUi {
+                        _state.update { it.copy(isSaving = true) }
                         eventRepository.addEvent(it.toEvent())
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
                     }
                     ?.ifTaskUi {
+                        _state.update { it.copy(isSaving = true) }
                         taskRepository.addTask(it.toTask())
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
                     }
                     ?.ifReminderUi {
+                        _state.update { it.copy(isSaving = true) }
                         reminderRepository.addReminder(it.toReminder())
                             .onSuccess {
                                 _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+                                _state.update { it.copy(isSaving = false) }
                             }
                             .onError { error ->
                                 _events.send(AgendaItemDetailsEvent.OnError(error.asUiText()))
+                                _state.update { it.copy(isSaving = false) }
                             }
 
                     }
