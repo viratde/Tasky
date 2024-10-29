@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "tableDeleteSyncs"
+    tableName = "taskDeletePendingSyncs"
 )
 data class TaskDeleteSyncEntity(
     @PrimaryKey val taskId:String,

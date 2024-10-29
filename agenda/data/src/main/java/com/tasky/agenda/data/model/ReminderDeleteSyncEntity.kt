@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "reminderDeleteSyncs"
+    tableName = "reminderDeletePendingSyncs"
 )
 data class ReminderDeleteSyncEntity(
     @PrimaryKey val reminderId: String,
