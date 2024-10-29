@@ -9,17 +9,21 @@ import com.tasky.agenda.data.model.TaskSyncEntity
 @Dao
 interface TaskSyncDao {
 
-    @Query("SELECT * FROM taskPendingSyncs WHERE syncType=:syncType")
-    suspend fun getAllTaskPendingSyncs(syncType: SyncType): List<TaskSyncEntity>
+    @Query("SELECT * FROM taskPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun getAllTaskPendingSyncs(syncType: SyncType, userId: String): List<TaskSyncEntity>
 
-    @Query("DELETE FROM taskPendingSyncs WHERE syncType=:syncType")
-    suspend fun deleteAllTaskPendingSync(syncType: SyncType)
+    @Query("DELETE FROM taskPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun deleteAllTaskPendingSync(syncType: SyncType, userId: String)
 
-    @Query("SELECT * FROM taskPendingSyncs WHERE taskId=:taskId AND syncType=:syncType")
-    suspend fun getTaskPendingSyncById(taskId: String, syncType: SyncType): TaskSyncEntity?
+    @Query("SELECT * FROM taskPendingSyncs WHERE taskId=:taskId AND syncType=:syncType AND userId=:userId")
+    suspend fun getTaskPendingSyncById(
+        taskId: String,
+        syncType: SyncType,
+        userId: String
+    ): TaskSyncEntity?
 
-    @Query("DELETE FROM taskPendingSyncs WHERE taskId=:taskId AND syncType=:syncType")
-    suspend fun deleteTaskPendingSyncById(taskId: String, syncType: SyncType)
+    @Query("DELETE FROM taskPendingSyncs WHERE taskId=:taskId AND syncType=:syncType AND userId=:userId")
+    suspend fun deleteTaskPendingSyncById(taskId: String, syncType: SyncType, userId: String)
 
     @Upsert
     suspend fun upsertTaskPendingSync(taskSyncEntity: TaskSyncEntity)

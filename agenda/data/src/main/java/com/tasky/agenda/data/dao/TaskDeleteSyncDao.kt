@@ -9,17 +9,17 @@ import com.tasky.agenda.data.model.TaskSyncEntity
 @Dao
 interface TaskDeleteSyncDao {
 
-    @Query("SELECT * FROM taskDeletePendingSyncs")
-    suspend fun getAllTaskDeletePendingSyncs(): List<TaskDeleteSyncEntity>
+    @Query("SELECT * FROM taskDeletePendingSyncs WHERE userId=:userId")
+    suspend fun getAllTaskDeletePendingSyncs(userId: String): List<TaskDeleteSyncEntity>
 
-    @Query("DELETE FROM taskDeletePendingSyncs")
-    suspend fun deleteAllTaskDeletePendingSync()
+    @Query("DELETE FROM taskDeletePendingSyncs WHERE userId=:userId")
+    suspend fun deleteAllTaskDeletePendingSync(userId: String)
 
-    @Query("SELECT * FROM taskDeletePendingSyncs WHERE taskId=:taskId")
-    suspend fun getTaskDeletePendingSyncById(taskId: String): TaskSyncEntity?
+    @Query("SELECT * FROM taskDeletePendingSyncs WHERE taskId=:taskId AND userId=:userId")
+    suspend fun getTaskDeletePendingSyncById(taskId: String, userId: String): TaskSyncEntity?
 
-    @Query("DELETE FROM taskDeletePendingSyncs WHERE taskId=:taskId")
-    suspend fun deleteTaskDeletePendingSyncById(taskId: String)
+    @Query("DELETE FROM taskDeletePendingSyncs WHERE taskId=:taskId AND userId=:userId")
+    suspend fun deleteTaskDeletePendingSyncById(taskId: String, userId: String)
 
     @Upsert
     suspend fun upsertTaskDeletePendingSync(taskDeleteSyncEntity: TaskDeleteSyncEntity)

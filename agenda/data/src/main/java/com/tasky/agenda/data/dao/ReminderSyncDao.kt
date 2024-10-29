@@ -9,17 +9,28 @@ import com.tasky.agenda.data.model.SyncType
 @Dao
 interface ReminderSyncDao {
 
-    @Query("SELECT * FROM reminderPendingSyncs WHERE syncType=:syncType")
-    suspend fun getAllReminderPendingSyncs(syncType: SyncType): List<ReminderSyncEntity>
+    @Query("SELECT * FROM reminderPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun getAllReminderPendingSyncs(
+        syncType: SyncType,
+        userId: String
+    ): List<ReminderSyncEntity>
 
-    @Query("DELETE FROM reminderPendingSyncs WHERE syncType=:syncType")
-    suspend fun deleteAllReminderPendingSync(syncType: SyncType)
+    @Query("DELETE FROM reminderPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun deleteAllReminderPendingSync(syncType: SyncType, userId: String)
 
-    @Query("SELECT * FROM reminderPendingSyncs WHERE reminderId=:reminderId AND syncType=:syncType")
-    suspend fun getReminderPendingSyncById(reminderId: String, syncType: SyncType): ReminderSyncEntity?
+    @Query("SELECT * FROM reminderPendingSyncs WHERE reminderId=:reminderId AND syncType=:syncType AND userId=:userId")
+    suspend fun getReminderPendingSyncById(
+        reminderId: String,
+        syncType: SyncType,
+        userId: String
+    ): ReminderSyncEntity?
 
-    @Query("DELETE FROM reminderPendingSyncs WHERE reminderId=:reminderId AND syncType=:syncType")
-    suspend fun deleteReminderPendingSyncById(reminderId: String, syncType: SyncType)
+    @Query("DELETE FROM reminderPendingSyncs WHERE reminderId=:reminderId AND syncType=:syncType AND userId=:userId")
+    suspend fun deleteReminderPendingSyncById(
+        reminderId: String,
+        syncType: SyncType,
+        userId: String
+    )
 
     @Upsert
     suspend fun upsertReminderPendingSync(reminderSyncEntity: ReminderSyncEntity)

@@ -9,17 +9,17 @@ import com.tasky.agenda.data.model.EventSyncEntity
 @Dao
 interface EventDeleteSyncDao {
 
-    @Query("SELECT * FROM eventDeletePendingSyncs")
-    suspend fun getAllEventDeletePendingSyncs(): List<EventDeleteSyncEntity>
+    @Query("SELECT * FROM eventDeletePendingSyncs WHERE userId=:userId")
+    suspend fun getAllEventDeletePendingSyncs(userId: String): List<EventDeleteSyncEntity>
 
-    @Query("DELETE FROM eventDeletePendingSyncs")
-    suspend fun deleteAllEventDeletePendingSync()
+    @Query("DELETE FROM eventDeletePendingSyncs WHERE userId=:userId")
+    suspend fun deleteAllEventDeletePendingSync(userId: String)
 
-    @Query("SELECT * FROM eventDeletePendingSyncs WHERE eventId=:eventId")
-    suspend fun getEventDeletePendingSyncById(eventId: String): EventSyncEntity?
+    @Query("SELECT * FROM eventDeletePendingSyncs WHERE eventId=:eventId AND userId=:userId")
+    suspend fun getEventDeletePendingSyncById(eventId: String, userId: String): EventSyncEntity?
 
-    @Query("DELETE FROM eventDeletePendingSyncs WHERE eventId=:eventId")
-    suspend fun deleteEventDeletePendingSyncById(eventId: String)
+    @Query("DELETE FROM eventDeletePendingSyncs WHERE eventId=:eventId AND userId=:userId")
+    suspend fun deleteEventDeletePendingSyncById(eventId: String, userId: String)
 
     @Upsert
     suspend fun upsertEventDeletePendingSync(eventDeleteSyncEntity: EventDeleteSyncEntity)

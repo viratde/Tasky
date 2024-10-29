@@ -9,17 +9,21 @@ import com.tasky.agenda.data.model.SyncType
 @Dao
 interface EventSyncDao {
 
-    @Query("SELECT * FROM eventPendingSyncs WHERE syncType=:syncType")
-    suspend fun getAllEventPendingSyncs(syncType: SyncType): List<EventSyncEntity>
+    @Query("SELECT * FROM eventPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun getAllEventPendingSyncs(syncType: SyncType, userId: String): List<EventSyncEntity>
 
-    @Query("DELETE FROM eventPendingSyncs WHERE syncType=:syncType")
-    suspend fun deleteAllEventPendingSync(syncType: SyncType)
+    @Query("DELETE FROM eventPendingSyncs WHERE syncType=:syncType AND userId=:userId")
+    suspend fun deleteAllEventPendingSync(syncType: SyncType, userId: String)
 
-    @Query("SELECT * FROM eventPendingSyncs WHERE eventId=:eventId AND syncType=:syncType")
-    suspend fun getEventPendingSyncById(eventId: String, syncType: SyncType): EventSyncEntity?
+    @Query("SELECT * FROM eventPendingSyncs WHERE eventId=:eventId AND syncType=:syncType AND userId=:userId")
+    suspend fun getEventPendingSyncById(
+        eventId: String,
+        syncType: SyncType,
+        userId: String
+    ): EventSyncEntity?
 
-    @Query("DELETE FROM eventPendingSyncs WHERE eventId=:eventId AND syncType=:syncType")
-    suspend fun deleteEventPendingSyncById(eventId: String, syncType: SyncType)
+    @Query("DELETE FROM eventPendingSyncs WHERE eventId=:eventId AND syncType=:syncType AND userId=:userId")
+    suspend fun deleteEventPendingSyncById(eventId: String, syncType: SyncType, userId: String)
 
     @Upsert
     suspend fun upsertEventPendingSync(eventSyncEntity: EventSyncEntity)
