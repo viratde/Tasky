@@ -45,6 +45,30 @@ val agendaDataModule = module {
         get<AgendaItemsDatabase>().reminderDao
     }
 
+    single {
+        get<AgendaItemsDatabase>().eventSyncDao
+    }
+
+    single {
+        get<AgendaItemsDatabase>().eventDeleteSyncDao
+    }
+
+    single {
+        get<AgendaItemsDatabase>().taskSyncDao
+    }
+
+    single {
+        get<AgendaItemsDatabase>().taskDeleteSyncDao
+    }
+
+    single {
+        get<AgendaItemsDatabase>().reminderSyncDao
+    }
+
+    single {
+        get<AgendaItemsDatabase>().reminderDeleteSyncDao
+    }
+
     singleOf(::RoomEventLocalDataSource).bind<LocalEventDataSource>()
 
     singleOf(::RoomTaskLocalDataSource).bind<LocalTaskDataSource>()

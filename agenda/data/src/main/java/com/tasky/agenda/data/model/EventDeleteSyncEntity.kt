@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "eventDeleteSyncs"
+    tableName = "eventDeletePendingSyncs"
 )
 data class EventDeleteSyncEntity(
     @PrimaryKey val eventId:String,
