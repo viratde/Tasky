@@ -16,7 +16,7 @@ interface EventDeleteSyncDao {
     suspend fun deleteAllEventDeletePendingSync(userId: String)
 
     @Query("SELECT * FROM eventDeletePendingSyncs WHERE eventId=:eventId AND userId=:userId")
-    suspend fun getEventDeletePendingSyncById(eventId: String, userId: String): EventSyncEntity?
+    suspend fun getEventDeletePendingSyncById(eventId: String, userId: String): EventDeleteSyncEntity?
 
     @Query("DELETE FROM eventDeletePendingSyncs WHERE eventId=:eventId AND userId=:userId")
     suspend fun deleteEventDeletePendingSyncById(eventId: String, userId: String)

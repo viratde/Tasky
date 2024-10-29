@@ -16,7 +16,7 @@ interface TaskDeleteSyncDao {
     suspend fun deleteAllTaskDeletePendingSync(userId: String)
 
     @Query("SELECT * FROM taskDeletePendingSyncs WHERE taskId=:taskId AND userId=:userId")
-    suspend fun getTaskDeletePendingSyncById(taskId: String, userId: String): TaskSyncEntity?
+    suspend fun getTaskDeletePendingSyncById(taskId: String, userId: String): TaskDeleteSyncEntity?
 
     @Query("DELETE FROM taskDeletePendingSyncs WHERE taskId=:taskId AND userId=:userId")
     suspend fun deleteTaskDeletePendingSyncById(taskId: String, userId: String)

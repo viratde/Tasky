@@ -22,13 +22,5 @@ interface ReminderSyncScheduler {
             val eventId: String
         ) : SyncType
 
-        data class CancelCreateReminderSync(
-            val eventId: String
-        ) : SyncType
-
-        data class CancelUpdateReminderSync(
-            val eventId: String
-        ) : SyncType
-
     }
 }
