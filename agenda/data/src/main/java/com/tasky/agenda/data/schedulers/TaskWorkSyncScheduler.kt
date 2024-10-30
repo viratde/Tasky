@@ -17,6 +17,9 @@ import com.tasky.agenda.data.workers.task.CreateTaskWorker
 import com.tasky.agenda.data.workers.task.DeleteTaskWorker
 import com.tasky.agenda.data.workers.task.UpdateTaskWorker
 import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
+import com.tasky.core.data.utils.setExponentialBackOffPolicy
+import com.tasky.core.data.utils.setInputParameters
+import com.tasky.core.data.utils.setRequiredNetworkConnectivity
 import com.tasky.core.domain.AuthInfoStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -66,24 +69,14 @@ class TaskWorkSyncScheduler(
             syncType = SyncType.CREATE
         )
 
+        taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
+
         val workRequest = OneTimeWorkRequestBuilder<CreateTaskWorker>()
             .addTag("$CREATE_TASK${taskSyncEntity.taskId}")
             .addTag(TASK_WORK)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.EXPONENTIAL,
-                backoffDelay = 2000L,
-                timeUnit = TimeUnit.MILLISECONDS
-            )
-            .setInputData(
-                Data.Builder()
-                    .putString(CreateTaskWorker.TASK_ID, taskSyncEntity.taskId)
-                    .build()
-            )
+            .setRequiredNetworkConnectivity()
+            .setExponentialBackOffPolicy(2000)
+            .setInputParameters { putString(CreateTaskWorker.TASK_ID, taskSyncEntity.taskId) }
             .build()
 
         applicationScope.launch {
@@ -94,7 +87,6 @@ class TaskWorkSyncScheduler(
     private suspend fun scheduleUpdateTaskWorker(
         sync: TaskSyncScheduler.SyncType.UpdateTaskSync
     ) {
-
         val userId = authInfoStorage.get()?.userId ?: return
         val taskSyncEntity = TaskSyncEntity(
             taskId = sync.task.id,
@@ -103,45 +95,52 @@ class TaskWorkSyncScheduler(
             syncType = SyncType.UPDATE
         )
 
-        applicationScope.launch {
-            taskSyncDao.getTaskPendingSyncById(
-                taskId = sync.task.id,
-                userId = userId,
-                syncType = SyncType.CREATE
-            )?.run<TaskSyncEntity, Unit> {
-                taskSyncDao.deleteTaskPendingSyncById(
-                    taskId = sync.task.id,
-                    userId = userId,
-                    syncType = SyncType.CREATE
-                )
-                workManager.cancelAllWorkByTag("$CREATE_TASK${taskSyncEntity.taskId}")
-                    .await()
-            }
-        }.join()
+        val preScheduledTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
+            taskId = sync.task.id,
+            userId = userId,
+            syncType = SyncType.CREATE
+        )
+        if (preScheduledTaskSyncEntity == null) {
+            // It means it is already created in remoted
+            taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
+            val workRequest = OneTimeWorkRequestBuilder<UpdateTaskWorker>()
+                .addTag("$UPDATE_TASK${taskSyncEntity.taskId}")
+                .addTag(TASK_WORK)
+                .setRequiredNetworkConnectivity()
+                .setExponentialBackOffPolicy(2000)
+                .setInputParameters {
+                    putString(
+                        UpdateTaskWorker.TASK_ID,
+                        taskSyncEntity.taskId
+                    )
+                }
+                .build()
 
-        val workRequest = OneTimeWorkRequestBuilder<UpdateTaskWorker>()
-            .addTag("$UPDATE_TASK${taskSyncEntity.taskId}")
-            .addTag(TASK_WORK)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.EXPONENTIAL,
-                backoffDelay = 2000L,
-                timeUnit = TimeUnit.MILLISECONDS
-            )
-            .setInputData(
-                Data.Builder()
-                    .putString(UpdateTaskWorker.TASK_ID, taskSyncEntity.taskId)
-                    .build()
-            )
-            .build()
+            applicationScope.launch {
+                workManager.enqueue(workRequest).await()
+            }.join()
+        } else {
+            // It means that it has not been created in remote yet so instead of update i will create
+            workManager.cancelAllWorkByTag("$CREATE_TASK${taskSyncEntity.taskId}")
+                .await() // cancel the previous work otherwise it will create again and throw error
+            taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
+            val workRequest = OneTimeWorkRequestBuilder<CreateTaskWorker>()
+                .addTag("$CREATE_TASK${taskSyncEntity.taskId}")
+                .addTag(TASK_WORK)
+                .setRequiredNetworkConnectivity()
+                .setExponentialBackOffPolicy(2000)
+                .setInputParameters {
+                    putString(
+                        CreateTaskWorker.TASK_ID,
+                        taskSyncEntity.taskId
+                    )
+                }
+                .build()
 
-        applicationScope.launch {
-            workManager.enqueue(workRequest).await()
-        }.join()
+            applicationScope.launch {
+                workManager.enqueue(workRequest).await()
+            }.join()
+        }
     }
 
     private suspend fun scheduleDeleteTaskWorker(
@@ -154,58 +153,53 @@ class TaskWorkSyncScheduler(
             userId = userId,
         )
 
-        applicationScope.launch {
-            taskSyncDao.getTaskPendingSyncById(
-                taskId = sync.taskId,
-                userId = userId,
-                syncType = SyncType.CREATE
-            )?.run<TaskSyncEntity, Unit> {
-                taskSyncDao.deleteTaskPendingSyncById(
-                    taskId = taskId,
-                    userId = userId,
-                    syncType = SyncType.CREATE
-                )
-                workManager.cancelAllWorkByTag("$CREATE_TASK${taskId}")
-                    .await()
-            }
-            taskSyncDao.getTaskPendingSyncById(
+        val preScheduledCreateTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
+            taskId = sync.taskId,
+            userId = userId,
+            syncType = SyncType.CREATE
+        ) // checking whether it has been created locally or not
+
+        if (preScheduledCreateTaskSyncEntity == null) {
+
+            val preScheduledUpdateTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
                 taskId = sync.taskId,
                 userId = userId,
                 syncType = SyncType.UPDATE
-            )?.run<TaskSyncEntity, Unit> {
+            ) // checking whether there is an update scheduled for this task if it is i will cancel it
+            if (preScheduledUpdateTaskSyncEntity != null) {
+                workManager.cancelAllWorkByTag("$UPDATE_TASK${sync.taskId}")
+                    .await()
                 taskSyncDao.deleteTaskPendingSyncById(
-                    taskId = taskId,
+                    taskId = sync.taskId,
                     userId = userId,
                     syncType = SyncType.UPDATE
                 )
-                workManager.cancelAllWorkByTag("$UPDATE_TASK${taskId}")
-                    .await()
             }
-        }.join()
 
-        val workRequest = OneTimeWorkRequestBuilder<DeleteTaskWorker>()
-            .addTag("$DELETE_TASK${taskDeleteSyncEntity.taskId}")
-            .addTag(TASK_WORK)
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.EXPONENTIAL,
-                backoffDelay = 2000L,
-                timeUnit = TimeUnit.MILLISECONDS
-            )
-            .setInputData(
-                Data.Builder()
-                    .putString(DeleteTaskWorker.TASK_ID, taskDeleteSyncEntity.taskId)
-                    .build()
-            )
-            .build()
+            val workRequest = OneTimeWorkRequestBuilder<DeleteTaskWorker>()
+                .addTag("$DELETE_TASK${taskDeleteSyncEntity.taskId}")
+                .addTag(TASK_WORK)
+                .setRequiredNetworkConnectivity()
+                .setExponentialBackOffPolicy(2000)
+                .setInputParameters {
+                    putString(
+                        DeleteTaskWorker.TASK_ID,
+                        taskDeleteSyncEntity.taskId
+                    )
+                }
+                .build()
 
-        applicationScope.launch {
-            workManager.enqueue(workRequest).await()
-        }.join()
+            applicationScope.launch {
+                workManager.enqueue(workRequest).await()
+            }.join()
+
+        } else {
+            taskSyncDao.deleteTaskPendingSyncById(
+                taskId = sync.taskId,
+                userId = userId,
+                syncType = SyncType.CREATE
+            )
+        }
 
     }
 
