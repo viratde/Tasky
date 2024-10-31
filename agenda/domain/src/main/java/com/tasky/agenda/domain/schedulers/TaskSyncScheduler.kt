@@ -11,23 +11,15 @@ interface TaskSyncScheduler {
     sealed interface SyncType {
 
         data class CreateTaskSync(
-            val event: Task
+            val task: Task
         ) : SyncType
 
         data class UpdateTaskSync(
-            val event: Task
+            val task: Task
         ) : SyncType
 
         data class DeleteTaskSync(
-            val eventId: String
-        ) : SyncType
-
-        data class CancelCreateTaskSync(
-            val eventId: String
-        ) : SyncType
-
-        data class CancelUpdateTaskSync(
-            val eventId: String
+            val taskId: String
         ) : SyncType
 
     }

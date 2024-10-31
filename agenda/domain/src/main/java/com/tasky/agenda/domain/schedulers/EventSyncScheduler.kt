@@ -22,13 +22,5 @@ interface EventSyncScheduler {
             val eventId: String
         ) : SyncType
 
-        data class CancelCreateEventSync(
-            val eventId: String
-        ) : SyncType
-
-        data class CancelUpdateEventSync(
-            val eventId: String
-        ) : SyncType
-
     }
 }
