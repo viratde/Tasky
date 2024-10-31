@@ -18,6 +18,7 @@ class DeleteTaskWorker(
     context: Context,
     private val params: WorkerParameters,
     private val authInfoStorage: AuthInfoStorage,
+    private val taskSyncDao: TaskSyncDao,
     private val taskDeleteSyncDao: TaskDeleteSyncDao,
     private val remoteTaskDataSource: RemoteTaskDataSource
 ) : CoroutineWorker(context, params) {
@@ -35,6 +36,34 @@ class DeleteTaskWorker(
             userId = userId
         ) ?: return Result.failure()
 
+        val preScheduledCreateTaskSync = taskSyncDao.getTaskPendingSyncById(
+            taskId = taskId,
+            userId = userId,
+            syncType = SyncType.CREATE
+        )
+
+        if (preScheduledCreateTaskSync != null) {
+            taskSyncDao.deleteTaskPendingSyncById(
+                taskId = taskId,
+                userId = userId,
+                syncType = SyncType.CREATE
+            )
+            return Result.success()
+        }
+
+        val preScheduledUpdateTaskSync = taskSyncDao.getTaskPendingSyncById(
+            taskId = taskId,
+            userId = userId,
+            syncType = SyncType.UPDATE
+        )
+
+        if (preScheduledUpdateTaskSync != null) {
+            taskSyncDao.deleteTaskPendingSyncById(
+                taskId = taskId,
+                userId = userId,
+                syncType = SyncType.UPDATE
+            )
+        }
 
         return when (val result = remoteTaskDataSource.delete(deleteTaskSyncEntity.taskId)) {
             is com.tasky.core.domain.util.Result.Error -> {
@@ -53,6 +82,7 @@ class DeleteTaskWorker(
     }
 
     companion object {
-        const val TASK_ID = "TASK_ID"
+        const val TASK_ID = "task_id"
+        const val TAG = "delete_task_work"
     }
 }

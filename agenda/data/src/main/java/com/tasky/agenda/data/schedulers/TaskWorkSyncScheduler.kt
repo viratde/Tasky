@@ -8,6 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.await
+import com.tasky.agenda.data.dao.TaskDeleteSyncDao
 import com.tasky.agenda.data.dao.TaskSyncDao
 import com.tasky.agenda.data.mappers.toTaskEntity
 import com.tasky.agenda.data.model.SyncType
@@ -29,6 +30,7 @@ class TaskWorkSyncScheduler(
     context: Context,
     private val authInfoStorage: AuthInfoStorage,
     private val taskSyncDao: TaskSyncDao,
+    private val taskDeleteSyncDao: TaskDeleteSyncDao,
     private val applicationScope: CoroutineScope
 ) : TaskSyncScheduler {
 
@@ -70,10 +72,10 @@ class TaskWorkSyncScheduler(
         )
 
         taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
-
         val workRequest = OneTimeWorkRequestBuilder<CreateTaskWorker>()
             .addTag("$CREATE_TASK${taskSyncEntity.taskId}")
             .addTag(TASK_WORK)
+            .addTag(CreateTaskWorker.TAG)
             .setRequiredNetworkConnectivity()
             .setExponentialBackOffPolicy(2000)
             .setInputParameters { putString(CreateTaskWorker.TASK_ID, taskSyncEntity.taskId) }
@@ -95,52 +97,24 @@ class TaskWorkSyncScheduler(
             syncType = SyncType.UPDATE
         )
 
-        val preScheduledTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
-            taskId = sync.task.id,
-            userId = userId,
-            syncType = SyncType.CREATE
-        )
-        if (preScheduledTaskSyncEntity == null) {
-            // It means it is already created in remoted
-            taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
-            val workRequest = OneTimeWorkRequestBuilder<UpdateTaskWorker>()
-                .addTag("$UPDATE_TASK${taskSyncEntity.taskId}")
-                .addTag(TASK_WORK)
-                .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
-                .setInputParameters {
-                    putString(
-                        UpdateTaskWorker.TASK_ID,
-                        taskSyncEntity.taskId
-                    )
-                }
-                .build()
+        taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
+        val workRequest = OneTimeWorkRequestBuilder<UpdateTaskWorker>()
+            .addTag("$UPDATE_TASK${taskSyncEntity.taskId}")
+            .addTag(TASK_WORK)
+            .addTag(UpdateTaskWorker.TAG)
+            .setRequiredNetworkConnectivity()
+            .setExponentialBackOffPolicy(2000)
+            .setInputParameters {
+                putString(
+                    UpdateTaskWorker.TASK_ID,
+                    taskSyncEntity.taskId
+                )
+            }
+            .build()
 
-            applicationScope.launch {
-                workManager.enqueue(workRequest).await()
-            }.join()
-        } else {
-            // It means that it has not been created in remote yet so instead of update i will create
-            workManager.cancelAllWorkByTag("$CREATE_TASK${taskSyncEntity.taskId}")
-                .await() // cancel the previous work otherwise it will create again and throw error
-            taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
-            val workRequest = OneTimeWorkRequestBuilder<CreateTaskWorker>()
-                .addTag("$CREATE_TASK${taskSyncEntity.taskId}")
-                .addTag(TASK_WORK)
-                .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
-                .setInputParameters {
-                    putString(
-                        CreateTaskWorker.TASK_ID,
-                        taskSyncEntity.taskId
-                    )
-                }
-                .build()
-
-            applicationScope.launch {
-                workManager.enqueue(workRequest).await()
-            }.join()
-        }
+        applicationScope.launch {
+            workManager.enqueue(workRequest).await()
+        }.join()
     }
 
     private suspend fun scheduleDeleteTaskWorker(
@@ -153,54 +127,24 @@ class TaskWorkSyncScheduler(
             userId = userId,
         )
 
-        val preScheduledCreateTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
-            taskId = sync.taskId,
-            userId = userId,
-            syncType = SyncType.CREATE
-        ) // checking whether it has been created locally or not
-
-        if (preScheduledCreateTaskSyncEntity == null) {
-
-            val preScheduledUpdateTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
-                taskId = sync.taskId,
-                userId = userId,
-                syncType = SyncType.UPDATE
-            ) // checking whether there is an update scheduled for this task if it is i will cancel it
-            if (preScheduledUpdateTaskSyncEntity != null) {
-                workManager.cancelAllWorkByTag("$UPDATE_TASK${sync.taskId}")
-                    .await()
-                taskSyncDao.deleteTaskPendingSyncById(
-                    taskId = sync.taskId,
-                    userId = userId,
-                    syncType = SyncType.UPDATE
+        taskDeleteSyncDao.upsertTaskDeletePendingSync(taskDeleteSyncEntity)
+        val workRequest = OneTimeWorkRequestBuilder<DeleteTaskWorker>()
+            .addTag("$DELETE_TASK${taskDeleteSyncEntity.taskId}")
+            .addTag(TASK_WORK)
+            .addTag(DeleteTaskWorker.TAG)
+            .setRequiredNetworkConnectivity()
+            .setExponentialBackOffPolicy(2000)
+            .setInputParameters {
+                putString(
+                    DeleteTaskWorker.TASK_ID,
+                    taskDeleteSyncEntity.taskId
                 )
             }
+            .build()
 
-            val workRequest = OneTimeWorkRequestBuilder<DeleteTaskWorker>()
-                .addTag("$DELETE_TASK${taskDeleteSyncEntity.taskId}")
-                .addTag(TASK_WORK)
-                .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
-                .setInputParameters {
-                    putString(
-                        DeleteTaskWorker.TASK_ID,
-                        taskDeleteSyncEntity.taskId
-                    )
-                }
-                .build()
-
-            applicationScope.launch {
-                workManager.enqueue(workRequest).await()
-            }.join()
-
-        } else {
-            taskSyncDao.deleteTaskPendingSyncById(
-                taskId = sync.taskId,
-                userId = userId,
-                syncType = SyncType.CREATE
-            )
-        }
-
+        applicationScope.launch {
+            workManager.enqueue(workRequest).await()
+        }.join()
     }
 
     companion object {

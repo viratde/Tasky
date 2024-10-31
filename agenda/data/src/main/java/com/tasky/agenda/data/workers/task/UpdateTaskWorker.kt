@@ -36,6 +36,27 @@ class UpdateTaskWorker(
             syncType = SyncType.UPDATE
         ) ?: return Result.failure()
 
+        val preScheduledCreateTaskSync = taskSyncDao.getTaskPendingSyncById(
+            taskId = taskId,
+            userId = userId,
+            syncType = SyncType.CREATE
+        )
+
+        if (preScheduledCreateTaskSync != null) {
+            when (val result = remoteTaskDataSource.create(preScheduledCreateTaskSync.task.toTask())) {
+                is com.tasky.core.domain.util.Result.Error -> {
+                    return result.error.toWorkerResult()
+                }
+
+                is com.tasky.core.domain.util.Result.Success -> {
+                    taskSyncDao.deleteTaskPendingSyncById(
+                        taskId = taskId,
+                        userId = userId,
+                        syncType = SyncType.CREATE
+                    )
+                }
+            }
+        }
 
         return when (val result = remoteTaskDataSource.update(updateTaskSyncEntity.task.toTask())) {
             is com.tasky.core.domain.util.Result.Error -> {
@@ -55,6 +76,7 @@ class UpdateTaskWorker(
     }
 
     companion object {
-        const val TASK_ID = "TASK_ID"
+        const val TASK_ID = "task_id"
+        const val TAG = "update_task_work"
     }
 }
