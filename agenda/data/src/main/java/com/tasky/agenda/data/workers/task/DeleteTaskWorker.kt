@@ -43,12 +43,19 @@ class DeleteTaskWorker(
         )
 
         if (preScheduledCreateTaskSync != null) {
-            taskSyncDao.deleteTaskPendingSyncById(
-                taskId = taskId,
-                userId = userId,
-                syncType = SyncType.CREATE
-            )
-            return Result.success()
+            when (val result = remoteTaskDataSource.create(preScheduledCreateTaskSync.task.toTask())) {
+                is com.tasky.core.domain.util.Result.Error -> {
+                    result.error.toWorkerResult()
+                }
+
+                is com.tasky.core.domain.util.Result.Success -> {
+                    taskSyncDao.deleteTaskPendingSyncById(
+                        taskId = taskId,
+                        userId = userId,
+                        syncType = SyncType.CREATE
+                    )
+                }
+            }
         }
 
         val preScheduledUpdateTaskSync = taskSyncDao.getTaskPendingSyncById(
@@ -58,11 +65,19 @@ class DeleteTaskWorker(
         )
 
         if (preScheduledUpdateTaskSync != null) {
-            taskSyncDao.deleteTaskPendingSyncById(
-                taskId = taskId,
-                userId = userId,
-                syncType = SyncType.UPDATE
-            )
+            when (val result = remoteTaskDataSource.update(preScheduledUpdateTaskSync.task.toTask())) {
+                is com.tasky.core.domain.util.Result.Error -> {
+                    result.error.toWorkerResult()
+                }
+
+                is com.tasky.core.domain.util.Result.Success -> {
+                    taskSyncDao.deleteTaskPendingSyncById(
+                        taskId = taskId,
+                        userId = userId,
+                        syncType = SyncType.UPDATE
+                    )
+                }
+            }
         }
 
         return when (val result = remoteTaskDataSource.delete(deleteTaskSyncEntity.taskId)) {
