@@ -71,9 +71,8 @@ class ReminderWorkSyncScheduler(
             reminderId = sync.reminder.id,
             reminder = sync.reminder.toReminderEntity(),
             userId = userId,
-            syncType = SyncType.CREATE
+            syncType = SyncType.UPDATE
         )
-        reminderSyncDao.upsertReminderPendingSync(reminderSyncEntity)
         val pendingCreateReminderSync = reminderSyncDao.getReminderPendingSyncById(
             reminderId = sync.reminder.id,
             userId = userId,
@@ -81,14 +80,16 @@ class ReminderWorkSyncScheduler(
         )
         applicationScope.launch {
             if (pendingCreateReminderSync != null) {
-                workManager.cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}")
-                    .await()
-                workManager.beginWith(
-                    WorkerType.CREATE.toReminderOneTimeWorkRequest(pendingCreateReminderSync.reminderId)
-                ).then(
-                    WorkerType.UPDATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
-                ).enqueue()
+                reminderSyncDao.upsertReminderPendingSync(
+                    reminderSyncEntity.copy(
+                        syncType = SyncType.CREATE
+                    )
+                )
+                workManager.enqueue(
+                    WorkerType.CREATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
+                ).await()
             } else {
+                reminderSyncDao.upsertReminderPendingSync(reminderSyncEntity)
                 workManager.enqueue(
                     WorkerType.UPDATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
                 ).await()
@@ -104,7 +105,6 @@ class ReminderWorkSyncScheduler(
             reminderId = sync.reminderId,
             userId = userId,
         )
-        reminderDeleteSyncDao.upsertReminderDeletePendingSync(reminderDeleteSyncEntity)
         val pendingCreateReminderSync = reminderSyncDao.getReminderPendingSyncById(
             reminderId = sync.reminderId,
             userId = userId,
@@ -134,7 +134,8 @@ class ReminderWorkSyncScheduler(
                         syncType = SyncType.UPDATE
                     )
                 }
-                if(pendingCreateReminderSync == null){
+                if (pendingCreateReminderSync == null) {
+                    reminderDeleteSyncDao.upsertReminderDeletePendingSync(reminderDeleteSyncEntity)
                     enqueue(WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId))
                         .await()
                 }

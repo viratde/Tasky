@@ -77,17 +77,19 @@ class TaskWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.CREATE
         )
-        taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
         applicationScope.launch {
             if (pendingCreateTaskSync != null) {
                 workManager.cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}")
                     .await()
-                workManager.beginWith(
-                    WorkerType.CREATE.toTaskOneTimeWorkRequest(pendingCreateTaskSync.taskId)
-                ).then(
-                    WorkerType.UPDATE.toTaskOneTimeWorkRequest(sync.task.id)
-                ).enqueue()
+                taskSyncDao.upsertTaskPendingSync(
+                    taskSyncEntity.copy(
+                        syncType = SyncType.CREATE
+                    )
+                )
+                workManager.enqueue(WorkerType.CREATE.toTaskOneTimeWorkRequest(sync.task.id))
+                    .await()
             } else {
+                taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
                 workManager.enqueue(WorkerType.UPDATE.toTaskOneTimeWorkRequest(sync.task.id))
                     .await()
             }
@@ -102,13 +104,11 @@ class TaskWorkSyncScheduler(
             taskId = sync.taskId,
             userId = userId,
         )
-        taskDeleteSyncDao.upsertTaskDeletePendingSync(taskDeleteSyncEntity)
         val pendingCreateTaskSync = taskSyncDao.getTaskPendingSyncById(
             taskId = sync.taskId,
             userId = userId,
             syncType = SyncType.CREATE
         )
-
         val pendingUpdateTaskSync = taskSyncDao.getTaskPendingSyncById(
             taskId = sync.taskId,
             userId = userId,
@@ -133,6 +133,7 @@ class TaskWorkSyncScheduler(
                     )
                 }
                 if (pendingCreateTaskSync == null) {
+                    taskDeleteSyncDao.upsertTaskDeletePendingSync(taskDeleteSyncEntity)
                     enqueue(WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId))
                         .await()
                 }
