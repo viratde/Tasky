@@ -9,7 +9,6 @@ import com.tasky.agenda.data.schedulers.ReminderWorkSyncScheduler.Companion.UPDA
 import com.tasky.agenda.data.workers.reminder.CreateReminderWorker
 import com.tasky.agenda.data.workers.reminder.DeleteReminderWorker
 import com.tasky.agenda.data.workers.reminder.UpdateReminderWorker
-import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
 import com.tasky.core.data.utils.setExponentialBackOffPolicy
 import com.tasky.core.data.utils.setInputParameters
 import com.tasky.core.data.utils.setRequiredNetworkConnectivity

@@ -32,28 +32,6 @@ class UpdateReminderWorker(
             syncType = SyncType.UPDATE
         ) ?: return Result.failure()
 
-        val preScheduledCreateReminderSync = reminderSyncDao.getReminderPendingSyncById(
-            reminderId = reminderId,
-            userId = userId,
-            syncType = SyncType.CREATE
-        )
-
-        if (preScheduledCreateReminderSync != null) {
-            when (val result = remoteReminderDataSource.create(preScheduledCreateReminderSync.reminder.toReminder())) {
-                is com.tasky.core.domain.util.Result.Error -> {
-                    return result.error.toWorkerResult()
-                }
-
-                is com.tasky.core.domain.util.Result.Success -> {
-                    reminderSyncDao.deleteReminderPendingSyncById(
-                        reminderId = reminderId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-            }
-        }
-
         return when (val result = remoteReminderDataSource.update(updateReminderSyncEntity.reminder.toReminder())) {
             is com.tasky.core.domain.util.Result.Error -> {
                 result.error.toWorkerResult()

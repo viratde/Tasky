@@ -120,41 +120,23 @@ class ReminderWorkSyncScheduler(
             workManager.apply {
                 if (pendingCreateReminderSync != null) {
                     cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}").await()
+                    reminderSyncDao.deleteReminderPendingSyncById(
+                        reminderId = sync.reminderId,
+                        userId = userId,
+                        syncType = SyncType.CREATE
+                    )
                 }
                 if (pendingUpdateReminderSync != null) {
                     cancelAllWorkByTag("$UPDATE_REMINDER${pendingUpdateReminderSync.reminderId}").await()
+                    reminderSyncDao.deleteReminderPendingSyncById(
+                        reminderId = sync.reminderId,
+                        userId = userId,
+                        syncType = SyncType.UPDATE
+                    )
                 }
-                when {
-                    pendingCreateReminderSync != null && pendingUpdateReminderSync != null -> {
-                        beginWith(
-                            WorkerType.CREATE.toReminderOneTimeWorkRequest(pendingCreateReminderSync.reminderId)
-                        ).then(
-                            WorkerType.UPDATE.toReminderOneTimeWorkRequest(pendingUpdateReminderSync.reminderId)
-                        ).then(
-                            WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId)
-                        ).enqueue().await()
-                    }
-
-                    pendingCreateReminderSync != null && pendingUpdateReminderSync == null -> {
-                        beginWith(
-                            WorkerType.CREATE.toReminderOneTimeWorkRequest(pendingCreateReminderSync.reminderId)
-                        ).then(
-                            WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId)
-                        ).enqueue().await()
-                    }
-
-                    pendingCreateReminderSync == null && pendingUpdateReminderSync != null -> {
-                        beginWith(
-                            WorkerType.UPDATE.toReminderOneTimeWorkRequest(pendingUpdateReminderSync.reminderId)
-                        ).then(
-                            WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId)
-                        ).enqueue().await()
-                    }
-
-                    else -> {
-                        enqueue(WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId))
-                            .await()
-                    }
+                if(pendingCreateReminderSync == null){
+                    enqueue(WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId))
+                        .await()
                 }
             }
         }.join()

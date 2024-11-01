@@ -118,41 +118,23 @@ class TaskWorkSyncScheduler(
             workManager.apply {
                 if (pendingCreateTaskSync != null) {
                     cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}").await()
+                    taskSyncDao.deleteTaskPendingSyncById(
+                        taskId = sync.taskId,
+                        userId = userId,
+                        syncType = SyncType.CREATE
+                    )
                 }
                 if (pendingUpdateTaskSync != null) {
                     cancelAllWorkByTag("$UPDATE_TASK${pendingUpdateTaskSync.taskId}").await()
+                    taskSyncDao.deleteTaskPendingSyncById(
+                        taskId = sync.taskId,
+                        userId = userId,
+                        syncType = SyncType.UPDATE
+                    )
                 }
-                when {
-                    pendingCreateTaskSync != null && pendingUpdateTaskSync != null -> {
-                        beginWith(
-                            WorkerType.CREATE.toTaskOneTimeWorkRequest(pendingCreateTaskSync.taskId)
-                        ).then(
-                            WorkerType.UPDATE.toTaskOneTimeWorkRequest(pendingUpdateTaskSync.taskId)
-                        ).then(
-                            WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId)
-                        ).enqueue().await()
-                    }
-
-                    pendingCreateTaskSync != null && pendingUpdateTaskSync == null -> {
-                        beginWith(
-                            WorkerType.CREATE.toTaskOneTimeWorkRequest(pendingCreateTaskSync.taskId)
-                        ).then(
-                            WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId)
-                        ).enqueue().await()
-                    }
-
-                    pendingCreateTaskSync == null && pendingUpdateTaskSync != null -> {
-                        beginWith(
-                            WorkerType.UPDATE.toTaskOneTimeWorkRequest(pendingUpdateTaskSync.taskId)
-                        ).then(
-                            WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId)
-                        ).enqueue().await()
-                    }
-
-                    else -> {
-                        enqueue(WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId))
-                            .await()
-                    }
+                if (pendingCreateTaskSync == null) {
+                    enqueue(WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId))
+                        .await()
                 }
             }
         }.join()

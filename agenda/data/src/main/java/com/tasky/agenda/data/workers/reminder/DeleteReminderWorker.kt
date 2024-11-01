@@ -15,7 +15,6 @@ class DeleteReminderWorker(
     context: Context,
     private val params: WorkerParameters,
     private val authInfoStorage: AuthInfoStorage,
-    private val reminderSyncDao: ReminderSyncDao,
     private val reminderDeleteSyncDao: ReminderDeleteSyncDao,
     private val remoteReminderDataSource: RemoteReminderDataSource
 ) : CoroutineWorker(context, params) {
@@ -32,53 +31,6 @@ class DeleteReminderWorker(
             reminderId = reminderId,
             userId = userId
         ) ?: return Result.failure()
-
-        val preScheduledCreateReminderSync = reminderSyncDao.getReminderPendingSyncById(
-            reminderId = reminderId,
-            userId = userId,
-            syncType = SyncType.CREATE
-        )
-
-        if (preScheduledCreateReminderSync != null) {
-            when (val result =
-                remoteReminderDataSource.create(preScheduledCreateReminderSync.reminder.toReminder())) {
-                is com.tasky.core.domain.util.Result.Error -> {
-                    result.error.toWorkerResult()
-                }
-
-                is com.tasky.core.domain.util.Result.Success -> {
-                    reminderSyncDao.deleteReminderPendingSyncById(
-                        reminderId = reminderId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-            }
-        }
-
-        val preScheduledUpdateReminderSync = reminderSyncDao.getReminderPendingSyncById(
-            reminderId = reminderId,
-            userId = userId,
-            syncType = SyncType.UPDATE
-        )
-
-        if (preScheduledUpdateReminderSync != null) {
-            when (val result =
-                remoteReminderDataSource.update(preScheduledUpdateReminderSync.reminder.toReminder())) {
-                is com.tasky.core.domain.util.Result.Error -> {
-                    result.error.toWorkerResult()
-                }
-
-                is com.tasky.core.domain.util.Result.Success -> {
-                    reminderSyncDao.deleteReminderPendingSyncById(
-                        reminderId = reminderId,
-                        userId = userId,
-                        syncType = SyncType.UPDATE
-                    )
-                    Result.success()
-                }
-            }
-        }
 
         return when (val result =
             remoteReminderDataSource.delete(deleteReminderSyncEntity.reminderId)) {

@@ -2,23 +2,17 @@ package com.tasky.agenda.data.workers.task
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
 import com.tasky.agenda.data.dao.TaskDeleteSyncDao
-import com.tasky.agenda.data.dao.TaskSyncDao
-import com.tasky.agenda.data.mappers.toTask
-import com.tasky.agenda.data.model.SyncType
 import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
 import com.tasky.core.data.utils.toWorkerResult
 import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.Result
-import kotlinx.coroutines.CoroutineScope
 
 class DeleteTaskWorker(
     context: Context,
     private val params: WorkerParameters,
     private val authInfoStorage: AuthInfoStorage,
-    private val taskSyncDao: TaskSyncDao,
     private val taskDeleteSyncDao: TaskDeleteSyncDao,
     private val remoteTaskDataSource: RemoteTaskDataSource
 ) : CoroutineWorker(context, params) {
@@ -35,50 +29,6 @@ class DeleteTaskWorker(
             taskId = taskId,
             userId = userId
         ) ?: return Result.failure()
-
-        val preScheduledCreateTaskSync = taskSyncDao.getTaskPendingSyncById(
-            taskId = taskId,
-            userId = userId,
-            syncType = SyncType.CREATE
-        )
-
-        if (preScheduledCreateTaskSync != null) {
-            when (val result = remoteTaskDataSource.create(preScheduledCreateTaskSync.task.toTask())) {
-                is com.tasky.core.domain.util.Result.Error -> {
-                    result.error.toWorkerResult()
-                }
-
-                is com.tasky.core.domain.util.Result.Success -> {
-                    taskSyncDao.deleteTaskPendingSyncById(
-                        taskId = taskId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-            }
-        }
-
-        val preScheduledUpdateTaskSync = taskSyncDao.getTaskPendingSyncById(
-            taskId = taskId,
-            userId = userId,
-            syncType = SyncType.UPDATE
-        )
-
-        if (preScheduledUpdateTaskSync != null) {
-            when (val result = remoteTaskDataSource.update(preScheduledUpdateTaskSync.task.toTask())) {
-                is com.tasky.core.domain.util.Result.Error -> {
-                    result.error.toWorkerResult()
-                }
-
-                is com.tasky.core.domain.util.Result.Success -> {
-                    taskSyncDao.deleteTaskPendingSyncById(
-                        taskId = taskId,
-                        userId = userId,
-                        syncType = SyncType.UPDATE
-                    )
-                }
-            }
-        }
 
         return when (val result = remoteTaskDataSource.delete(deleteTaskSyncEntity.taskId)) {
             is com.tasky.core.domain.util.Result.Error -> {
