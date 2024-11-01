@@ -11,15 +11,15 @@ interface ReminderSyncScheduler {
     sealed interface SyncType {
 
         data class CreateReminderSync(
-            val event: Reminder
+            val reminder: Reminder
         ) : SyncType
 
         data class UpdateReminderSync(
-            val event: Reminder
+            val reminder: Reminder
         ) : SyncType
 
         data class DeleteReminderSync(
-            val eventId: String
+            val reminderId: String
         ) : SyncType
 
     }

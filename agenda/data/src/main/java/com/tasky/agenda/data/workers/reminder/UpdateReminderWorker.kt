@@ -1,25 +1,21 @@
-package com.tasky.agenda.data.workers.task
+package com.tasky.agenda.data.workers.reminder
 
 import android.content.Context
 import androidx.work.CoroutineWorker
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
-import com.tasky.agenda.data.dao.TaskDeleteSyncDao
-import com.tasky.agenda.data.dao.TaskSyncDao
-import com.tasky.agenda.data.mappers.toTask
+import com.tasky.agenda.data.dao.ReminderSyncDao
+import com.tasky.agenda.data.mappers.toReminder
 import com.tasky.agenda.data.model.SyncType
-import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
 import com.tasky.core.data.utils.toWorkerResult
 import com.tasky.core.domain.AuthInfoStorage
-import com.tasky.core.domain.util.Result
-import kotlinx.coroutines.CoroutineScope
 
-class UpdateTaskWorker(
+class UpdateReminderWorker(
     context: Context,
     private val params: WorkerParameters,
     private val authInfoStorage: AuthInfoStorage,
-    private val taskSyncDao: TaskSyncDao,
-    private val remoteTaskDataSource: RemoteTaskDataSource
+    private val reminderSyncDao: ReminderSyncDao,
+    private val remoteReminderDataSource: RemoteReminderDataSource
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -28,22 +24,22 @@ class UpdateTaskWorker(
             return Result.failure()
         }
 
-        val taskId = params.inputData.getString(TASK_ID) ?: return Result.failure()
+        val reminderId = params.inputData.getString(REMINDER_ID) ?: return Result.failure()
         val userId = authInfoStorage.get()?.userId ?: return Result.failure()
-        val updateTaskSyncEntity = taskSyncDao.getTaskPendingSyncById(
-            taskId = taskId,
+        val updateReminderSyncEntity = reminderSyncDao.getReminderPendingSyncById(
+            reminderId = reminderId,
             userId = userId,
             syncType = SyncType.UPDATE
         ) ?: return Result.failure()
 
-        return when (val result = remoteTaskDataSource.update(updateTaskSyncEntity.task.toTask())) {
+        return when (val result = remoteReminderDataSource.update(updateReminderSyncEntity.reminder.toReminder())) {
             is com.tasky.core.domain.util.Result.Error -> {
                 result.error.toWorkerResult()
             }
 
             is com.tasky.core.domain.util.Result.Success -> {
-                taskSyncDao.deleteTaskPendingSyncById(
-                    taskId = taskId,
+                reminderSyncDao.deleteReminderPendingSyncById(
+                    reminderId = reminderId,
                     userId = userId,
                     syncType = SyncType.UPDATE
                 )
@@ -54,7 +50,7 @@ class UpdateTaskWorker(
     }
 
     companion object {
-        const val TASK_ID = "task_id"
-        const val TAG = "update_task_work"
+        const val REMINDER_ID = "reminder_id"
+        const val TAG = "update_reminder_work"
     }
 }
