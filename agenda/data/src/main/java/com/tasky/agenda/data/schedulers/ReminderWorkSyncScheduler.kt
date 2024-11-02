@@ -9,6 +9,7 @@ import com.tasky.agenda.data.mappers.toReminderEntity
 import com.tasky.agenda.data.model.ReminderDeleteSyncEntity
 import com.tasky.agenda.data.model.ReminderSyncEntity
 import com.tasky.agenda.data.model.SyncType
+import com.tasky.agenda.data.schedulers.TaskWorkSyncScheduler.Companion.CREATE_TASK
 import com.tasky.agenda.data.schedulers.util.WorkerType
 import com.tasky.agenda.data.schedulers.util.toReminderOneTimeWorkRequest
 import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
@@ -27,15 +28,15 @@ class ReminderWorkSyncScheduler(
     override suspend fun sync(syncType: ReminderSyncScheduler.SyncType) {
         when (syncType) {
             is ReminderSyncScheduler.SyncType.CreateReminderSync -> {
-                scheduleCreateTaskWorker(syncType)
+                scheduleCreateReminderWorker(syncType)
             }
 
             is ReminderSyncScheduler.SyncType.DeleteReminderSync -> {
-                scheduleDeleteTaskWorker(syncType)
+                scheduleDeleteReminderWorker(syncType)
             }
 
             is ReminderSyncScheduler.SyncType.UpdateReminderSync -> {
-                scheduleUpdateTaskWorker(syncType)
+                scheduleUpdateReminderWorker(syncType)
             }
         }
     }
@@ -46,7 +47,7 @@ class ReminderWorkSyncScheduler(
             .await()
     }
 
-    private suspend fun scheduleCreateTaskWorker(
+    private suspend fun scheduleCreateReminderWorker(
         sync: ReminderSyncScheduler.SyncType.CreateReminderSync,
     ) {
         val userId = authInfoStorage.get()?.userId ?: return
@@ -63,7 +64,7 @@ class ReminderWorkSyncScheduler(
         }.join()
     }
 
-    private suspend fun scheduleUpdateTaskWorker(
+    private suspend fun scheduleUpdateReminderWorker(
         sync: ReminderSyncScheduler.SyncType.UpdateReminderSync
     ) {
         val userId = authInfoStorage.get()?.userId ?: return
@@ -80,6 +81,8 @@ class ReminderWorkSyncScheduler(
         )
         applicationScope.launch {
             if (pendingCreateReminderSync != null) {
+                workManager.cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}")
+                    .await()
                 reminderSyncDao.upsertReminderPendingSync(
                     reminderSyncEntity.copy(
                         syncType = SyncType.CREATE
@@ -97,7 +100,7 @@ class ReminderWorkSyncScheduler(
         }.join()
     }
 
-    private suspend fun scheduleDeleteTaskWorker(
+    private suspend fun scheduleDeleteReminderWorker(
         sync: ReminderSyncScheduler.SyncType.DeleteReminderSync
     ) {
         val userId = authInfoStorage.get()?.userId ?: return
@@ -147,7 +150,7 @@ class ReminderWorkSyncScheduler(
         const val CREATE_REMINDER = "create_reminder"
         const val UPDATE_REMINDER = "update_reminder"
         const val DELETE_REMINDER = "delete_reminder"
-        const val REMINDER_WORK = "task_work"
+        const val REMINDER_WORK = "reminder_work"
     }
 
 }

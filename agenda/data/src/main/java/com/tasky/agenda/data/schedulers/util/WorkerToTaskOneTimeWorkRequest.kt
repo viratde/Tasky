@@ -29,22 +29,6 @@ fun WorkerType.toTaskOneTimeWorkRequest(
         }
 
         WorkerType.UPDATE -> {
-            OneTimeWorkRequestBuilder<DeleteTaskWorker>()
-                .addTag("$DELETE_TASK${taskId}")
-                .addTag(TASK_WORK)
-                .addTag(DeleteTaskWorker.TAG)
-                .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
-                .setInputParameters {
-                    putString(
-                        DeleteTaskWorker.TASK_ID,
-                        taskId
-                    )
-                }
-                .build()
-        }
-
-        WorkerType.DELETE -> {
             OneTimeWorkRequestBuilder<UpdateTaskWorker>()
                 .addTag("$UPDATE_TASK$taskId")
                 .addTag(TASK_WORK)
@@ -54,6 +38,22 @@ fun WorkerType.toTaskOneTimeWorkRequest(
                 .setInputParameters {
                     putString(
                         UpdateTaskWorker.TASK_ID,
+                        taskId
+                    )
+                }
+                .build()
+        }
+
+        WorkerType.DELETE -> {
+            OneTimeWorkRequestBuilder<DeleteTaskWorker>()
+                .addTag("$DELETE_TASK${taskId}")
+                .addTag(TASK_WORK)
+                .addTag(DeleteTaskWorker.TAG)
+                .setRequiredNetworkConnectivity()
+                .setExponentialBackOffPolicy(2000)
+                .setInputParameters {
+                    putString(
+                        DeleteTaskWorker.TASK_ID,
                         taskId
                     )
                 }
