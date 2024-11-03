@@ -29,21 +29,6 @@ fun WorkerType.toReminderOneTimeWorkRequest(
         }
 
         WorkerType.UPDATE -> {
-            OneTimeWorkRequestBuilder<DeleteReminderWorker>()
-                .addTag("$DELETE_REMINDER$reminderId")
-                .addTag(REMINDER_WORK)
-                .addTag(DeleteReminderWorker.TAG)
-                .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
-                .setInputParameters {
-                    putString(
-                        DeleteReminderWorker.REMINDER_ID,
-                        reminderId
-                    )
-                }.build()
-        }
-
-        WorkerType.DELETE -> {
             OneTimeWorkRequestBuilder<UpdateReminderWorker>()
                 .addTag("$UPDATE_REMINDER$reminderId")
                 .addTag(REMINDER_WORK)
@@ -53,6 +38,21 @@ fun WorkerType.toReminderOneTimeWorkRequest(
                 .setInputParameters {
                     putString(
                         UpdateReminderWorker.REMINDER_ID,
+                        reminderId
+                    )
+                }.build()
+        }
+
+        WorkerType.DELETE -> {
+            OneTimeWorkRequestBuilder<DeleteReminderWorker>()
+                .addTag("$DELETE_REMINDER$reminderId")
+                .addTag(REMINDER_WORK)
+                .addTag(DeleteReminderWorker.TAG)
+                .setRequiredNetworkConnectivity()
+                .setExponentialBackOffPolicy(2000)
+                .setInputParameters {
+                    putString(
+                        DeleteReminderWorker.REMINDER_ID,
                         reminderId
                     )
                 }.build()
