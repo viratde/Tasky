@@ -4,6 +4,7 @@ import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstTaskRepository(
     private val localTaskDataSource: LocalTaskDataSource,
-    private val remoteTaskDataSource: RemoteTaskDataSource
+    private val remoteTaskDataSource: RemoteTaskDataSource,
+    private val taskSyncScheduler: TaskSyncScheduler
 ) : TaskRepository {
 
 
@@ -23,8 +25,8 @@ class OfflineFirstTaskRepository(
         }
         return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet created in remote data source
-                Result.Error(remoteTaskResult.error)
+                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(task))
+                Result.Success(Unit)
             }
 
             is Result.Success -> {
@@ -41,7 +43,7 @@ class OfflineFirstTaskRepository(
         return when (val remoteTaskResult =
             remoteTaskDataSource.update(task)) {
             is Result.Error -> {
-                // @todo - i need to store that as it has been yet updated in remote data source
+                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.UpdateTaskSync(task))
                 Result.Success(Unit)
             }
 
@@ -57,9 +59,10 @@ class OfflineFirstTaskRepository(
 
     override suspend fun deleteTaskById(taskId: String) {
         localTaskDataSource.deleteTask(taskId)
-
-        // @todo - I need to check whether it was created remotely or not
-        remoteTaskDataSource.delete(taskId)
+        val result = remoteTaskDataSource.delete(taskId)
+        if (result is Result.Error) {
+            taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(taskId))
+        }
     }
 
     override suspend fun getTaskById(taskId: String): Task? {

@@ -23,7 +23,7 @@ fun WorkerType.toEventOneTimeWorkRequest(
                 .addTag(EVENT_WORK)
                 .addTag(CreateEventWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters { putString(CreateEventWorker.EVENT_ID, eventId) }
                 .build()
         }
@@ -34,7 +34,7 @@ fun WorkerType.toEventOneTimeWorkRequest(
                 .addTag(EVENT_WORK)
                 .addTag(UpdateEventWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         UpdateEventWorker.EVENT_ID,
@@ -49,7 +49,7 @@ fun WorkerType.toEventOneTimeWorkRequest(
                 .addTag(EVENT_WORK)
                 .addTag(DeleteEventWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         DeleteEventWorker.EVENT_ID,

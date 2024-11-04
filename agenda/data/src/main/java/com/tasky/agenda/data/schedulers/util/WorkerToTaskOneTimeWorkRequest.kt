@@ -23,7 +23,7 @@ fun WorkerType.toTaskOneTimeWorkRequest(
                 .addTag(TASK_WORK)
                 .addTag(CreateTaskWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters { putString(CreateTaskWorker.TASK_ID, taskId) }
                 .build()
         }
@@ -34,7 +34,7 @@ fun WorkerType.toTaskOneTimeWorkRequest(
                 .addTag(TASK_WORK)
                 .addTag(UpdateTaskWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         UpdateTaskWorker.TASK_ID,
@@ -50,7 +50,7 @@ fun WorkerType.toTaskOneTimeWorkRequest(
                 .addTag(TASK_WORK)
                 .addTag(DeleteTaskWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         DeleteTaskWorker.TASK_ID,

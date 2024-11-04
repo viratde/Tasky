@@ -4,6 +4,7 @@ import com.tasky.agenda.domain.model.Reminder
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -12,7 +13,8 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstReminderRepository(
     private val localReminderDataSource: LocalReminderDataSource,
-    private val remoteReminderDataSource: RemoteReminderDataSource
+    private val remoteReminderDataSource: RemoteReminderDataSource,
+    private val reminderSyncScheduler: ReminderSyncScheduler
 ) : ReminderRepository {
 
     override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
@@ -22,7 +24,11 @@ class OfflineFirstReminderRepository(
         }
         return when (val remoteReminderResult = remoteReminderDataSource.create(reminder)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet created in remote data source
+                reminderSyncScheduler.sync(
+                    ReminderSyncScheduler.SyncType.CreateReminderSync(
+                        reminder
+                    )
+                )
                 Result.Success(Unit)
             }
 
@@ -40,7 +46,11 @@ class OfflineFirstReminderRepository(
         return when (val remoteReminderResult =
             remoteReminderDataSource.update(reminder)) {
             is Result.Error -> {
-                // @todo - i need to store that as it has been yet updated in remote data source
+                reminderSyncScheduler.sync(
+                    ReminderSyncScheduler.SyncType.UpdateReminderSync(
+                        reminder
+                    )
+                )
                 Result.Success(Unit)
             }
 
@@ -56,9 +66,10 @@ class OfflineFirstReminderRepository(
 
     override suspend fun deleteRemindersById(reminderId: String) {
         localReminderDataSource.deleteReminder(reminderId)
-
-        // @todo - I need to check whether it was created remotely or not
-        remoteReminderDataSource.delete(reminderId)
+        val result = remoteReminderDataSource.delete(reminderId)
+        if (result is Result.Error) {
+            reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(reminderId))
+        }
     }
 
     override suspend fun getReminderById(reminderId: String): Reminder? {

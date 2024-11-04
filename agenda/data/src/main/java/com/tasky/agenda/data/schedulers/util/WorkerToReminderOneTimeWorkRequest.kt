@@ -23,7 +23,7 @@ fun WorkerType.toReminderOneTimeWorkRequest(
                 .addTag(REMINDER_WORK)
                 .addTag(CreateReminderWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters { putString(CreateReminderWorker.REMINDER_ID, reminderId) }
                 .build()
         }
@@ -34,7 +34,7 @@ fun WorkerType.toReminderOneTimeWorkRequest(
                 .addTag(REMINDER_WORK)
                 .addTag(UpdateReminderWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         UpdateReminderWorker.REMINDER_ID,
@@ -49,7 +49,7 @@ fun WorkerType.toReminderOneTimeWorkRequest(
                 .addTag(REMINDER_WORK)
                 .addTag(DeleteReminderWorker.TAG)
                 .setRequiredNetworkConnectivity()
-                .setExponentialBackOffPolicy(2000)
+                .setExponentialBackOffPolicy(10000)
                 .setInputParameters {
                     putString(
                         DeleteReminderWorker.REMINDER_ID,

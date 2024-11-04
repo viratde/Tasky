@@ -38,7 +38,7 @@ class EventWorkSyncScheduler(
             }
 
             is EventSyncScheduler.SyncType.DeleteEventSync -> {
-
+                scheduleDeleteEventWorker(syncType)
             }
         }
     }

@@ -221,10 +221,10 @@ class AgendaItemsViewModel(
                     eventRepository.deleteEventById(it.id)
                 }
                 .ifTaskUi {
-                    reminderRepository.deleteRemindersById(it.id)
+                    taskRepository.deleteTaskById(it.id)
                 }
                 .ifReminderUi {
-                    taskRepository.deleteTaskById(it.id)
+                    reminderRepository.deleteRemindersById(it.id)
                 }
         }
     }

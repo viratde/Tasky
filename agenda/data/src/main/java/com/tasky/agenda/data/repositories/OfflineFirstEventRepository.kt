@@ -5,6 +5,7 @@ import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.schedulers.EventSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -13,7 +14,8 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineFirstEventRepository(
     private val localEventDataSource: LocalEventDataSource,
-    private val remoteEventDataSource: RemoteEventDataSource
+    private val remoteEventDataSource: RemoteEventDataSource,
+    private val eventSyncScheduler: EventSyncScheduler
 ) : EventRepository {
 
     override suspend fun addEvent(event: Event): EmptyDataResult<DataError> {
@@ -23,7 +25,7 @@ class OfflineFirstEventRepository(
         }
         return when (val remoteEventResult = remoteEventDataSource.create(event)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet created in remote data source
+                eventSyncScheduler.sync(EventSyncScheduler.SyncType.CreateEventSync(event))
                 Result.Success(Unit)
             }
 
@@ -44,7 +46,7 @@ class OfflineFirstEventRepository(
         return when (val remoteEventResult =
             remoteEventDataSource.update(event, deletedPhotoKeys)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet updated in remote data source
+                eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(event))
                 Result.Success(Unit)
             }
 
@@ -60,9 +62,10 @@ class OfflineFirstEventRepository(
 
     override suspend fun deleteEventById(eventId: String) {
         localEventDataSource.deleteEvent(eventId)
-
-        // @todo - I need to check whether it was created remotely or not
-        remoteEventDataSource.delete(eventId)
+        val result = remoteEventDataSource.delete(eventId)
+        if(result is Result.Error){
+            eventSyncScheduler.sync(EventSyncScheduler.SyncType.DeleteEventSync(eventId))
+        }
     }
 
 
