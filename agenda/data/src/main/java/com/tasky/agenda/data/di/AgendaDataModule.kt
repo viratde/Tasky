@@ -2,6 +2,7 @@ package com.tasky.agenda.data.di
 
 import androidx.room.Room
 import com.tasky.agenda.data.AgendaItemsDatabase
+import com.tasky.agenda.data.alarmScheduler.AlarmSchedulerImpl
 import com.tasky.agenda.data.repositories.OfflineFirstAgendaItemsRepository
 import com.tasky.agenda.data.repositories.OfflineFirstEventRepository
 import com.tasky.agenda.data.repositories.OfflineFirstReminderRepository
@@ -22,6 +23,7 @@ import com.tasky.agenda.data.workers.task.UpdateTaskWorker
 import com.tasky.agenda.data.workers.reminder.CreateReminderWorker
 import com.tasky.agenda.data.workers.reminder.DeleteReminderWorker
 import com.tasky.agenda.data.workers.reminder.UpdateReminderWorker
+import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
 import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
@@ -125,5 +127,6 @@ val agendaDataModule = module {
 
     workerOf(::DeleteReminderWorker)
 
+    singleOf(::AlarmSchedulerImpl).bind<AlarmScheduler>()
 
 }

@@ -1,5 +1,7 @@
 package com.tasky.agenda.data.repositories
 
+import com.tasky.agenda.data.mappers.toAlarm
+import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
 import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.Flow
 class OfflineFirstTaskRepository(
     private val localTaskDataSource: LocalTaskDataSource,
     private val remoteTaskDataSource: RemoteTaskDataSource,
-    private val taskSyncScheduler: TaskSyncScheduler
+    private val taskSyncScheduler: TaskSyncScheduler,
+    private val alarmScheduler: AlarmScheduler
 ) : TaskRepository {
 
 
@@ -23,6 +26,7 @@ class OfflineFirstTaskRepository(
         if (localTaskResult !is Result.Success) {
             return localTaskResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(task.toAlarm())
         return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
                 taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(task))
@@ -40,6 +44,7 @@ class OfflineFirstTaskRepository(
         if (localTaskResult !is Result.Success) {
             return localTaskResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(task.toAlarm())
         return when (val remoteTaskResult =
             remoteTaskDataSource.update(task)) {
             is Result.Error -> {
@@ -59,6 +64,7 @@ class OfflineFirstTaskRepository(
 
     override suspend fun deleteTaskById(taskId: String) {
         localTaskDataSource.deleteTask(taskId)
+        alarmScheduler.cancelAlarmById(taskId)
         val result = remoteTaskDataSource.delete(taskId)
         if (result is Result.Error) {
             taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(taskId))

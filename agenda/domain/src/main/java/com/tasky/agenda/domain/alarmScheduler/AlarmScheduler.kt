@@ -10,6 +10,4 @@ interface AlarmScheduler {
 
     suspend fun cancelAlarmById(alarmId: String)
 
-    suspend fun cancelAllAlarms()
-
 }

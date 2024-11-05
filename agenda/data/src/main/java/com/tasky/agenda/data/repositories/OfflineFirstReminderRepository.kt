@@ -1,5 +1,7 @@
 package com.tasky.agenda.data.repositories
 
+import com.tasky.agenda.data.mappers.toAlarm
+import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
 import com.tasky.agenda.domain.model.Reminder
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.Flow
 class OfflineFirstReminderRepository(
     private val localReminderDataSource: LocalReminderDataSource,
     private val remoteReminderDataSource: RemoteReminderDataSource,
-    private val reminderSyncScheduler: ReminderSyncScheduler
+    private val reminderSyncScheduler: ReminderSyncScheduler,
+    private val alarmScheduler: AlarmScheduler
 ) : ReminderRepository {
 
     override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
@@ -22,6 +25,7 @@ class OfflineFirstReminderRepository(
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(reminder.toAlarm())
         return when (val remoteReminderResult = remoteReminderDataSource.create(reminder)) {
             is Result.Error -> {
                 reminderSyncScheduler.sync(
@@ -43,6 +47,7 @@ class OfflineFirstReminderRepository(
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(reminder.toAlarm())
         return when (val remoteReminderResult =
             remoteReminderDataSource.update(reminder)) {
             is Result.Error -> {
@@ -66,6 +71,7 @@ class OfflineFirstReminderRepository(
 
     override suspend fun deleteRemindersById(reminderId: String) {
         localReminderDataSource.deleteReminder(reminderId)
+        alarmScheduler.cancelAlarmById(reminderId)
         val result = remoteReminderDataSource.delete(reminderId)
         if (result is Result.Error) {
             reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(reminderId))
