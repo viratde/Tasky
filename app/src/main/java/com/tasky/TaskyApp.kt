@@ -1,6 +1,11 @@
 package com.tasky
 
 import android.app.Application
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
+import com.tasky.agenda.data.alarmScheduler.AlarmReceiver
 import com.tasky.agenda.data.di.agendaDataModule
 import com.tasky.agenda.network.di.agendaNetworkModule
 import com.tasky.agenda.presentation.di.agendaPresentationModule
@@ -38,6 +43,23 @@ class TaskyApp : Application() {
                 agendaNetworkModule,
                 agendaPresentationModule
             )
+        }
+        createReminderNotificationChannel()
+    }
+
+    private fun createReminderNotificationChannel(){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                AlarmReceiver.REMINDER_NOTIFICATION_CHANNEL_ID,
+                AlarmReceiver.REMINDER_NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                enableVibration(true)
+                enableLights(true)
+                description = applicationContext.getString(R.string.reminder_notification_channel_desc)
+            }
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

@@ -7,6 +7,7 @@
         tools:ignore="ExactAlarm" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"
         tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application>
         <receiver android:name=".alarmScheduler.AlarmReceiver" android:exported="false"/>
     </application>

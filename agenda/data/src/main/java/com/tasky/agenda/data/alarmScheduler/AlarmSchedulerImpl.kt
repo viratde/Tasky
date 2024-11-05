@@ -40,7 +40,6 @@ class AlarmSchedulerImpl(
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
             )
-            Timber.d("Alarm scheduled  at ${alarm.at}")
         } else {
             Timber.d("App Does not have the permission to schedule exact alarms.")
         }
