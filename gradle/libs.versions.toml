@@ -41,6 +41,7 @@ testng = "6.9.6"
 room = "2.6.1"
 ksp = "2.0.21-1.0.25"
 timber = "5.0.1"
+activity = "1.9.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -112,6 +113,7 @@ room-gradlePlugin = { group = "androidx.room", name = "room-gradle-plugin", vers
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
