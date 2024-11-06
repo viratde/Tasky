@@ -1,23 +1,26 @@
 package com.tasky.agenda.data.repositories
 
-import com.tasky.agenda.data.mappers.toAlarm
 import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.mappers.toAlarm
+import com.tasky.agenda.domain.model.Reminder
+import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class OfflineFirstReminderRepository(
     private val localReminderDataSource: LocalReminderDataSource,
     private val remoteReminderDataSource: RemoteReminderDataSource,
     private val reminderSyncScheduler: ReminderSyncScheduler,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val applicationScope: CoroutineScope
 ) : ReminderRepository {
 
     override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
@@ -28,11 +31,13 @@ class OfflineFirstReminderRepository(
         alarmScheduler.scheduleAlarm(reminder.toAlarm())
         return when (val remoteReminderResult = remoteReminderDataSource.create(reminder)) {
             is Result.Error -> {
-                reminderSyncScheduler.sync(
-                    ReminderSyncScheduler.SyncType.CreateReminderSync(
-                        reminder
+                applicationScope.launch {
+                    reminderSyncScheduler.sync(
+                        ReminderSyncScheduler.SyncType.CreateReminderSync(
+                            reminder
+                        )
                     )
-                )
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -51,11 +56,13 @@ class OfflineFirstReminderRepository(
         return when (val remoteReminderResult =
             remoteReminderDataSource.update(reminder)) {
             is Result.Error -> {
-                reminderSyncScheduler.sync(
-                    ReminderSyncScheduler.SyncType.UpdateReminderSync(
-                        reminder
+                applicationScope.launch {
+                    reminderSyncScheduler.sync(
+                        ReminderSyncScheduler.SyncType.UpdateReminderSync(
+                            reminder
+                        )
                     )
-                )
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -74,7 +81,9 @@ class OfflineFirstReminderRepository(
         alarmScheduler.cancelAlarmById(reminderId)
         val result = remoteReminderDataSource.delete(reminderId)
         if (result is Result.Error) {
-            reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(reminderId))
+            applicationScope.launch {
+                reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(reminderId))
+            }.join()
         }
     }
 

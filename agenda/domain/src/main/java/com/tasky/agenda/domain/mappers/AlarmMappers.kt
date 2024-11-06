@@ -1,4 +1,4 @@
-package com.tasky.agenda.data.mappers
+package com.tasky.agenda.domain.mappers
 
 import com.tasky.agenda.domain.model.Alarm
 import com.tasky.agenda.domain.model.Event

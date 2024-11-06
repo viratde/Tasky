@@ -4,12 +4,11 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
-import android.provider.Settings
 import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
 import com.tasky.agenda.domain.model.Alarm
 import timber.log.Timber
+import java.time.Instant
 
 class AlarmSchedulerImpl(
     private val context: Context
@@ -17,13 +16,8 @@ class AlarmSchedulerImpl(
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    init {
-        if(!alarmManager.hasExactAlarmPermission()){
-            requestAlarmPermission()
-        }
-    }
-
     override suspend fun scheduleAlarm(alarm: Alarm) {
+        if (alarm.at > Instant.now().toEpochMilli()) return
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra(AlarmReceiver.ID, alarm.id)
             putExtra(AlarmReceiver.TITLE, alarm.title)
@@ -60,14 +54,6 @@ class AlarmSchedulerImpl(
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         )
-    }
-
-    private fun requestAlarmPermission(){
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", context.packageName, null)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        context.startActivity(intent)
     }
 
     private fun AlarmManager.hasExactAlarmPermission(): Boolean {

@@ -1,23 +1,26 @@
 package com.tasky.agenda.data.repositories
 
-import com.tasky.agenda.data.mappers.toAlarm
 import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
-import com.tasky.agenda.domain.model.Task
-import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteTaskDataSource
+import com.tasky.agenda.domain.mappers.toAlarm
+import com.tasky.agenda.domain.model.Task
+import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class OfflineFirstTaskRepository(
     private val localTaskDataSource: LocalTaskDataSource,
     private val remoteTaskDataSource: RemoteTaskDataSource,
     private val taskSyncScheduler: TaskSyncScheduler,
-    private val alarmScheduler: AlarmScheduler
+    private val alarmScheduler: AlarmScheduler,
+    private val applicationScope: CoroutineScope
 ) : TaskRepository {
 
 
@@ -29,7 +32,9 @@ class OfflineFirstTaskRepository(
         alarmScheduler.scheduleAlarm(task.toAlarm())
         return when (val remoteTaskResult = remoteTaskDataSource.create(task)) {
             is Result.Error -> {
-                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(task))
+                applicationScope.launch {
+                    taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(task))
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -48,7 +53,9 @@ class OfflineFirstTaskRepository(
         return when (val remoteTaskResult =
             remoteTaskDataSource.update(task)) {
             is Result.Error -> {
-                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.UpdateTaskSync(task))
+                applicationScope.launch {
+                    taskSyncScheduler.sync(TaskSyncScheduler.SyncType.UpdateTaskSync(task))
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -67,7 +74,9 @@ class OfflineFirstTaskRepository(
         alarmScheduler.cancelAlarmById(taskId)
         val result = remoteTaskDataSource.delete(taskId)
         if (result is Result.Error) {
-            taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(taskId))
+           applicationScope.launch {
+               taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(taskId))
+           }.join()
         }
     }
 
