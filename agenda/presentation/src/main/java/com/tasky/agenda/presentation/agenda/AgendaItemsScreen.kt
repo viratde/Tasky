@@ -27,6 +27,7 @@ import com.tasky.agenda.presentation.agenda.components.AgendaDateRange
 import com.tasky.agenda.presentation.agenda.components.AgendaFloatingContextMenu
 import com.tasky.agenda.presentation.agenda.components.AgendaItemUi
 import com.tasky.agenda.presentation.agenda.components.AgendaItemsTopBar
+import com.tasky.agenda.presentation.agenda.components.AgendaNowIndicator
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
@@ -191,6 +192,15 @@ fun AgendaItemsScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(state.agendaItems) { agendaItemUi ->
+
+                        if (state.nearestGreaterThanNowAgendaItemId == agendaItemUi.id) {
+                            AgendaNowIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                            )
+                        }
+
                         AgendaItemUi(
                             agendaItemUi = agendaItemUi,
                             modifier = Modifier

@@ -15,9 +15,11 @@ import com.tasky.agenda.presentation.common.util.ifEventUi
 import com.tasky.agenda.presentation.common.util.ifReminderUi
 import com.tasky.agenda.presentation.common.util.ifTaskUi
 import com.tasky.agenda.presentation.common.util.toAgendaItemUiType
+import com.tasky.agenda.presentation.common.util.toComparableTime
 import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.Result
 import com.tasky.core.presentation.ui.asUiText
+import com.tasky.core.presentation.ui.getCurrentTimeInMillis
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -188,8 +190,12 @@ class AgendaItemsViewModel(
         viewModelScope.launch {
             agendaRepository.getAgendaItemsByTime(time).collect { agenda ->
                 _state.update {
+                    val items =
+                        agenda.toAgendaItemUiList().sortedBy { item -> item.toComparableTime() }
+                    val currentTime = getCurrentTimeInMillis()
                     it.copy(
-                        agendaItems = agenda.toAgendaItemUiList()
+                        agendaItems = items,
+                        nearestGreaterThanNowAgendaItemId = items.lastOrNull { item -> item.toComparableTime() < currentTime }?.id
                     )
                 }
             }

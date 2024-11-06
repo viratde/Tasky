@@ -3,11 +3,19 @@ package com.tasky.agenda.presentation.common.util
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 
 
-fun AgendaItemUi.toAgendaItemUiType():AgendaItemUiType {
-    return when(this){
+fun AgendaItemUi.toAgendaItemUiType(): AgendaItemUiType {
+    return when (this) {
         is AgendaItemUi.EventUi -> AgendaItemUiType.Event
         is AgendaItemUi.ReminderUi -> AgendaItemUiType.Reminder
         is AgendaItemUi.TaskUi -> AgendaItemUiType.Task
+    }
+}
+
+fun AgendaItemUi.toComparableTime(): Long {
+    return when (this) {
+        is AgendaItemUi.EventUi -> from
+        is AgendaItemUi.ReminderUi -> time
+        is AgendaItemUi.TaskUi -> time
     }
 }
 
