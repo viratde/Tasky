@@ -7,6 +7,7 @@ import com.tasky.agenda.domain.model.AgendaPhoto
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
+import com.tasky.agenda.domain.utils.ConnectivityObserver
 import com.tasky.agenda.domain.utils.ImageCompressor
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
@@ -46,7 +47,8 @@ class AgendaDetailsViewModel(
     private val eventRepository: EventRepository,
     private val reminderRepository: ReminderRepository,
     private val authInfoStorage: AuthInfoStorage,
-    private val imageCompressor: ImageCompressor
+    private val imageCompressor: ImageCompressor,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModel() {
 
 
@@ -54,6 +56,7 @@ class AgendaDetailsViewModel(
     val state = _state
         .onStart {
             loadAgendaItem()
+            observeNetworkConnectivity()
         }
         .stateIn(
             viewModelScope,
@@ -302,6 +305,18 @@ class AgendaDetailsViewModel(
                     }
                 }
             }
+    }
+
+    private fun observeNetworkConnectivity() {
+        viewModelScope.launch {
+            connectivityObserver.observe().collect { isNetworkConnected ->
+                _state.update {
+                    it.copy(
+                        isNetworkConnected = isNetworkConnected
+                    )
+                }
+            }
+        }
     }
 
     private fun loadAgendaItem() {

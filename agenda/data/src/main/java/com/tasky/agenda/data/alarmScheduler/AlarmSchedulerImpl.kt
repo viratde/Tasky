@@ -17,7 +17,7 @@ class AlarmSchedulerImpl(
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
     override suspend fun scheduleAlarm(alarm: Alarm) {
-        if (alarm.at > Instant.now().toEpochMilli()) return
+        if (alarm.at <= Instant.now().toEpochMilli()) return
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra(AlarmReceiver.ID, alarm.id)
             putExtra(AlarmReceiver.TITLE, alarm.title)

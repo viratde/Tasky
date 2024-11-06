@@ -14,6 +14,7 @@ import com.tasky.agenda.data.schedulers.EventWorkSyncScheduler
 import com.tasky.agenda.data.schedulers.ReminderWorkSyncScheduler
 import com.tasky.agenda.data.schedulers.TaskWorkSyncScheduler
 import com.tasky.agenda.data.utils.ImageCompressorImpl
+import com.tasky.agenda.data.utils.NetworkConnectivityObserver
 import com.tasky.agenda.data.workers.event.CreateEventWorker
 import com.tasky.agenda.data.workers.event.DeleteEventWorker
 import com.tasky.agenda.data.workers.event.UpdateEventWorker
@@ -34,6 +35,7 @@ import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
 import com.tasky.agenda.domain.schedulers.EventSyncScheduler
 import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
 import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
+import com.tasky.agenda.domain.utils.ConnectivityObserver
 import com.tasky.agenda.domain.utils.ImageCompressor
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.workmanager.dsl.workerOf
@@ -128,5 +130,7 @@ val agendaDataModule = module {
     workerOf(::DeleteReminderWorker)
 
     singleOf(::AlarmSchedulerImpl).bind<AlarmScheduler>()
+
+    singleOf(::NetworkConnectivityObserver).bind<ConnectivityObserver>()
 
 }

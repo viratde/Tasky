@@ -218,7 +218,7 @@ fun AgendaItemDetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             photos = state.agendaItemUi.photos,
-                            enabled = state.isInEditMode,
+                            enabled = state.isInEditMode && state.isNetworkConnected,
                             onAddPhoto = { photo, mimeType ->
                                 onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo, mimeType))
                             },

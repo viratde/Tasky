@@ -14,5 +14,6 @@ data class AgendaDetailsState(
     val selectedVisitorsFilterState: VisitorsFilterState = VisitorsFilterState.ALL,
     val visitorState: VisitorState? = null,
     val deletedPhotoKeys: List<String> = listOf(),
-    val isSaving:Boolean = false
+    val isSaving: Boolean = false,
+    val isNetworkConnected: Boolean = false
 )
