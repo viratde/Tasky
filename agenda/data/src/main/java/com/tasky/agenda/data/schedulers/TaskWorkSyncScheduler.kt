@@ -21,7 +21,6 @@ class TaskWorkSyncScheduler(
     private val authInfoStorage: AuthInfoStorage,
     private val taskSyncDao: TaskSyncDao,
     private val taskDeleteSyncDao: TaskDeleteSyncDao,
-    private val applicationScope: CoroutineScope
 ) : TaskSyncScheduler {
     private val workManager = WorkManager.getInstance(context)
     override suspend fun sync(syncType: TaskSyncScheduler.SyncType) {
@@ -57,9 +56,7 @@ class TaskWorkSyncScheduler(
             syncType = SyncType.CREATE
         )
         taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
-        applicationScope.launch {
-            workManager.enqueue(WorkerType.CREATE.toTaskOneTimeWorkRequest(sync.task.id)).await()
-        }.join()
+        workManager.enqueue(WorkerType.CREATE.toTaskOneTimeWorkRequest(sync.task.id)).await()
     }
 
     private suspend fun scheduleUpdateTaskWorker(
@@ -77,23 +74,21 @@ class TaskWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.CREATE
         )
-        applicationScope.launch {
-            if (pendingCreateTaskSync != null) {
-                workManager.cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}")
-                    .await()
-                taskSyncDao.upsertTaskPendingSync(
-                    taskSyncEntity.copy(
-                        syncType = SyncType.CREATE
-                    )
+        if (pendingCreateTaskSync != null) {
+            workManager.cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}")
+                .await()
+            taskSyncDao.upsertTaskPendingSync(
+                taskSyncEntity.copy(
+                    syncType = SyncType.CREATE
                 )
-                workManager.enqueue(WorkerType.CREATE.toTaskOneTimeWorkRequest(sync.task.id))
-                    .await()
-            } else {
-                taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
-                workManager.enqueue(WorkerType.UPDATE.toTaskOneTimeWorkRequest(sync.task.id))
-                    .await()
-            }
-        }.join()
+            )
+            workManager.enqueue(WorkerType.CREATE.toTaskOneTimeWorkRequest(sync.task.id))
+                .await()
+        } else {
+            taskSyncDao.upsertTaskPendingSync(taskSyncEntity)
+            workManager.enqueue(WorkerType.UPDATE.toTaskOneTimeWorkRequest(sync.task.id))
+                .await()
+        }
     }
 
     private suspend fun scheduleDeleteTaskWorker(
@@ -114,31 +109,29 @@ class TaskWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.UPDATE
         )
-        applicationScope.launch {
-            workManager.apply {
-                if (pendingCreateTaskSync != null) {
-                    cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}").await()
-                    taskSyncDao.deleteTaskPendingSyncById(
-                        taskId = sync.taskId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-                if (pendingUpdateTaskSync != null) {
-                    cancelAllWorkByTag("$UPDATE_TASK${pendingUpdateTaskSync.taskId}").await()
-                    taskSyncDao.deleteTaskPendingSyncById(
-                        taskId = sync.taskId,
-                        userId = userId,
-                        syncType = SyncType.UPDATE
-                    )
-                }
-                if (pendingCreateTaskSync == null) {
-                    taskDeleteSyncDao.upsertTaskDeletePendingSync(taskDeleteSyncEntity)
-                    enqueue(WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId))
-                        .await()
-                }
+        workManager.apply {
+            if (pendingCreateTaskSync != null) {
+                cancelAllWorkByTag("$CREATE_TASK${pendingCreateTaskSync.taskId}").await()
+                taskSyncDao.deleteTaskPendingSyncById(
+                    taskId = sync.taskId,
+                    userId = userId,
+                    syncType = SyncType.CREATE
+                )
             }
-        }.join()
+            if (pendingUpdateTaskSync != null) {
+                cancelAllWorkByTag("$UPDATE_TASK${pendingUpdateTaskSync.taskId}").await()
+                taskSyncDao.deleteTaskPendingSyncById(
+                    taskId = sync.taskId,
+                    userId = userId,
+                    syncType = SyncType.UPDATE
+                )
+            }
+            if (pendingCreateTaskSync == null) {
+                taskDeleteSyncDao.upsertTaskDeletePendingSync(taskDeleteSyncEntity)
+                enqueue(WorkerType.DELETE.toTaskOneTimeWorkRequest(taskDeleteSyncEntity.taskId))
+                    .await()
+            }
+        }
     }
 
     companion object {

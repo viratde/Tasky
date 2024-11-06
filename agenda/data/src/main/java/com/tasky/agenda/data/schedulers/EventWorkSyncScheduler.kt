@@ -9,20 +9,16 @@ import com.tasky.agenda.data.mappers.toEventEntity
 import com.tasky.agenda.data.model.EventDeleteSyncEntity
 import com.tasky.agenda.data.model.EventSyncEntity
 import com.tasky.agenda.data.model.SyncType
-import com.tasky.agenda.data.schedulers.TaskWorkSyncScheduler.Companion.TASK_WORK
 import com.tasky.agenda.data.schedulers.util.WorkerType
 import com.tasky.agenda.data.schedulers.util.toEventOneTimeWorkRequest
 import com.tasky.agenda.domain.schedulers.EventSyncScheduler
 import com.tasky.core.domain.AuthInfoStorage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 class EventWorkSyncScheduler(
     context: Context,
     private val authInfoStorage: AuthInfoStorage,
     private val eventSyncDao: EventSyncDao,
-    private val eventDeleteSyncDao: EventDeleteSyncDao,
-    private val applicationScope: CoroutineScope
+    private val eventDeleteSyncDao: EventDeleteSyncDao
 ) : EventSyncScheduler {
 
     private val workManager = WorkManager.getInstance(context)
@@ -60,9 +56,7 @@ class EventWorkSyncScheduler(
             syncType = SyncType.CREATE
         )
         eventSyncDao.upsertEventPendingSync(eventSyncEntity)
-        applicationScope.launch {
-            workManager.enqueue(WorkerType.CREATE.toEventOneTimeWorkRequest(sync.event.id)).await()
-        }.join()
+        workManager.enqueue(WorkerType.CREATE.toEventOneTimeWorkRequest(sync.event.id)).await()
     }
 
     private suspend fun scheduleUpdateEventWorker(
@@ -80,23 +74,21 @@ class EventWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.CREATE
         )
-        applicationScope.launch {
-            if (pendingCreateEventSync != null) {
-                workManager.cancelAllWorkByTag("$CREATE_EVENT${pendingCreateEventSync.eventId}")
-                    .await()
-                eventSyncDao.upsertEventPendingSync(
-                    eventSyncEntity.copy(
-                        syncType = SyncType.CREATE
-                    )
+        if (pendingCreateEventSync != null) {
+            workManager.cancelAllWorkByTag("$CREATE_EVENT${pendingCreateEventSync.eventId}")
+                .await()
+            eventSyncDao.upsertEventPendingSync(
+                eventSyncEntity.copy(
+                    syncType = SyncType.CREATE
                 )
-                workManager.enqueue(WorkerType.CREATE.toEventOneTimeWorkRequest(sync.event.id))
-                    .await()
-            } else {
-                eventSyncDao.upsertEventPendingSync(eventSyncEntity)
-                workManager.enqueue(WorkerType.UPDATE.toEventOneTimeWorkRequest(sync.event.id))
-                    .await()
-            }
-        }.join()
+            )
+            workManager.enqueue(WorkerType.CREATE.toEventOneTimeWorkRequest(sync.event.id))
+                .await()
+        } else {
+            eventSyncDao.upsertEventPendingSync(eventSyncEntity)
+            workManager.enqueue(WorkerType.UPDATE.toEventOneTimeWorkRequest(sync.event.id))
+                .await()
+        }
     }
 
     private suspend fun scheduleDeleteEventWorker(
@@ -117,31 +109,29 @@ class EventWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.UPDATE
         )
-        applicationScope.launch {
-            workManager.apply {
-                if (pendingCreateEventSync != null) {
-                    cancelAllWorkByTag("$CREATE_EVENT${pendingCreateEventSync.eventId}").await()
-                    eventSyncDao.deleteEventPendingSyncById(
-                        eventId = sync.eventId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-                if (pendingUpdateEventSync != null) {
-                    cancelAllWorkByTag("$UPDATE_EVENT${pendingUpdateEventSync.eventId}").await()
-                    eventSyncDao.deleteEventPendingSyncById(
-                        eventId = sync.eventId,
-                        userId = userId,
-                        syncType = SyncType.UPDATE
-                    )
-                }
-                if (pendingCreateEventSync == null) {
-                    eventDeleteSyncDao.upsertEventDeletePendingSync(eventDeleteSyncEntity)
-                    enqueue(WorkerType.DELETE.toEventOneTimeWorkRequest(eventDeleteSyncEntity.eventId))
-                        .await()
-                }
+        workManager.apply {
+            if (pendingCreateEventSync != null) {
+                cancelAllWorkByTag("$CREATE_EVENT${pendingCreateEventSync.eventId}").await()
+                eventSyncDao.deleteEventPendingSyncById(
+                    eventId = sync.eventId,
+                    userId = userId,
+                    syncType = SyncType.CREATE
+                )
             }
-        }.join()
+            if (pendingUpdateEventSync != null) {
+                cancelAllWorkByTag("$UPDATE_EVENT${pendingUpdateEventSync.eventId}").await()
+                eventSyncDao.deleteEventPendingSyncById(
+                    eventId = sync.eventId,
+                    userId = userId,
+                    syncType = SyncType.UPDATE
+                )
+            }
+            if (pendingCreateEventSync == null) {
+                eventDeleteSyncDao.upsertEventDeletePendingSync(eventDeleteSyncEntity)
+                enqueue(WorkerType.DELETE.toEventOneTimeWorkRequest(eventDeleteSyncEntity.eventId))
+                    .await()
+            }
+        }
     }
 
     companion object {
