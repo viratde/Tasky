@@ -52,6 +52,6 @@ class UpdateEventWorker(
 
     companion object {
         const val EVENT_ID = "event_id"
-        const val TAG = "create_event_work"
+        const val TAG = "update_event_work"
     }
 }

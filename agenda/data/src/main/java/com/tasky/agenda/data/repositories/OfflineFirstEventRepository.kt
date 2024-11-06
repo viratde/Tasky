@@ -1,19 +1,27 @@
 package com.tasky.agenda.data.repositories
 
+import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
+import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
+import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.mappers.toAlarm
 import com.tasky.agenda.domain.model.AttendeeExistence
 import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.repository.EventRepository
-import com.tasky.agenda.domain.data_sources.local.LocalEventDataSource
-import com.tasky.agenda.domain.data_sources.remote.RemoteEventDataSource
+import com.tasky.agenda.domain.schedulers.EventSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class OfflineFirstEventRepository(
     private val localEventDataSource: LocalEventDataSource,
-    private val remoteEventDataSource: RemoteEventDataSource
+    private val remoteEventDataSource: RemoteEventDataSource,
+    private val eventSyncScheduler: EventSyncScheduler,
+    private val alarmScheduler: AlarmScheduler,
+    private val applicationScope: CoroutineScope
 ) : EventRepository {
 
     override suspend fun addEvent(event: Event): EmptyDataResult<DataError> {
@@ -21,9 +29,12 @@ class OfflineFirstEventRepository(
         if (localEventResult !is Result.Success) {
             return localEventResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(event.toAlarm())
         return when (val remoteEventResult = remoteEventDataSource.create(event)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet created in remote data source
+                applicationScope.launch {
+                    eventSyncScheduler.sync(EventSyncScheduler.SyncType.CreateEventSync(event))
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -41,10 +52,13 @@ class OfflineFirstEventRepository(
         if (localEventResult !is Result.Success) {
             return localEventResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(event.toAlarm())
         return when (val remoteEventResult =
             remoteEventDataSource.update(event, deletedPhotoKeys)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet updated in remote data source
+                applicationScope.launch {
+                    eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(event))
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -60,9 +74,13 @@ class OfflineFirstEventRepository(
 
     override suspend fun deleteEventById(eventId: String) {
         localEventDataSource.deleteEvent(eventId)
-
-        // @todo - I need to check whether it was created remotely or not
-        remoteEventDataSource.delete(eventId)
+        alarmScheduler.cancelAlarmById(eventId)
+        val result = remoteEventDataSource.delete(eventId)
+        if (result is Result.Error) {
+            applicationScope.launch {
+                eventSyncScheduler.sync(EventSyncScheduler.SyncType.DeleteEventSync(eventId))
+            }.join()
+        }
     }
 
 

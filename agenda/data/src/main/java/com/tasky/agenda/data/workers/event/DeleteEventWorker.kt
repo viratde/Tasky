@@ -48,6 +48,6 @@ class DeleteEventWorker(
 
     companion object {
         const val EVENT_ID = "event_id"
-        const val TAG = "create_event_work"
+        const val TAG = "delete_event_work"
     }
 }

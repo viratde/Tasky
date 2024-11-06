@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Tasky</string>
+    <string name="reminder_notification_channel_desc">This channel is used to remind about tasks, reminder and upcoming events.</string>
 </resources>

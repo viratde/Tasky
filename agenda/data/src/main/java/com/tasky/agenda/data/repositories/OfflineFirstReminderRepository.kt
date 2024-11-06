@@ -1,18 +1,26 @@
 package com.tasky.agenda.data.repositories
 
-import com.tasky.agenda.domain.model.Reminder
-import com.tasky.agenda.domain.repository.ReminderRepository
+import com.tasky.agenda.domain.alarmScheduler.AlarmScheduler
 import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
 import com.tasky.agenda.domain.data_sources.remote.RemoteReminderDataSource
+import com.tasky.agenda.domain.mappers.toAlarm
+import com.tasky.agenda.domain.model.Reminder
+import com.tasky.agenda.domain.repository.ReminderRepository
+import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 class OfflineFirstReminderRepository(
     private val localReminderDataSource: LocalReminderDataSource,
-    private val remoteReminderDataSource: RemoteReminderDataSource
+    private val remoteReminderDataSource: RemoteReminderDataSource,
+    private val reminderSyncScheduler: ReminderSyncScheduler,
+    private val alarmScheduler: AlarmScheduler,
+    private val applicationScope: CoroutineScope
 ) : ReminderRepository {
 
     override suspend fun addReminder(reminder: Reminder): EmptyDataResult<DataError> {
@@ -20,9 +28,16 @@ class OfflineFirstReminderRepository(
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(reminder.toAlarm())
         return when (val remoteReminderResult = remoteReminderDataSource.create(reminder)) {
             is Result.Error -> {
-                // @todo - i need to store that it has been yet created in remote data source
+                applicationScope.launch {
+                    reminderSyncScheduler.sync(
+                        ReminderSyncScheduler.SyncType.CreateReminderSync(
+                            reminder
+                        )
+                    )
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -37,10 +52,17 @@ class OfflineFirstReminderRepository(
         if (localReminderResult !is Result.Success) {
             return localReminderResult.asEmptyDataResult()
         }
+        alarmScheduler.scheduleAlarm(reminder.toAlarm())
         return when (val remoteReminderResult =
             remoteReminderDataSource.update(reminder)) {
             is Result.Error -> {
-                // @todo - i need to store that as it has been yet updated in remote data source
+                applicationScope.launch {
+                    reminderSyncScheduler.sync(
+                        ReminderSyncScheduler.SyncType.UpdateReminderSync(
+                            reminder
+                        )
+                    )
+                }.join()
                 Result.Success(Unit)
             }
 
@@ -56,9 +78,13 @@ class OfflineFirstReminderRepository(
 
     override suspend fun deleteRemindersById(reminderId: String) {
         localReminderDataSource.deleteReminder(reminderId)
-
-        // @todo - I need to check whether it was created remotely or not
-        remoteReminderDataSource.delete(reminderId)
+        alarmScheduler.cancelAlarmById(reminderId)
+        val result = remoteReminderDataSource.delete(reminderId)
+        if (result is Result.Error) {
+            applicationScope.launch {
+                reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(reminderId))
+            }.join()
+        }
     }
 
     override suspend fun getReminderById(reminderId: String): Reminder? {

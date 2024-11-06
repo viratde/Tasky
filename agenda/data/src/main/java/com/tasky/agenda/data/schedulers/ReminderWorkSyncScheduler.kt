@@ -21,8 +21,7 @@ class ReminderWorkSyncScheduler(
     context: Context,
     private val authInfoStorage: AuthInfoStorage,
     private val reminderSyncDao: ReminderSyncDao,
-    private val reminderDeleteSyncDao: ReminderDeleteSyncDao,
-    private val applicationScope: CoroutineScope
+    private val reminderDeleteSyncDao: ReminderDeleteSyncDao
 ) : ReminderSyncScheduler {
     private val workManager = WorkManager.getInstance(context)
     override suspend fun sync(syncType: ReminderSyncScheduler.SyncType) {
@@ -58,10 +57,8 @@ class ReminderWorkSyncScheduler(
             syncType = SyncType.CREATE
         )
         reminderSyncDao.upsertReminderPendingSync(reminderSyncEntity)
-        applicationScope.launch {
-            workManager.enqueue(WorkerType.CREATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId))
-                .await()
-        }.join()
+        workManager.enqueue(WorkerType.CREATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId))
+            .await()
     }
 
     private suspend fun scheduleUpdateReminderWorker(
@@ -79,25 +76,23 @@ class ReminderWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.CREATE
         )
-        applicationScope.launch {
-            if (pendingCreateReminderSync != null) {
-                workManager.cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}")
-                    .await()
-                reminderSyncDao.upsertReminderPendingSync(
-                    reminderSyncEntity.copy(
-                        syncType = SyncType.CREATE
-                    )
+        if (pendingCreateReminderSync != null) {
+            workManager.cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}")
+                .await()
+            reminderSyncDao.upsertReminderPendingSync(
+                reminderSyncEntity.copy(
+                    syncType = SyncType.CREATE
                 )
-                workManager.enqueue(
-                    WorkerType.CREATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
-                ).await()
-            } else {
-                reminderSyncDao.upsertReminderPendingSync(reminderSyncEntity)
-                workManager.enqueue(
-                    WorkerType.UPDATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
-                ).await()
-            }
-        }.join()
+            )
+            workManager.enqueue(
+                WorkerType.CREATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
+            ).await()
+        } else {
+            reminderSyncDao.upsertReminderPendingSync(reminderSyncEntity)
+            workManager.enqueue(
+                WorkerType.UPDATE.toReminderOneTimeWorkRequest(reminderSyncEntity.reminderId)
+            ).await()
+        }
     }
 
     private suspend fun scheduleDeleteReminderWorker(
@@ -119,31 +114,29 @@ class ReminderWorkSyncScheduler(
             userId = userId,
             syncType = SyncType.UPDATE
         )
-        applicationScope.launch {
-            workManager.apply {
-                if (pendingCreateReminderSync != null) {
-                    cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}").await()
-                    reminderSyncDao.deleteReminderPendingSyncById(
-                        reminderId = sync.reminderId,
-                        userId = userId,
-                        syncType = SyncType.CREATE
-                    )
-                }
-                if (pendingUpdateReminderSync != null) {
-                    cancelAllWorkByTag("$UPDATE_REMINDER${pendingUpdateReminderSync.reminderId}").await()
-                    reminderSyncDao.deleteReminderPendingSyncById(
-                        reminderId = sync.reminderId,
-                        userId = userId,
-                        syncType = SyncType.UPDATE
-                    )
-                }
-                if (pendingCreateReminderSync == null) {
-                    reminderDeleteSyncDao.upsertReminderDeletePendingSync(reminderDeleteSyncEntity)
-                    enqueue(WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId))
-                        .await()
-                }
+        workManager.apply {
+            if (pendingCreateReminderSync != null) {
+                cancelAllWorkByTag("$CREATE_REMINDER${pendingCreateReminderSync.reminderId}").await()
+                reminderSyncDao.deleteReminderPendingSyncById(
+                    reminderId = sync.reminderId,
+                    userId = userId,
+                    syncType = SyncType.CREATE
+                )
             }
-        }.join()
+            if (pendingUpdateReminderSync != null) {
+                cancelAllWorkByTag("$UPDATE_REMINDER${pendingUpdateReminderSync.reminderId}").await()
+                reminderSyncDao.deleteReminderPendingSyncById(
+                    reminderId = sync.reminderId,
+                    userId = userId,
+                    syncType = SyncType.UPDATE
+                )
+            }
+            if (pendingCreateReminderSync == null) {
+                reminderDeleteSyncDao.upsertReminderDeletePendingSync(reminderDeleteSyncEntity)
+                enqueue(WorkerType.DELETE.toReminderOneTimeWorkRequest(reminderDeleteSyncEntity.reminderId))
+                    .await()
+            }
+        }
     }
 
     companion object {

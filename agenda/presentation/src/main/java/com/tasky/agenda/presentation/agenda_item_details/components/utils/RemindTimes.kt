@@ -15,7 +15,7 @@ enum class RemindTimes(
     ONE_DAY(24L * 60L);
 
     fun getTimeInMilliseconds(): Long {
-        return multiplier * 60L * 60L
+        return multiplier * 60L * 1000L
     }
 
     companion object {

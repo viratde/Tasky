@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.koin)
+    implementation(libs.timber)
 
     implementation(projects.core.domain)
     implementation(projects.agenda.domain)

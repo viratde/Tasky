@@ -9,6 +9,7 @@ import com.tasky.test_utils.auth.domain.FakeAuthRepository
 import com.tasky.test_utils.auth.domain.FakePatternValidator
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.presentation.ui.asUiText
+import com.tasky.test_utils.utils.MainDispatcherExtension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -21,7 +22,9 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
 
+@ExtendWith(MainDispatcherExtension::class)
 class LoginViewModelTest {
 
 

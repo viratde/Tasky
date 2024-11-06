@@ -19,6 +19,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 class HttpClientFactory(
     private val authInfoStorage: AuthInfoStorage,
@@ -28,20 +29,19 @@ class HttpClientFactory(
             install(ContentNegotiation) {
                 json(
                     json =
-                        Json {
-                            ignoreUnknownKeys = true
-                        },
+                    Json {
+                        ignoreUnknownKeys = true
+                    },
                 )
             }
 
             install(Logging) {
-                level = LogLevel.ALL
-                logger =
-                    object : Logger {
-                        override fun log(message: String) {
-                            println(message) // needs to implement some logger
-                        }
+                logger = object : Logger {
+                    override fun log(message: String) {
+                        Timber.d(message)
                     }
+                }
+                level = LogLevel.ALL
             }
 
             defaultRequest {
@@ -66,10 +66,10 @@ class HttpClientFactory(
                             client.post<AccessTokenRequest, AccessTokenResponse>(
                                 route = "/accessToken",
                                 body =
-                                    AccessTokenRequest(
-                                        refreshToken = authInfo?.refreshToken ?: "",
-                                        userId = authInfo?.userId ?: "",
-                                    ),
+                                AccessTokenRequest(
+                                    refreshToken = authInfo?.refreshToken ?: "",
+                                    userId = authInfo?.userId ?: "",
+                                ),
                             )
 
                         if (response is Result.Success) {
