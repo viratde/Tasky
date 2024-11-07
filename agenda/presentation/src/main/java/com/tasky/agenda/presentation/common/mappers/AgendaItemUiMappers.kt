@@ -4,9 +4,10 @@ import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.model.Reminder
 import com.tasky.agenda.domain.model.Task
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 
-fun AgendaItemUi.TaskUi.toTask(): Task {
+fun AgendaItem.TaskUi.toTask(): Task {
     return Task(
         id = id,
         title = title,
@@ -17,7 +18,7 @@ fun AgendaItemUi.TaskUi.toTask(): Task {
     )
 }
 
-fun AgendaItemUi.EventUi.toEvent(): Event {
+fun AgendaItem.EventUi.toEvent(): Event {
     return Event(
         id = id,
         title = title,
@@ -32,7 +33,7 @@ fun AgendaItemUi.EventUi.toEvent(): Event {
     )
 }
 
-fun AgendaItemUi.ReminderUi.toReminder(): Reminder {
+fun AgendaItem.ReminderUi.toReminder(): Reminder {
     return Reminder(
         id = id,
         title = title,
@@ -42,38 +43,20 @@ fun AgendaItemUi.ReminderUi.toReminder(): Reminder {
     )
 }
 
-fun Event.toAgendaItemEventUi(): AgendaItemUi.EventUi {
-    return AgendaItemUi.EventUi(
-        id = id,
-        title = title,
-        description = description,
-        from = from,
-        to = to,
-        remindAt = RemindTimes.getByTimeInMilliseconds(to, remindAt),
-        photos = photos,
-        attendees = attendees,
-        isHost = isUserEventCreator,
-        hostId = host
+fun Event.toAgendaItemUi(): AgendaItemUi.Item {
+    return AgendaItemUi.Item(
+        item = toAgendaItem()
     )
 }
 
-fun Task.toAgendaItemTaskUi(): AgendaItemUi.TaskUi {
-    return AgendaItemUi.TaskUi(
-        id = id,
-        title = title,
-        description = description,
-        time = time,
-        remindAt = RemindTimes.getByTimeInMilliseconds(time, remindAt),
-        isDone = isDone
+fun Task.toAgendaItemUi(): AgendaItemUi.Item {
+    return AgendaItemUi.Item(
+        item = toAgendaItem()
     )
 }
 
-fun Reminder.toAgendaItemReminderUi(): AgendaItemUi.ReminderUi {
-    return AgendaItemUi.ReminderUi(
-        id = id,
-        title = title,
-        description = description,
-        time = time,
-        remindAt = RemindTimes.getByTimeInMilliseconds(time, remindAt),
+fun Reminder.toAgendaItemUi(): AgendaItemUi.Item {
+    return AgendaItemUi.Item(
+        item = toAgendaItem()
     )
 }

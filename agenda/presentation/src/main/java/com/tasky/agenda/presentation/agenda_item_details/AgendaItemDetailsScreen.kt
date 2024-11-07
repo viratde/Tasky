@@ -20,9 +20,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.tasky.agenda.presentation.R
-import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputType
-import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyAgendaButton
+import com.tasky.agenda.presentation.agenda_item_details.components.TaskyDateTimePicker
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyModeledTextField
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyPhotosInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyRemindTimeInput
@@ -30,7 +29,8 @@ import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTitle
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyTopBar
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsAdderInput
 import com.tasky.agenda.presentation.agenda_item_details.components.TaskyVisitorsList
-import com.tasky.agenda.presentation.common.model.AgendaItemUi
+import com.tasky.agenda.presentation.agenda_item_details.components.utils.InputType
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
@@ -70,7 +70,7 @@ fun AgendaItemDetailsRoot(
     LoadingContainer(
         modifier = Modifier
             .fillMaxSize(),
-        isLoading = state.agendaItemUi == null
+        isLoading = state.agendaItem == null
     ) {
         AgendaItemDetailsScreen(
             state = state,
@@ -98,7 +98,7 @@ fun AgendaItemDetailsScreen(
     onAction: (AgendaItemDetailsAction) -> Unit
 ) {
 
-    requireNotNull(value = state.agendaItemUi)
+    requireNotNull(value = state.agendaItem)
     TaskyScaffold { innerPadding ->
 
         Column(
@@ -151,15 +151,15 @@ fun AgendaItemDetailsScreen(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .fillMaxWidth(),
-                        title = when (state.agendaItemUi) {
-                            is AgendaItemUi.TaskUi -> stringResource(id = R.string.task)
-                            is AgendaItemUi.EventUi -> stringResource(id = R.string.event)
-                            is AgendaItemUi.ReminderUi -> stringResource(id = R.string.remainder)
+                        title = when (state.agendaItem) {
+                            is AgendaItem.TaskUi -> stringResource(id = R.string.task)
+                            is AgendaItem.EventUi -> stringResource(id = R.string.event)
+                            is AgendaItem.ReminderUi -> stringResource(id = R.string.remainder)
                         },
-                        color = when (state.agendaItemUi) {
-                            is AgendaItemUi.EventUi -> TaskyLightGreen
-                            is AgendaItemUi.ReminderUi -> TaskyGrey
-                            is AgendaItemUi.TaskUi -> TaskyGreen
+                        color = when (state.agendaItem) {
+                            is AgendaItem.EventUi -> TaskyLightGreen
+                            is AgendaItem.ReminderUi -> TaskyGrey
+                            is AgendaItem.TaskUi -> TaskyGreen
                         }
                     )
 
@@ -171,7 +171,7 @@ fun AgendaItemDetailsScreen(
                             .padding(horizontal = 16.dp),
                         placeHolder = stringResource(id = R.string.title),
                         title = stringResource(id = R.string.edit_title),
-                        text = state.agendaItemUi.title,
+                        text = state.agendaItem.title,
                         inputType = InputType.TITLE,
                         isEnabled = state.isInEditMode,
                         onValueChange = { title ->
@@ -194,7 +194,7 @@ fun AgendaItemDetailsScreen(
                             .padding(horizontal = 16.dp),
                         placeHolder = stringResource(id = R.string.description),
                         title = stringResource(id = R.string.edit_description),
-                        text = state.agendaItemUi.description,
+                        text = state.agendaItem.description,
                         inputType = InputType.DESCRIPTION,
                         isEnabled = state.isInEditMode,
                         onValueChange = { desc ->
@@ -212,13 +212,13 @@ fun AgendaItemDetailsScreen(
                     )
 
 
-                    if (state.agendaItemUi is AgendaItemUi.EventUi) {
+                    if (state.agendaItem is AgendaItem.EventUi) {
 
                         TaskyPhotosInput(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            photos = state.agendaItemUi.photos,
-                            enabled = state.isInEditMode,
+                            photos = state.agendaItem.photos,
+                            enabled = state.isInEditMode && state.isNetworkConnected,
                             onAddPhoto = { photo, mimeType ->
                                 onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo, mimeType))
                             },
@@ -238,14 +238,14 @@ fun AgendaItemDetailsScreen(
 
                     }
 
-                    when (state.agendaItemUi) {
-                        is AgendaItemUi.EventUi -> {
+                    when (state.agendaItem) {
+                        is AgendaItem.EventUi -> {
                             TaskyDateTimePicker(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.from),
-                                dateTime = state.agendaItemUi.from,
+                                dateTime = state.agendaItem.from,
                                 isEnabled = state.isInEditMode,
                                 onChange = { from ->
                                     onAction(AgendaItemDetailsAction.OnFromChange(from))
@@ -266,7 +266,7 @@ fun AgendaItemDetailsScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.to),
-                                dateTime = state.agendaItemUi.to,
+                                dateTime = state.agendaItem.to,
                                 isEnabled = state.isInEditMode,
                                 onChange = { to ->
                                     onAction(AgendaItemDetailsAction.OnFromChange(to))
@@ -274,13 +274,13 @@ fun AgendaItemDetailsScreen(
                             )
                         }
 
-                        is AgendaItemUi.ReminderUi -> {
+                        is AgendaItem.ReminderUi -> {
                             TaskyDateTimePicker(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.at),
-                                dateTime = state.agendaItemUi.time,
+                                dateTime = state.agendaItem.time,
                                 isEnabled = state.isInEditMode,
                                 onChange = { at ->
                                     onAction(AgendaItemDetailsAction.OnAtChange(at))
@@ -290,13 +290,13 @@ fun AgendaItemDetailsScreen(
 
                         }
 
-                        is AgendaItemUi.TaskUi -> {
+                        is AgendaItem.TaskUi -> {
                             TaskyDateTimePicker(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.at),
-                                dateTime = state.agendaItemUi.time,
+                                dateTime = state.agendaItem.time,
                                 isEnabled = state.isInEditMode,
                                 onChange = { at ->
                                     onAction(AgendaItemDetailsAction.OnAtChange(at))
@@ -319,7 +319,7 @@ fun AgendaItemDetailsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
-                        remindTime = state.agendaItemUi.remindAt,
+                        remindTime = state.agendaItem.remindAt,
                         isEnabled = state.isInEditMode
                     ) { remindTime ->
                         onAction(AgendaItemDetailsAction.OnRemindTimeChange(remindTime))
@@ -334,7 +334,7 @@ fun AgendaItemDetailsScreen(
                             )
                     )
 
-                    if (state.agendaItemUi is AgendaItemUi.EventUi) {
+                    if (state.agendaItem is AgendaItem.EventUi) {
                         TaskyVisitorsList(
                             modifier = Modifier
                                 .padding(
@@ -348,8 +348,8 @@ fun AgendaItemDetailsScreen(
                                     )
                                 )
                             },
-                            visitors = state.agendaItemUi.attendees,
-                            hostUserId = state.agendaItemUi.hostId,
+                            visitors = state.agendaItem.attendees,
+                            hostUserId = state.agendaItem.hostId,
                             onToggleAddModel = {
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },
@@ -401,13 +401,13 @@ fun AgendaItemDetailsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    text = when (state.agendaItemUi) {
-                        is AgendaItemUi.EventUi -> {
-                            stringResource(id = if (state.agendaItemUi.isHost) R.string.delete_event else R.string.leave_event)
+                    text = when (state.agendaItem) {
+                        is AgendaItem.EventUi -> {
+                            stringResource(id = if (state.agendaItem.isHost) R.string.delete_event else R.string.leave_event)
                         }
 
-                        is AgendaItemUi.ReminderUi -> stringResource(id = R.string.delete_remainder)
-                        is AgendaItemUi.TaskUi -> stringResource(id = R.string.delete_task)
+                        is AgendaItem.ReminderUi -> stringResource(id = R.string.delete_remainder)
+                        is AgendaItem.TaskUi -> stringResource(id = R.string.delete_task)
                     },
                     enabled = true,
                     onClick = {
@@ -430,7 +430,7 @@ private fun AgendaEventUiScreenPreview() {
     TaskyTheme {
         AgendaItemDetailsScreen(
             state = AgendaDetailsState(
-                agendaItemUi = FakeEventUi
+                agendaItem = FakeEventUi
             ),
             selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
         ) { action ->
@@ -445,7 +445,7 @@ private fun AgendaRemainderUiScreenPreview() {
     TaskyTheme {
         AgendaItemDetailsScreen(
             state = AgendaDetailsState(
-                agendaItemUi = FakeRemainderUi
+                agendaItem = FakeRemainderUi
             ),
             selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
         ) { action ->
@@ -460,7 +460,7 @@ private fun AgendaTaskUiScreenPreview() {
     TaskyTheme {
         AgendaItemDetailsScreen(
             state = AgendaDetailsState(
-                agendaItemUi = FakeTaskUi
+                agendaItem = FakeTaskUi
             ),
             selectedDate = ZonedDateTime.now().toInstant().toEpochMilli()
         ) { action ->

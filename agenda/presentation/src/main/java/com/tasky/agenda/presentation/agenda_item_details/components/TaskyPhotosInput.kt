@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,6 +106,7 @@ fun TaskyPhotosInput(
     if (selectedPhoto != null) {
         TaskySelectedPhoto(
             selectedPhoto = selectedPhoto!!,
+            enabled = enabled,
             onDelete = { onDeletePhoto(selectedPhoto!!) },
             onClose = { selectedPhoto = null }
         )
@@ -127,23 +129,38 @@ fun TaskyPhotosInput(
                 contentAlignment = Alignment.Center
             ) {
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null,
-                        tint = TaskyGrey
-                    )
+                if (enabled) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = TaskyGrey
+                        )
+                        Text(
+                            text = stringResource(id = R.string.add_photos),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = TaskyGrey,
+                                fontSize = 16.sp,
+                                fontFamily = inter,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        )
+                    }
+                } else {
                     Text(
-                        text = stringResource(id = R.string.add_photos),
+                        text = stringResource(id = R.string.photo_cannot_be_added),
                         style = MaterialTheme.typography.bodyLarge.copy(
                             color = TaskyGrey,
                             fontSize = 16.sp,
                             fontFamily = inter,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center
+                        ),
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
                     )
                 }
 
@@ -199,24 +216,24 @@ fun TaskyPhotosInput(
                             },
                         )
                     }
-                    TaskyPhotoAdder(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                            .border(
-                                2.dp,
-                                TaskyLightBlue,
-                                RoundedCornerShape(6.dp)
-                            )
-                            .border(
-                                2.dp,
-                                Color.Transparent,
-                                RoundedCornerShape(6.dp)
-                            ),
-                        enabled = enabled,
-                        onClick = onOpen
-                    )
-
+                    if (enabled) {
+                        TaskyPhotoAdder(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .border(
+                                    2.dp,
+                                    TaskyLightBlue,
+                                    RoundedCornerShape(6.dp)
+                                )
+                                .border(
+                                    2.dp,
+                                    Color.Transparent,
+                                    RoundedCornerShape(6.dp)
+                                ),
+                            onClick = onOpen
+                        )
+                    }
                 }
 
             }
@@ -229,9 +246,9 @@ fun TaskyPhotosInput(
 
 @Composable
 private fun TaskyPhotoAdder(
-    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Icon(
         imageVector = Icons.Default.Add,
@@ -252,6 +269,7 @@ private fun TaskyPhotoAdder(
 @Composable
 private fun TaskySelectedPhoto(
     selectedPhoto: AgendaPhoto,
+    enabled: Boolean,
     onDelete: () -> Unit,
     onClose: () -> Unit
 ) {
@@ -315,17 +333,19 @@ private fun TaskySelectedPhoto(
                         )
                     }
 
-                    IconButton(
-                        onClick = {
-                            onDelete()
-                            onClose()
+                    if (enabled) {
+                        IconButton(
+                            onClick = {
+                                onDelete()
+                                onClose()
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = null,
+                                tint = TaskyWhite
+                            )
                         }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = null,
-                            tint = TaskyWhite
-                        )
                     }
 
                 }

@@ -1,39 +1,40 @@
 package com.tasky.agenda.presentation.common.util
 
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 
 
-fun AgendaItemUi.toAgendaItemUiType():AgendaItemUiType {
-    return when(this){
-        is AgendaItemUi.EventUi -> AgendaItemUiType.Event
-        is AgendaItemUi.ReminderUi -> AgendaItemUiType.Reminder
-        is AgendaItemUi.TaskUi -> AgendaItemUiType.Task
-    }
+fun AgendaItemUi.Item.toAgendaItemUiType(): AgendaItemType {
+    return item.toAgendaItemUiType()
 }
 
-inline fun AgendaItemUi.ifTaskUi(
-    action: (AgendaItemUi.TaskUi) -> Unit
-): AgendaItemUi {
-    if (this is AgendaItemUi.TaskUi) {
-        action(this)
-    }
-    return this
+fun AgendaItemUi.Item.toComparableTime(): Long {
+    return item.toComparableTime()
 }
 
-inline fun AgendaItemUi.ifEventUi(
-    action: (AgendaItemUi.EventUi) -> Unit
-): AgendaItemUi {
-    if (this is AgendaItemUi.EventUi) {
-        action(this)
+inline fun AgendaItemUi.Item.ifTaskUi(
+    action: (AgendaItem.TaskUi) -> Unit
+): AgendaItemUi.Item {
+    if (item is AgendaItem.TaskUi) {
+        action(item)
     }
     return this
 }
 
-inline fun AgendaItemUi.ifReminderUi(
-    action: (AgendaItemUi.ReminderUi) -> Unit
-): AgendaItemUi {
-    if (this is AgendaItemUi.ReminderUi) {
-        action(this)
+inline fun AgendaItemUi.Item.ifEventUi(
+    action: (AgendaItem.EventUi) -> Unit
+): AgendaItemUi.Item {
+    if (item is AgendaItem.EventUi) {
+        action(item)
+    }
+    return this
+}
+
+inline fun AgendaItemUi.Item.ifReminderUi(
+    action: (AgendaItem.ReminderUi) -> Unit
+): AgendaItemUi.Item {
+    if (item is AgendaItem.ReminderUi) {
+        action(item)
     }
     return this
 }

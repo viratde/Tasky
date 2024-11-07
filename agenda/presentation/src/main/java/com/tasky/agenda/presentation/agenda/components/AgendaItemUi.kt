@@ -14,22 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -38,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tasky.agenda.presentation.R
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
@@ -63,7 +57,7 @@ fun AgendaItemUi(
     onEdit: () -> Unit,
     onView: () -> Unit,
     onDelete: () -> Unit,
-    agendaItemUi: AgendaItemUi,
+    agendaItem: AgendaItem,
     isContextMenuOpen: Boolean,
     modifier: Modifier = Modifier,
     onToggle: (() -> Unit)? = null,
@@ -75,10 +69,10 @@ fun AgendaItemUi(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(
-                when (agendaItemUi) {
-                    is AgendaItemUi.EventUi -> TaskyLightGreen
-                    is AgendaItemUi.ReminderUi -> TaskyLight2
-                    is AgendaItemUi.TaskUi -> TaskyGreen
+                when (agendaItem) {
+                    is AgendaItem.EventUi -> TaskyLightGreen
+                    is AgendaItem.ReminderUi -> TaskyLight2
+                    is AgendaItem.TaskUi -> TaskyGreen
                 }
             )
             .padding(
@@ -97,21 +91,21 @@ fun AgendaItemUi(
                 modifier = Modifier
                     .size(18.dp)
                     .clip(CircleShape)
-                    .clickable(agendaItemUi is AgendaItemUi.TaskUi && onToggle != null) {
+                    .clickable(agendaItem is AgendaItem.TaskUi && onToggle != null) {
                         onToggle?.invoke()
                     }
                     .border(
                         2.dp,
-                        when (agendaItemUi) {
-                            is AgendaItemUi.EventUi -> TaskyBlack
-                            is AgendaItemUi.ReminderUi -> TaskyBlack
-                            is AgendaItemUi.TaskUi -> TaskyWhite
+                        when (agendaItem) {
+                            is AgendaItem.EventUi -> TaskyBlack
+                            is AgendaItem.ReminderUi -> TaskyBlack
+                            is AgendaItem.TaskUi -> TaskyWhite
                         },
                         CircleShape
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (agendaItemUi is AgendaItemUi.TaskUi && agendaItemUi.isDone) {
+                if (agendaItem is AgendaItem.TaskUi && agendaItem.isDone) {
                     Icon(
                         imageVector = CheckedIcon,
                         contentDescription = null,
@@ -125,17 +119,17 @@ fun AgendaItemUi(
             Spacer(modifier = Modifier.width(12.dp))
 
             Text(
-                text = agendaItemUi.title,
+                text = agendaItem.title,
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    color = when (agendaItemUi) {
-                        is AgendaItemUi.EventUi -> TaskyBlack
-                        is AgendaItemUi.ReminderUi -> TaskyBlack
-                        is AgendaItemUi.TaskUi -> TaskyWhite
+                    color = when (agendaItem) {
+                        is AgendaItem.EventUi -> TaskyBlack
+                        is AgendaItem.ReminderUi -> TaskyBlack
+                        is AgendaItem.TaskUi -> TaskyWhite
                     },
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = inter,
-                    textDecoration = if (agendaItemUi is AgendaItemUi.TaskUi && agendaItemUi.isDone) TextDecoration.LineThrough else null
+                    textDecoration = if (agendaItem is AgendaItem.TaskUi && agendaItem.isDone) TextDecoration.LineThrough else null
                 )
             )
 
@@ -148,14 +142,14 @@ fun AgendaItemUi(
                     Icon(
                         imageVector = ContextMenuIcon,
                         contentDescription = null,
-                        tint = when (agendaItemUi) {
-                            is AgendaItemUi.EventUi -> TaskyBlack
-                            is AgendaItemUi.ReminderUi -> TaskyBlack
-                            is AgendaItemUi.TaskUi -> TaskyWhite
+                        tint = when (agendaItem) {
+                            is AgendaItem.EventUi -> TaskyBlack
+                            is AgendaItem.ReminderUi -> TaskyBlack
+                            is AgendaItem.TaskUi -> TaskyWhite
                         }
                     )
                 }
-                AgendaItemUiContextMenu(
+                AgendaItemContextMenu(
                     expanded = isContextMenuOpen,
                     onClose = onToggleContextMenu,
                     onEdit = onEdit,
@@ -168,12 +162,12 @@ fun AgendaItemUi(
 
 
         Text(
-            text = agendaItemUi.description,
+            text = agendaItem.description,
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = when (agendaItemUi) {
-                    is AgendaItemUi.EventUi -> TaskyDarkGrey
-                    is AgendaItemUi.ReminderUi -> TaskyDarkGrey
-                    is AgendaItemUi.TaskUi -> TaskyWhite
+                color = when (agendaItem) {
+                    is AgendaItem.EventUi -> TaskyDarkGrey
+                    is AgendaItem.ReminderUi -> TaskyDarkGrey
+                    is AgendaItem.TaskUi -> TaskyWhite
                 },
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
@@ -186,19 +180,19 @@ fun AgendaItemUi(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = when (agendaItemUi) {
-                is AgendaItemUi.EventUi -> "${agendaItemUi.from.toFormatAgendaUiDate()} - ${agendaItemUi.to.toFormatAgendaUiDate()}"
-                is AgendaItemUi.ReminderUi -> agendaItemUi.time.toFormatAgendaUiDate()
-                is AgendaItemUi.TaskUi -> agendaItemUi.time.toFormatAgendaUiDate()
+            text = when (agendaItem) {
+                is AgendaItem.EventUi -> "${agendaItem.from.toFormatAgendaUiDate()} - ${agendaItem.to.toFormatAgendaUiDate()}"
+                is AgendaItem.ReminderUi -> agendaItem.time.toFormatAgendaUiDate()
+                is AgendaItem.TaskUi -> agendaItem.time.toFormatAgendaUiDate()
             },
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
                 fontFamily = inter,
-                color = when (agendaItemUi) {
-                    is AgendaItemUi.EventUi -> TaskyDarkGrey
-                    is AgendaItemUi.ReminderUi -> TaskyDarkGrey
-                    is AgendaItemUi.TaskUi -> TaskyWhite
+                color = when (agendaItem) {
+                    is AgendaItem.EventUi -> TaskyDarkGrey
+                    is AgendaItem.ReminderUi -> TaskyDarkGrey
+                    is AgendaItem.TaskUi -> TaskyWhite
                 },
                 textAlign = TextAlign.Right
             ),
@@ -211,7 +205,7 @@ fun AgendaItemUi(
 }
 
 @Composable
-private fun AgendaItemUiContextMenu(
+private fun AgendaItemContextMenu(
     expanded: Boolean,
     onClose: () -> Unit,
     onEdit: () -> Unit,
@@ -253,10 +247,10 @@ private fun AgendaItemUiContextMenu(
     showBackground = true
 )
 @Composable
-private fun BasicAgendaItemUiPreview() {
+private fun BasicAgendaItemPreview() {
     TaskyTheme {
         AgendaItemUi(
-            agendaItemUi = FakeEventUi,
+            agendaItem = FakeEventUi,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -279,7 +273,7 @@ private fun BasicAgendaItemUiPreview() {
 private fun BasicAgendaItemTaskUiPreview() {
     TaskyTheme {
         AgendaItemUi(
-            agendaItemUi = FakeTaskUi,
+            agendaItem = FakeTaskUi,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
@@ -302,7 +296,7 @@ private fun BasicAgendaItemTaskUiPreview() {
 private fun BasicAgendaItemTaskUiDonePreview() {
     TaskyTheme {
         AgendaItemUi(
-            agendaItemUi = FakeTaskUi.copy(
+            agendaItem = FakeTaskUi.copy(
                 isDone = true
             ),
             modifier = Modifier
@@ -327,7 +321,7 @@ private fun BasicAgendaItemTaskUiDonePreview() {
 private fun BasicAgendaItemRemainderUiPreview() {
     TaskyTheme {
         AgendaItemUi(
-            agendaItemUi = FakeRemainderUi,
+            agendaItem = FakeRemainderUi,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
