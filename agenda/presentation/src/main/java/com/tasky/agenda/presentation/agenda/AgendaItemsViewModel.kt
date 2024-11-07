@@ -9,8 +9,9 @@ import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemUiList
 import com.tasky.agenda.presentation.common.mappers.toTask
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
-import com.tasky.agenda.presentation.common.util.AgendaItemUiType
+import com.tasky.agenda.presentation.common.util.AgendaItemType
 import com.tasky.agenda.presentation.common.util.ifEventUi
 import com.tasky.agenda.presentation.common.util.ifReminderUi
 import com.tasky.agenda.presentation.common.util.ifTaskUi
@@ -60,25 +61,25 @@ class AgendaItemsViewModel(
                 _state.update {
                     it.copy(isAddAgendaItemDropDownOpen = false)
                 }
-                navigateToDetailsScreen(AgendaItemUiType.Event)
+                navigateToDetailsScreen(AgendaItemType.Event)
             }
 
             AgendaItemsAction.OnAddRemainder -> {
                 _state.update {
                     it.copy(isAddAgendaItemDropDownOpen = false)
                 }
-                navigateToDetailsScreen(AgendaItemUiType.Reminder)
+                navigateToDetailsScreen(AgendaItemType.Reminder)
             }
 
             AgendaItemsAction.OnAddTask -> {
                 _state.update {
                     it.copy(isAddAgendaItemDropDownOpen = false)
                 }
-                navigateToDetailsScreen(AgendaItemUiType.Task)
+                navigateToDetailsScreen(AgendaItemType.Task)
             }
 
             is AgendaItemsAction.OnDeleteAgendaItemUi -> {
-                deleteAgendaItem(action.agendaItemUi)
+                deleteAgendaItem(action.agendaItem)
             }
 
             is AgendaItemsAction.OnEditAgendaItemUi -> {
@@ -86,8 +87,8 @@ class AgendaItemsViewModel(
                     it.copy(selectedAgendaItemUi = null)
                 }
                 navigateToDetailsScreen(
-                    action.agendaItemUi.toAgendaItemUiType(),
-                    action.agendaItemUi.id,
+                    action.agendaItem.toAgendaItemUiType(),
+                    action.agendaItem.item.id,
                     true
                 )
             }
@@ -97,8 +98,8 @@ class AgendaItemsViewModel(
                     it.copy(selectedAgendaItemUi = null)
                 }
                 navigateToDetailsScreen(
-                    action.agendaItemUi.toAgendaItemUiType(),
-                    action.agendaItemUi.id
+                    action.agendaItem.toAgendaItemUiType(),
+                    action.agendaItem.item.id
                 )
             }
 
@@ -153,7 +154,7 @@ class AgendaItemsViewModel(
             is AgendaItemsAction.OnToggleAgendaItemUi -> {
                 _state.update {
                     it.copy(
-                        selectedAgendaItemUi = if (it.selectedAgendaItemUi == action.agendaItemUiId) null else action.agendaItemUiId
+                        selectedAgendaItemUi = if (it.selectedAgendaItemUi == action.agendaItemId) null else action.agendaItemId
                     )
                 }
             }
@@ -192,10 +193,20 @@ class AgendaItemsViewModel(
                 _state.update {
                     val items =
                         agenda.toAgendaItemUiList().sortedBy { item -> item.toComparableTime() }
-                    val currentTime = getCurrentTimeInMillis()
+                            .let { items ->
+                                val currentTime = getCurrentTimeInMillis()
+                                val index =
+                                    items.indexOfLast { item -> item.toComparableTime() < currentTime }
+                                if (index != -1) {
+                                    val mutableList = items.toMutableList<AgendaItemUi>()
+                                    mutableList.add(index + 1, AgendaItemUi.Needle)
+                                    return@let mutableList.toList()
+                                }
+                                items.toList<AgendaItemUi>()
+                            }
+
                     it.copy(
                         agendaItems = items,
-                        nearestGreaterThanNowAgendaItemId = items.lastOrNull { item -> item.toComparableTime() < currentTime }?.id
                     )
                 }
             }
@@ -203,7 +214,7 @@ class AgendaItemsViewModel(
     }
 
     private fun navigateToDetailsScreen(
-        itemUiType: AgendaItemUiType,
+        itemUiType: AgendaItemType,
         agendaItemUiId: String? = null,
         isInEditMode: Boolean = false
     ) {
@@ -220,7 +231,7 @@ class AgendaItemsViewModel(
         }
     }
 
-    private fun deleteAgendaItem(agendaItemUi: AgendaItemUi) {
+    private fun deleteAgendaItem(agendaItemUi: AgendaItemUi.Item) {
         viewModelScope.launch {
             agendaItemUi
                 .ifEventUi {
@@ -235,7 +246,7 @@ class AgendaItemsViewModel(
         }
     }
 
-    private fun toggleTaskUiAgendaItem(taskUi: AgendaItemUi.TaskUi) {
+    private fun toggleTaskUiAgendaItem(taskUi: AgendaItem.TaskUi) {
         viewModelScope.launch {
             val result = taskRepository.updateTask(taskUi.copy(isDone = !taskUi.isDone).toTask())
             when (result) {

@@ -28,11 +28,12 @@ import com.tasky.agenda.presentation.agenda.components.AgendaFloatingContextMenu
 import com.tasky.agenda.presentation.agenda.components.AgendaItemUi
 import com.tasky.agenda.presentation.agenda.components.AgendaItemsTopBar
 import com.tasky.agenda.presentation.agenda.components.AgendaNowIndicator
+import com.tasky.agenda.presentation.common.model.AgendaItem
 import com.tasky.agenda.presentation.common.model.AgendaItemUi
 import com.tasky.agenda.presentation.common.model.FakeEventUi
 import com.tasky.agenda.presentation.common.model.FakeRemainderUi
 import com.tasky.agenda.presentation.common.model.FakeTaskUi
-import com.tasky.agenda.presentation.common.util.AgendaItemUiType
+import com.tasky.agenda.presentation.common.util.AgendaItemType
 import com.tasky.core.presentation.designsystem.components.TaskyFloatingActionButton
 import com.tasky.core.presentation.designsystem.components.TaskyScaffold
 import com.tasky.core.presentation.designsystem.ui.TaskyBlack
@@ -44,7 +45,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
-    onNavigate: (itemType: AgendaItemUiType, selectedDate: Long, agendaItemId: String?, isInEditMode: Boolean) -> Unit
+    onNavigate: (itemType: AgendaItemType, selectedDate: Long, agendaItemId: String?, isInEditMode: Boolean) -> Unit
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -193,38 +194,41 @@ fun AgendaItemsScreen(
                 ) {
                     items(state.agendaItems) { agendaItemUi ->
 
-                        if (state.nearestGreaterThanNowAgendaItemId == agendaItemUi.id) {
-                            AgendaNowIndicator(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            )
-                        }
-
-                        AgendaItemUi(
-                            agendaItemUi = agendaItemUi,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            onDelete = {
-                                onAction(AgendaItemsAction.OnDeleteAgendaItemUi(agendaItemUi))
-                            },
-                            onEdit = {
-                                onAction(AgendaItemsAction.OnEditAgendaItemUi(agendaItemUi))
-                            },
-                            onToggle = if (agendaItemUi is AgendaItemUi.TaskUi) ({
-                                onAction(AgendaItemsAction.OnToggleTaskUiCompletion(agendaItemUi))
-                            }) else null,
-                            onView = {
-                                onAction(AgendaItemsAction.OnOpenAgendaItemUi(agendaItemUi))
-                            },
-                            isContextMenuOpen = state.selectedAgendaItemUi == agendaItemUi.id,
-                            onToggleContextMenu = {
-                                onAction(
-                                    AgendaItemsAction.OnToggleAgendaItemUi(agendaItemUi.id)
+                        when(agendaItemUi){
+                            is AgendaItemUi.Item -> {
+                                AgendaItemUi(
+                                    agendaItem = agendaItemUi.item,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp),
+                                    onDelete = {
+                                        onAction(AgendaItemsAction.OnDeleteAgendaItemUi(agendaItemUi))
+                                    },
+                                    onEdit = {
+                                        onAction(AgendaItemsAction.OnEditAgendaItemUi(agendaItemUi))
+                                    },
+                                    onToggle = if (agendaItemUi.item is AgendaItem.TaskUi) ({
+                                        onAction(AgendaItemsAction.OnToggleTaskUiCompletion(agendaItemUi.item))
+                                    }) else null,
+                                    onView = {
+                                        onAction(AgendaItemsAction.OnOpenAgendaItemUi(agendaItemUi))
+                                    },
+                                    isContextMenuOpen = state.selectedAgendaItemUi == agendaItemUi.item.id,
+                                    onToggleContextMenu = {
+                                        onAction(
+                                            AgendaItemsAction.OnToggleAgendaItemUi(agendaItemUi.item.id)
+                                        )
+                                    }
                                 )
                             }
-                        )
+                            AgendaItemUi.Needle -> {
+                                AgendaNowIndicator(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp)
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -246,15 +250,15 @@ private fun AgendaItemsScreenPreview() {
             state = AgendaItemsState(
                 fullName = "Virat Kumar",
                 agendaItems = listOf(
-                    FakeEventUi,
-                    FakeRemainderUi,
-                    FakeTaskUi,
-                    FakeEventUi,
-                    FakeRemainderUi,
-                    FakeTaskUi,
-                    FakeEventUi,
-                    FakeRemainderUi,
-                    FakeTaskUi,
+                    AgendaItemUi.Item(FakeEventUi),
+                     AgendaItemUi.Item(FakeRemainderUi),
+                     AgendaItemUi.Item(FakeTaskUi),
+                     AgendaItemUi.Item(FakeEventUi),
+                     AgendaItemUi.Item(FakeRemainderUi),
+                     AgendaItemUi.Item(FakeTaskUi),
+                     AgendaItemUi.Item(FakeEventUi),
+                     AgendaItemUi.Item(FakeRemainderUi),
+                     AgendaItemUi.Item(FakeTaskUi),
                 )
             )
         ) { action ->

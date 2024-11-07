@@ -1,6 +1,6 @@
 package com.tasky.agenda.presentation.common.util
 
-enum class AgendaItemUiType {
+enum class AgendaItemType {
     Reminder,
     Event,
     Task

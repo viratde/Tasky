@@ -39,7 +39,7 @@ fun NavGraphBuilder.agendaGraph(
                     navController.navigate(
                         AgendaItemUiScreen(
                             agendaItemId = agendaItemUiId,
-                            agendaItemUiType = agendaItemUiType,
+                            agendaItemType = agendaItemUiType,
                             selectedDate = selectedDate,
                             isInEditMode = isInEditMode
                         )

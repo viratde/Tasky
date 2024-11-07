@@ -1,11 +1,9 @@
 package com.tasky
 
 import android.app.Application
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.tasky.agenda.data.alarmScheduler.AlarmReceiver
 import com.tasky.agenda.data.di.agendaDataModule
 import com.tasky.agenda.network.di.agendaNetworkModule
 import com.tasky.agenda.presentation.di.agendaPresentationModule
@@ -50,8 +48,8 @@ class TaskyApp : Application() {
     private fun createReminderNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
-                AlarmReceiver.REMINDER_NOTIFICATION_CHANNEL_ID,
-                AlarmReceiver.REMINDER_NOTIFICATION_CHANNEL_NAME,
+                REMINDER_NOTIFICATION_CHANNEL_ID,
+                REMINDER_NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 enableVibration(true)
@@ -61,6 +59,11 @@ class TaskyApp : Application() {
             val notificationManager = getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)
         }
+    }
+
+    companion object {
+        const val REMINDER_NOTIFICATION_CHANNEL_ID = "Reminder"
+        const val REMINDER_NOTIFICATION_CHANNEL_NAME = "Reminder"
     }
 
 }

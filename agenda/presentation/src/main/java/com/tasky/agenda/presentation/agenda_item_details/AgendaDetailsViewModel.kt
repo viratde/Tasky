@@ -11,15 +11,13 @@ import com.tasky.agenda.domain.utils.ConnectivityObserver
 import com.tasky.agenda.domain.utils.ImageCompressor
 import com.tasky.agenda.presentation.agenda_item_details.components.utils.RemindTimes
 import com.tasky.agenda.presentation.agenda_item_details.model.VisitorState
-import com.tasky.agenda.presentation.common.mappers.toAgendaItemEventUi
-import com.tasky.agenda.presentation.common.mappers.toAgendaItemReminderUi
-import com.tasky.agenda.presentation.common.mappers.toAgendaItemTaskUi
+import com.tasky.agenda.presentation.common.mappers.toAgendaItem
 import com.tasky.agenda.presentation.common.mappers.toAttendee
 import com.tasky.agenda.presentation.common.mappers.toEvent
 import com.tasky.agenda.presentation.common.mappers.toReminder
 import com.tasky.agenda.presentation.common.mappers.toTask
-import com.tasky.agenda.presentation.common.model.AgendaItemUi
-import com.tasky.agenda.presentation.common.util.AgendaItemUiType
+import com.tasky.agenda.presentation.common.model.AgendaItem
+import com.tasky.agenda.presentation.common.util.AgendaItemType
 import com.tasky.agenda.presentation.common.util.ifEventUi
 import com.tasky.agenda.presentation.common.util.ifReminderUi
 import com.tasky.agenda.presentation.common.util.ifTaskUi
@@ -70,11 +68,11 @@ class AgendaDetailsViewModel(
     fun onAction(action: AgendaItemDetailsAction) {
         when (action) {
             is AgendaItemDetailsAction.OnAtChange -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifTaskUi { taskUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = taskUi.copy(
+                                agendaItem = taskUi.copy(
                                     time = action.at
                                 )
                             )
@@ -83,7 +81,7 @@ class AgendaDetailsViewModel(
                     ?.ifReminderUi { reminderUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = reminderUi.copy(
+                                agendaItem = reminderUi.copy(
                                     time = action.at
                                 )
                             )
@@ -94,7 +92,7 @@ class AgendaDetailsViewModel(
             is AgendaItemDetailsAction.OnDescriptionChange -> {
                 _state.update {
                     it.copy(
-                        agendaItemUi = it.agendaItemUi?.copy(
+                        agendaItem = it.agendaItem?.copy(
                             description = action.description
                         )
                     )
@@ -102,11 +100,11 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnFromChange -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = eventUi.copy(
+                                agendaItem = eventUi.copy(
                                     from = action.from
                                 )
                             )
@@ -117,7 +115,7 @@ class AgendaDetailsViewModel(
             is AgendaItemDetailsAction.OnRemindTimeChange -> {
                 _state.update {
                     it.copy(
-                        agendaItemUi = it.agendaItemUi?.copy(
+                        agendaItem = it.agendaItem?.copy(
                             remindAt = action.remindTime
                         )
                     )
@@ -127,7 +125,7 @@ class AgendaDetailsViewModel(
             is AgendaItemDetailsAction.OnTitleChange -> {
                 _state.update {
                     it.copy(
-                        agendaItemUi = it.agendaItemUi?.copy(
+                        agendaItem = it.agendaItem?.copy(
                             title = action.title
                         )
                     )
@@ -135,11 +133,11 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnToChange -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         _state.update {
                             it.copy(
-                                agendaItemUi = eventUi.copy(
+                                agendaItem = eventUi.copy(
                                     to = action.to
                                 )
                             )
@@ -156,12 +154,12 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnAddAgendaPhoto -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         viewModelScope.launch {
                             _state.update {
                                 it.copy(
-                                    agendaItemUi = eventUi.copy(
+                                    agendaItem = eventUi.copy(
                                         photos = eventUi.photos + AgendaPhoto.LocalPhoto(
                                             id = action.photo.id,
                                             photo = imageCompressor.compress(
@@ -209,12 +207,12 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnDeleteVisitor -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         _state.update {
                             // @todo need to handle the situation where a user wants to delete himself from event (handled in leave event action)
                             it.copy(
-                                agendaItemUi = eventUi.copy(
+                                agendaItem = eventUi.copy(
                                     attendees = eventUi.attendees.filter {
                                         it.userId != action.attendee.userId && it.userId != eventUi.hostId
                                     }
@@ -229,13 +227,13 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnDeleteAgendaPhoto -> {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         _state.update {
                             when (action.agendaPhoto) {
                                 is AgendaPhoto.LocalPhoto -> {
                                     it.copy(
-                                        agendaItemUi = eventUi.copy(
+                                        agendaItem = eventUi.copy(
                                             photos = eventUi.photos.filter { it.id != action.agendaPhoto.id }
                                         )
                                     )
@@ -243,7 +241,7 @@ class AgendaDetailsViewModel(
 
                                 is AgendaPhoto.RemotePhoto -> {
                                     it.copy(
-                                        agendaItemUi = eventUi.copy(
+                                        agendaItem = eventUi.copy(
                                             photos = eventUi.photos.filter { it.id != action.agendaPhoto.id }
                                         ),
                                         deletedPhotoKeys = it.deletedPhotoKeys + action.agendaPhoto.id
@@ -255,7 +253,7 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnDeleteAgendaItem -> {
-                deleteAgendaItemUi(action.agendaItemUi)
+                deleteAgendaItemUi(action.agendaItem)
             }
 
             is AgendaItemDetailsAction.OnLeaveAgendaItemEventIi -> {
@@ -268,7 +266,7 @@ class AgendaDetailsViewModel(
 
 
     private fun addVisitor(email: String) {
-        _state.value.agendaItemUi
+        _state.value.agendaItem
             ?.ifEventUi { eventUi ->
                 viewModelScope.launch {
                     _state.update {
@@ -291,7 +289,7 @@ class AgendaDetailsViewModel(
                             if (attendeeResult.data != null) {
                                 _state.update {
                                     it.copy(
-                                        agendaItemUi = eventUi.copy(
+                                        agendaItem = eventUi.copy(
                                             attendees = eventUi.attendees + attendeeResult.data!!.toAttendee(
                                                 remindAt = eventUi.to - eventUi.remindAt.getTimeInMilliseconds(),
                                                 eventId = eventUi.id
@@ -321,18 +319,18 @@ class AgendaDetailsViewModel(
 
     private fun loadAgendaItem() {
 
-        val agendaItemUiType = savedStateHandle.get<AgendaItemUiType>(AGENDA_ITEM_UI_TYPE)
+        val agendaItemType = savedStateHandle.get<AgendaItemType>(AGENDA_ITEM_UI_TYPE)
         val agendaItemUiId = savedStateHandle.get<String>(AGENDA_ITEM_UI_ID)
         val selectedDate =
             savedStateHandle.get<Long?>(SELECTED_DATE)?.withCurrentTimeHourAndMinutes()
                 ?: Instant.now().toEpochMilli()
         val isInEditMode = savedStateHandle[IS_IN_EDIT_MODE] ?: false
         if (agendaItemUiId == null) {
-            when (agendaItemUiType) {
-                AgendaItemUiType.Reminder -> {
+            when (agendaItemType) {
+                AgendaItemType.Reminder -> {
                     _state.update {
                         it.copy(
-                            agendaItemUi = AgendaItemUi.ReminderUi(
+                            agendaItem = AgendaItem.ReminderUi(
                                 id = UUID.randomUUID().toString(),
                                 title = "New Reminder",
                                 description = "Reminder Description",
@@ -344,11 +342,11 @@ class AgendaDetailsViewModel(
                     }
                 }
 
-                AgendaItemUiType.Event -> {
+                AgendaItemType.Event -> {
                     viewModelScope.launch {
                         _state.update {
                             it.copy(
-                                agendaItemUi = AgendaItemUi.EventUi(
+                                agendaItem = AgendaItem.EventUi(
                                     id = UUID.randomUUID().toString(),
                                     title = "New Event",
                                     description = "Event Description",
@@ -368,10 +366,10 @@ class AgendaDetailsViewModel(
                     }
                 }
 
-                AgendaItemUiType.Task -> {
+                AgendaItemType.Task -> {
                     _state.update {
                         it.copy(
-                            agendaItemUi = AgendaItemUi.TaskUi(
+                            agendaItem = AgendaItem.TaskUi(
                                 id = UUID.randomUUID().toString(),
                                 title = "New Task",
                                 description = "Task Description",
@@ -389,40 +387,40 @@ class AgendaDetailsViewModel(
 
         } else {
             viewModelScope.launch {
-                when (agendaItemUiType) {
-                    AgendaItemUiType.Reminder -> {
+                when (agendaItemType) {
+                    AgendaItemType.Reminder -> {
                         val agendaItem = reminderRepository.getReminderById(agendaItemUiId)
-                            ?.toAgendaItemReminderUi() ?: return@launch
+                            ?.toAgendaItem() ?: return@launch
                         _state.update {
                             it.copy(
                                 isEditingPreAgendaItem = true,
-                                agendaItemUi = agendaItem,
+                                agendaItem = agendaItem,
                                 isInEditMode = isInEditMode
                             )
                         }
                     }
 
-                    AgendaItemUiType.Event -> {
+                    AgendaItemType.Event -> {
                         val agendaItem =
-                            eventRepository.getEventById(agendaItemUiId)?.toAgendaItemEventUi()
+                            eventRepository.getEventById(agendaItemUiId)?.toAgendaItem()
                                 ?: return@launch
                         _state.update {
                             it.copy(
                                 isEditingPreAgendaItem = true,
-                                agendaItemUi = agendaItem,
+                                agendaItem = agendaItem,
                                 isInEditMode = isInEditMode
                             )
                         }
                     }
 
-                    AgendaItemUiType.Task -> {
+                    AgendaItemType.Task -> {
                         val agendaItem =
-                            taskRepository.getTaskById(agendaItemUiId)?.toAgendaItemTaskUi()
+                            taskRepository.getTaskById(agendaItemUiId)?.toAgendaItem()
                                 ?: return@launch
                         _state.update {
                             it.copy(
                                 isEditingPreAgendaItem = true,
-                                agendaItemUi = agendaItem,
+                                agendaItem = agendaItem,
                                 isInEditMode = isInEditMode
                             )
                         }
@@ -439,7 +437,7 @@ class AgendaDetailsViewModel(
     private fun saveAgendaItems() {
         viewModelScope.launch {
             if (_state.value.isEditingPreAgendaItem) {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi {
                         _state.update { it.copy(isSaving = true) }
                         eventRepository.updateEvent(it.toEvent(), _state.value.deletedPhotoKeys)
@@ -478,7 +476,7 @@ class AgendaDetailsViewModel(
 
                     }
             } else {
-                _state.value.agendaItemUi
+                _state.value.agendaItem
                     ?.ifEventUi {
                         _state.update { it.copy(isSaving = true) }
                         eventRepository.addEvent(it.toEvent())
@@ -522,7 +520,7 @@ class AgendaDetailsViewModel(
 
 
     private fun deleteAgendaItemUi(
-        agendaItemUi: AgendaItemUi
+        agendaItemUi: AgendaItem
     ) {
         viewModelScope.launch {
             agendaItemUi

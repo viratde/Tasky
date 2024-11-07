@@ -1,4 +1,4 @@
-package com.tasky.agenda.data.alarmScheduler
+package com.tasky
 
 import android.Manifest
 import android.app.PendingIntent
@@ -9,7 +9,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.tasky.agenda.data.R
+import com.tasky.TaskyApp.Companion.REMINDER_NOTIFICATION_CHANNEL_ID
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -42,7 +42,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 id.hashCode(),
-                Intent(context, Class.forName(ACTIVITY_CLASS_NAME)),
+                Intent(context, MainActivity::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             val notification = NotificationCompat.Builder(
@@ -66,8 +66,5 @@ class AlarmReceiver : BroadcastReceiver() {
         const val TITLE = "title"
         const val DESCRIPTION = "description"
         const val ID = "id"
-        const val REMINDER_NOTIFICATION_CHANNEL_ID = "Reminder"
-        const val REMINDER_NOTIFICATION_CHANNEL_NAME = "Reminder"
-        const val ACTIVITY_CLASS_NAME = "com.tasky.MainActivity"
     }
 }

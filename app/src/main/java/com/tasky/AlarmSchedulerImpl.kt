@@ -1,4 +1,4 @@
-package com.tasky.agenda.data.alarmScheduler
+package com.tasky
 
 import android.app.AlarmManager
 import android.app.PendingIntent

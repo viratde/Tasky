@@ -50,6 +50,7 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.agenda.data)
     implementation(projects.agenda.network)
+    implementation(projects.agenda.domain)
 
     // splash screen
     implementation(libs.androidx.core.splashscreen)
