@@ -17,4 +17,6 @@ interface ReminderRepository {
 
     suspend fun getReminderById(reminderId: String): Reminder?
 
+    suspend fun getAllRemindersGraterThanTime(time: Long): List<Reminder>
+
 }

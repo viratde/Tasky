@@ -7,6 +7,9 @@ import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
+import com.tasky.agenda.domain.schedulers.EventSyncScheduler
+import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
+import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemUiList
 import com.tasky.agenda.presentation.common.mappers.toTask
 import com.tasky.agenda.presentation.common.model.AgendaItem
@@ -37,7 +40,10 @@ class AgendaItemsViewModel(
     private val eventRepository: EventRepository,
     private val taskRepository: TaskRepository,
     private val reminderRepository: ReminderRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val eventSyncScheduler: EventSyncScheduler,
+    private val taskSyncScheduler: TaskSyncScheduler,
+    private val reminderSyncScheduler: ReminderSyncScheduler,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AgendaItemsState())
@@ -104,7 +110,7 @@ class AgendaItemsViewModel(
             }
 
             AgendaItemsAction.OnLogOut -> {
-                // $todo - Needs to implement logout feature
+                logout()
             }
 
             is AgendaItemsAction.OnSelectDate -> {
@@ -256,6 +262,17 @@ class AgendaItemsViewModel(
 
                 is Result.Success -> Unit
             }
+        }
+    }
+
+    private fun logout(){
+        viewModelScope.launch {
+            eventSyncScheduler.cancelAllSyncs()
+            taskSyncScheduler.cancelAllSyncs()
+            reminderSyncScheduler.cancelAllSyncs()
+            agendaRepository.deleteAllAgendaItems()
+            agendaRepository.logout()
+            authInfoStorage.set(null)
         }
     }
 

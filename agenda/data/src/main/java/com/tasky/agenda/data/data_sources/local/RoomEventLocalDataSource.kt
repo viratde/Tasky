@@ -56,4 +56,8 @@ class RoomEventLocalDataSource(
     override suspend fun deleteAllEvents() {
         return eventDao.deleteEvents()
     }
+
+    override suspend fun getAllEventsGreaterThanTime(time: Long): List<Event> {
+        return eventDao.getAllEventsGraterThanTime(time).map { it.toEvent() }
+    }
 }

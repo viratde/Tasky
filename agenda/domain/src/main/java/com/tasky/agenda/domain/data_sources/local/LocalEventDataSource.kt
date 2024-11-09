@@ -21,4 +21,6 @@ interface LocalEventDataSource {
 
     suspend fun deleteAllEvents()
 
+    suspend fun getAllEventsGreaterThanTime(time: Long): List<Event>
+
 }

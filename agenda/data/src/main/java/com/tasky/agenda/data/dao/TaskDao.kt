@@ -31,4 +31,7 @@ interface TaskDao {
     @Query("DELETE FROM taskEntity")
     suspend fun deleteAllTasks()
 
+    @Query("SELECT * FROM taskEntity WHERE `time` >= :time")
+    suspend fun getAllTasksGraterThanTime(time: Long): List<TaskEntity>
+
 }

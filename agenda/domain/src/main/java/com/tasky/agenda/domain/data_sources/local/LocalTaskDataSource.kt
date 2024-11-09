@@ -21,4 +21,6 @@ interface LocalTaskDataSource {
 
     suspend fun deleteAllTasks()
 
+    suspend fun getAllTasksGreaterThanTime(time: Long): List<Task>
+
 }

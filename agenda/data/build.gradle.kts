@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.bundles.koin)
     implementation(libs.timber)
+    implementation(libs.bundles.ktor)
 
     implementation(projects.core.domain)
     implementation(projects.agenda.domain)
