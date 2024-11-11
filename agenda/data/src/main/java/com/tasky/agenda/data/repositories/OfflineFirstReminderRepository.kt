@@ -91,4 +91,8 @@ class OfflineFirstReminderRepository(
         return localReminderDataSource.getReminderById(reminderId)
     }
 
+    override suspend fun getAllRemindersGraterThanTime(time: Long): List<Reminder> {
+        return localReminderDataSource.getAllRemindersGreaterThanTime(time)
+    }
+
 }

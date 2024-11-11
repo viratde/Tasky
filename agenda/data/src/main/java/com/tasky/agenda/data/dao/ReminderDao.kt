@@ -30,4 +30,7 @@ interface ReminderDao {
     @Query("DELETE FROM reminderEntity")
     suspend fun deleteAllReminders()
 
+    @Query("SELECT * FROM reminderEntity WHERE `time` >= :time")
+    suspend fun getAllRemindersGraterThanTime(time: Long): List<ReminderEntity>
+
 }

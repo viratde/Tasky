@@ -35,6 +35,13 @@ fun NavGraphBuilder.agendaGraph(
     navigation<AgendaGraph>(startDestination = AgendaScreen()) {
         composable<AgendaScreen> {
             AgendaItemsScreenRoot(
+                onLogoutClick = {
+                    navController.navigate(AuthGraph){
+                        popUpTo<AgendaGraph> {
+                            inclusive = true
+                        }
+                    }
+                },
                 onNavigate = { agendaItemUiType, selectedDate, agendaItemUiId,isInEditMode ->
                     navController.navigate(
                         AgendaItemUiScreen(

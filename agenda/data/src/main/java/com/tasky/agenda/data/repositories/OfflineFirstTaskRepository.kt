@@ -83,4 +83,9 @@ class OfflineFirstTaskRepository(
     override suspend fun getTaskById(taskId: String): Task? {
         return localTaskDataSource.getTaskById(taskId)
     }
+
+    override suspend fun getAllTasksGraterThanTime(time: Long): List<Task> {
+        return localTaskDataSource.getAllTasksGreaterThanTime(time)
+    }
+
 }

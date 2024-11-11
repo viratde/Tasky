@@ -96,4 +96,8 @@ class OfflineFirstEventRepository(
         return localEventDataSource.getEventById(eventId)
     }
 
+    override suspend fun getAllEventsGraterThanTime(time: Long): List<Event> {
+        return localEventDataSource.getAllEventsGreaterThanTime(time)
+    }
+
 }

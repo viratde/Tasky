@@ -14,4 +14,11 @@ interface AgendaRepository {
     fun getAgendaItems(): Flow<Agenda>
 
     fun getAgendaItemsByTime(time: Long): Flow<Agenda>
+
+    suspend fun getAllAgendaItemsGraterThanTime(time: Long): Agenda
+
+    suspend fun deleteAllAgendaItems()
+
+    suspend fun logout(): EmptyDataResult<DataError.Network>
+
 }

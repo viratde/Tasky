@@ -45,6 +45,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun AgendaItemsScreenRoot(
     viewModel: AgendaItemsViewModel = koinViewModel(),
+    onLogoutClick:() -> Unit,
     onNavigate: (itemType: AgendaItemType, selectedDate: Long, agendaItemId: String?, isInEditMode: Boolean) -> Unit
 ) {
 
@@ -71,6 +72,9 @@ fun AgendaItemsScreenRoot(
         state = state
     ) { action ->
         viewModel.onAction(action)
+        if(action is AgendaItemsAction.OnLogOut){
+            onLogoutClick()
+        }
     }
 
 }

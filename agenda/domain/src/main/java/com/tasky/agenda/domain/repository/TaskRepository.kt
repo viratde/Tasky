@@ -16,4 +16,7 @@ interface TaskRepository {
     suspend fun deleteTaskById(taskId: String)
 
     suspend fun getTaskById(taskId: String): Task?
+
+    suspend fun getAllTasksGraterThanTime(time: Long): List<Task>
+
 }

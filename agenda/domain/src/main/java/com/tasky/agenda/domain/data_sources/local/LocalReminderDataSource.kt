@@ -21,4 +21,6 @@ interface LocalReminderDataSource {
 
     suspend fun deleteAllReminders()
 
+    suspend fun getAllRemindersGreaterThanTime(time: Long): List<Reminder>
+
 }

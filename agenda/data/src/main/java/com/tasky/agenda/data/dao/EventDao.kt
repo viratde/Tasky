@@ -30,4 +30,7 @@ interface EventDao {
     @Query("DELETE FROM eventEntity")
     suspend fun deleteEvents()
 
+    @Query("SELECT * FROM eventEntity WHERE `from` >= :time")
+    suspend fun getAllEventsGraterThanTime(time: Long): List<EventEntity>
+
 }

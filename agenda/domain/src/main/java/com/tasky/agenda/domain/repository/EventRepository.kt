@@ -1,7 +1,7 @@
 package com.tasky.agenda.domain.repository
 
-import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.model.AttendeeExistence
+import com.tasky.agenda.domain.model.Event
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -25,4 +25,7 @@ interface EventRepository {
     suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network>
 
     suspend fun getEventById(eventId: String): Event?
+
+    suspend fun getAllEventsGraterThanTime(time: Long): List<Event>
+
 }

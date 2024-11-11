@@ -56,4 +56,8 @@ class RoomTaskLocalDataSource(
     override suspend fun deleteAllTasks() {
         return taskDao.deleteAllTasks()
     }
+
+    override suspend fun getAllTasksGreaterThanTime(time: Long): List<Task> {
+        return taskDao.getAllTasksGraterThanTime(time).map { it.toTask() }
+    }
 }

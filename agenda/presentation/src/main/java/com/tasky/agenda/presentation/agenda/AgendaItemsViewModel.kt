@@ -7,6 +7,9 @@ import com.tasky.agenda.domain.repository.AgendaRepository
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
+import com.tasky.agenda.domain.schedulers.EventSyncScheduler
+import com.tasky.agenda.domain.schedulers.ReminderSyncScheduler
+import com.tasky.agenda.domain.schedulers.TaskSyncScheduler
 import com.tasky.agenda.presentation.common.mappers.toAgendaItemUiList
 import com.tasky.agenda.presentation.common.mappers.toTask
 import com.tasky.agenda.presentation.common.model.AgendaItem
@@ -21,6 +24,7 @@ import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.Result
 import com.tasky.core.presentation.ui.asUiText
 import com.tasky.core.presentation.ui.getCurrentTimeInMillis
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,7 +41,11 @@ class AgendaItemsViewModel(
     private val eventRepository: EventRepository,
     private val taskRepository: TaskRepository,
     private val reminderRepository: ReminderRepository,
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val eventSyncScheduler: EventSyncScheduler,
+    private val taskSyncScheduler: TaskSyncScheduler,
+    private val reminderSyncScheduler: ReminderSyncScheduler,
+    private val applicationScope: CoroutineScope
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AgendaItemsState())
@@ -104,7 +112,7 @@ class AgendaItemsViewModel(
             }
 
             AgendaItemsAction.OnLogOut -> {
-                // $todo - Needs to implement logout feature
+                logout()
             }
 
             is AgendaItemsAction.OnSelectDate -> {
@@ -255,6 +263,29 @@ class AgendaItemsViewModel(
                 }
 
                 is Result.Success -> Unit
+            }
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            applicationScope.launch {
+                taskSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                reminderSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                eventSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                agendaRepository.deleteAllAgendaItems()
+            }
+            applicationScope.launch {
+                agendaRepository.logout()
+            }
+            applicationScope.launch {
+                authInfoStorage.set(null)
             }
         }
     }

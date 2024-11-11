@@ -8,10 +8,15 @@ import com.tasky.agenda.domain.data_sources.local.LocalReminderDataSource
 import com.tasky.agenda.domain.data_sources.local.LocalTaskDataSource
 import com.tasky.agenda.domain.data_sources.remote.AgendaRemoteDataSource
 import com.tasky.agenda.domain.model.Agenda
+import com.tasky.core.data.networking.get
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
 import com.tasky.core.domain.util.asEmptyDataResult
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerAuthProvider
+import io.ktor.client.plugins.plugin
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +28,8 @@ class OfflineFirstAgendaItemsRepository(
     private val localReminderDataSource: LocalReminderDataSource,
     private val db: AgendaItemsDatabase,
     private val agendaRemoteDataSource: AgendaRemoteDataSource,
-    private val applicationScope: CoroutineScope
+    private val applicationScope: CoroutineScope,
+    private val client: HttpClient
 ) : AgendaRepository {
 
     override suspend fun fetchAgendaItems(): EmptyDataResult<DataError> {
@@ -83,4 +89,31 @@ class OfflineFirstAgendaItemsRepository(
             )
         }
     }
+
+    override suspend fun getAllAgendaItemsGraterThanTime(time: Long): Agenda {
+        return Agenda(
+            events = localEventDataSource.getAllEventsGreaterThanTime(time),
+            tasks = localTaskDataSource.getAllTasksGreaterThanTime(time),
+            reminders = localReminderDataSource.getAllRemindersGreaterThanTime(time)
+        )
+    }
+
+    override suspend fun deleteAllAgendaItems() {
+        localTaskDataSource.deleteAllTasks()
+        localEventDataSource.deleteAllEvents()
+        localTaskDataSource.deleteAllTasks()
+    }
+
+    override suspend fun logout(): EmptyDataResult<DataError.Network> {
+        val result = client.get<Unit>(
+            route = "/logout",
+        ).asEmptyDataResult()
+
+        client.plugin(Auth).providers.filterIsInstance<BearerAuthProvider>()
+            .firstOrNull()
+            ?.clearToken()
+
+        return result
+    }
+
 }

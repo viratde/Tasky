@@ -57,4 +57,8 @@ class RoomReminderLocalDataSource(
     override suspend fun deleteAllReminders() {
         return reminderDao.deleteAllReminders()
     }
+
+    override suspend fun getAllRemindersGreaterThanTime(time: Long): List<Reminder> {
+        return reminderDao.getAllRemindersGraterThanTime(time).map { it.toReminder() }
+    }
 }
