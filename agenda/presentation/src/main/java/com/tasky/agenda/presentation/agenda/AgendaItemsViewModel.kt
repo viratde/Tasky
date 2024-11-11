@@ -24,6 +24,7 @@ import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.Result
 import com.tasky.core.presentation.ui.asUiText
 import com.tasky.core.presentation.ui.getCurrentTimeInMillis
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +45,7 @@ class AgendaItemsViewModel(
     private val eventSyncScheduler: EventSyncScheduler,
     private val taskSyncScheduler: TaskSyncScheduler,
     private val reminderSyncScheduler: ReminderSyncScheduler,
+    private val applicationScope: CoroutineScope
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AgendaItemsState())
@@ -265,14 +267,26 @@ class AgendaItemsViewModel(
         }
     }
 
-    private fun logout(){
+    private fun logout() {
         viewModelScope.launch {
-            eventSyncScheduler.cancelAllSyncs()
-            taskSyncScheduler.cancelAllSyncs()
-            reminderSyncScheduler.cancelAllSyncs()
-            agendaRepository.deleteAllAgendaItems()
-            agendaRepository.logout()
-            authInfoStorage.set(null)
+            applicationScope.launch {
+                taskSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                reminderSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                eventSyncScheduler.cancelAllSyncs()
+            }
+            applicationScope.launch {
+                agendaRepository.deleteAllAgendaItems()
+            }
+            applicationScope.launch {
+                agendaRepository.logout()
+            }
+            applicationScope.launch {
+                authInfoStorage.set(null)
+            }
         }
     }
 
