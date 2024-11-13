@@ -210,11 +210,10 @@ class AgendaDetailsViewModel(
                 _state.value.agendaItem
                     ?.ifEventUi { eventUi ->
                         _state.update {
-                            // @todo need to handle the situation where a user wants to delete himself from event (handled in leave event action)
                             it.copy(
                                 agendaItem = eventUi.copy(
                                     attendees = eventUi.attendees.filter {
-                                        it.userId != action.attendee.userId && it.userId != eventUi.hostId
+                                        it.userId != action.attendee.userId || it.userId == eventUi.hostId
                                     }
                                 )
                             )
@@ -257,13 +256,30 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnLeaveAgendaItemEventIi -> {
-
+                deleteLocalAttendeeFromEvent(action.eventUi.id)
             }
 
             AgendaItemDetailsAction.OnNavigateUp -> Unit
+
+            is AgendaItemDetailsAction.OnToggleAgendaItemEventIi -> {
+                _state.update {
+                    it.copy(
+                        isGoingIfEventUi = !it.isGoingIfEventUi
+                    )
+                }
+            }
         }
+
+
     }
 
+
+    private fun deleteLocalAttendeeFromEvent(eventId: String) {
+        viewModelScope.launch {
+            eventRepository.deleteLocalAttendeeFromEvent(eventId)
+            _events.send(AgendaItemDetailsEvent.OnNavigateUp)
+        }
+    }
 
     private fun addVisitor(email: String) {
         _state.value.agendaItem
@@ -337,7 +353,8 @@ class AgendaDetailsViewModel(
                                 remindAt = RemindTimes.TEN_MINUTES,
                                 time = selectedDate
                             ),
-                            isInEditMode = true
+                            isInEditMode = true,
+                            isCreatorOfPreAgendaItem = true
                         )
                     }
                 }
@@ -360,7 +377,8 @@ class AgendaDetailsViewModel(
                                     isHost = true,
                                     hostId = authInfoStorage.get()?.userId ?: ""
                                 ),
-                                isInEditMode = true
+                                isInEditMode = true,
+                                isCreatorOfPreAgendaItem = true
                             )
                         }
                     }
@@ -377,7 +395,8 @@ class AgendaDetailsViewModel(
                                 time = selectedDate,
                                 isDone = false
                             ),
-                            isInEditMode = true
+                            isInEditMode = true,
+                            isCreatorOfPreAgendaItem = true
                         )
                     }
                 }
@@ -395,20 +414,21 @@ class AgendaDetailsViewModel(
                             it.copy(
                                 isEditingPreAgendaItem = true,
                                 agendaItem = agendaItem,
-                                isInEditMode = isInEditMode
+                                isInEditMode = isInEditMode,
+                                isCreatorOfPreAgendaItem = true
                             )
                         }
                     }
 
                     AgendaItemType.Event -> {
-                        val agendaItem =
-                            eventRepository.getEventById(agendaItemUiId)?.toAgendaItem()
-                                ?: return@launch
+                        val event = eventRepository.getEventById(agendaItemUiId) ?: return@launch
+                        val agendaItem = event.toAgendaItem()
                         _state.update {
                             it.copy(
                                 isEditingPreAgendaItem = true,
                                 agendaItem = agendaItem,
-                                isInEditMode = isInEditMode
+                                isInEditMode = isInEditMode,
+                                isCreatorOfPreAgendaItem = event.isUserEventCreator
                             )
                         }
                     }
@@ -421,7 +441,8 @@ class AgendaDetailsViewModel(
                             it.copy(
                                 isEditingPreAgendaItem = true,
                                 agendaItem = agendaItem,
-                                isInEditMode = isInEditMode
+                                isInEditMode = isInEditMode,
+                                isCreatorOfPreAgendaItem = true
                             )
                         }
                     }
@@ -526,12 +547,15 @@ class AgendaDetailsViewModel(
             agendaItemUi
                 .ifEventUi {
                     eventRepository.deleteEventById(agendaItemUi.id)
+                    _events.send(AgendaItemDetailsEvent.OnNavigateUp)
                 }
                 .ifTaskUi {
                     taskRepository.deleteTaskById(agendaItemUi.id)
+                    _events.send(AgendaItemDetailsEvent.OnNavigateUp)
                 }
                 .ifReminderUi {
                     reminderRepository.deleteRemindersById(agendaItemUi.id)
+                    _events.send(AgendaItemDetailsEvent.OnNavigateUp)
                 }
 
         }

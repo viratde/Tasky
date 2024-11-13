@@ -12,6 +12,8 @@ data class AgendaDetailsState(
     val isLoading: Boolean = false,
     val isInEditMode: Boolean = false,
     val selectedVisitorsFilterState: VisitorsFilterState = VisitorsFilterState.ALL,
+    val isCreatorOfPreAgendaItem: Boolean = false,
+    val isGoingIfEventUi: Boolean = false,
     val visitorState: VisitorState? = null,
     val deletedPhotoKeys: List<String> = listOf(),
     val isSaving: Boolean = false,

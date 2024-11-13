@@ -189,6 +189,7 @@ class AgendaItemsViewModel(
             val isComingFromLoginScreen = savedStateHandle[IS_COMING_FROM_LOGIN_SCREEN] ?: false
             if (isComingFromLoginScreen) {
                 agendaRepository.fetchAgendaItems()
+                agendaRepository.syncPendingAgendaItems()
             } else {
                 agendaRepository.fetchAgendaItemsByTime(state.value.selectedDate)
             }

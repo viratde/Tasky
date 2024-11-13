@@ -38,5 +38,5 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="logout">Logout</string>
-    <string name="photo_cannot_be_added">Photo can be added due to \n network inactivity.</string>
+    <string name="photo_cannot_be_added">Photo cann\'t be added.</string>
 </resources>

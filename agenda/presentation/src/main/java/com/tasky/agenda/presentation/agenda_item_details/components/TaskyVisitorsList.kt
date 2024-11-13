@@ -119,12 +119,14 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.going),
-                    onDelete = onDelete
+                    onDelete = onDelete,
+                    isEnabled = isEnabled
                 )
                 TaskyVisitors(
                     visitors = visitors.filter { !it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.not_going),
+                    isEnabled = isEnabled,
                     onDelete = onDelete
                 )
             }
@@ -134,6 +136,7 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.going),
+                    isEnabled = isEnabled,
                     onDelete = onDelete
                 )
             }
@@ -143,6 +146,7 @@ fun TaskyVisitorsList(
                     visitors = visitors.filter { !it.isGoing },
                     creatorUserId = hostUserId,
                     title = stringResource(id = R.string.not_going),
+                    isEnabled = isEnabled,
                     onDelete = onDelete
                 )
             }
@@ -157,6 +161,7 @@ private fun TaskyVisitors(
     visitors: List<Attendee>,
     creatorUserId: String,
     title: String,
+    isEnabled: Boolean,
     onDelete: (Attendee) -> Unit
 ) {
 
@@ -184,6 +189,7 @@ private fun TaskyVisitors(
                         .fillMaxWidth(),
                     name = attendee.fullName,
                     isCreator = attendee.userId == creatorUserId,
+                    isEnabled = isEnabled,
                     onDelete = {
                         onDelete(attendee)
                     }

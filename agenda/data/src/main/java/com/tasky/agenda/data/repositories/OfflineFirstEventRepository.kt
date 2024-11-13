@@ -8,6 +8,7 @@ import com.tasky.agenda.domain.model.AttendeeExistence
 import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.schedulers.EventSyncScheduler
+import com.tasky.core.domain.AuthInfoStorage
 import com.tasky.core.domain.util.DataError
 import com.tasky.core.domain.util.EmptyDataResult
 import com.tasky.core.domain.util.Result
@@ -21,6 +22,7 @@ class OfflineFirstEventRepository(
     private val remoteEventDataSource: RemoteEventDataSource,
     private val eventSyncScheduler: EventSyncScheduler,
     private val alarmScheduler: AlarmScheduler,
+    private val authInfoStorage: AuthInfoStorage,
     private val applicationScope: CoroutineScope
 ) : EventRepository {
 
@@ -89,7 +91,22 @@ class OfflineFirstEventRepository(
     }
 
     override suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network> {
-        return remoteEventDataSource.deleteLocalAttendeeFromAnEvent(eventId)
+        val result = remoteEventDataSource.deleteLocalAttendeeFromAnEvent(eventId)
+        if (result is Result.Error) {
+            val event = localEventDataSource.getEventById(eventId) ?: return result
+            val userId = authInfoStorage.get()?.userId ?: return result
+            applicationScope.launch {
+                eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(
+                    event.copy(
+                        attendees = event.attendees.filter {
+                            it.userId != userId || event.host == userId
+                        }
+                    )
+                ))
+            }.join()
+        }
+        localEventDataSource.deleteEvent(eventId)
+        return result
     }
 
     override suspend fun getEventById(eventId: String): Event? {
