@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tasky.agenda.domain.model.AgendaPhoto
+import com.tasky.agenda.domain.model.Event
 import com.tasky.agenda.domain.repository.EventRepository
 import com.tasky.agenda.domain.repository.ReminderRepository
 import com.tasky.agenda.domain.repository.TaskRepository
@@ -256,7 +257,7 @@ class AgendaDetailsViewModel(
             }
 
             is AgendaItemDetailsAction.OnLeaveAgendaItemEventIi -> {
-                deleteLocalAttendeeFromEvent(action.eventUi.id)
+                deleteLocalAttendeeFromEvent(action.eventUi)
             }
 
             AgendaItemDetailsAction.OnNavigateUp -> Unit
@@ -274,9 +275,9 @@ class AgendaDetailsViewModel(
     }
 
 
-    private fun deleteLocalAttendeeFromEvent(eventId: String) {
+    private fun deleteLocalAttendeeFromEvent(agendaItem: AgendaItem.EventUi) {
         viewModelScope.launch {
-            eventRepository.deleteLocalAttendeeFromEvent(eventId)
+            eventRepository.deleteLocalAttendeeFromEvent(agendaItem.toEvent())
             _events.send(AgendaItemDetailsEvent.OnNavigateUp)
         }
     }

@@ -146,60 +146,105 @@ class OfflineFirstAgendaItemsRepository(
         withContext(Dispatchers.IO) {
             val userId = authInfoStorage.get()?.userId ?: return@withContext
 
-            eventSyncDao.getAllEventPendingSyncs(
-                syncType = SyncType.CREATE,
-                userId = userId
-            ).forEach {
-                eventSyncScheduler.sync(EventSyncScheduler.SyncType.CreateEventSync(it.event.toEvent()))
-            }
-            eventSyncDao.getAllEventPendingSyncs(
-                syncType = SyncType.UPDATE,
-                userId = userId
-            ).forEach {
-                eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(it.event.toEvent()))
-            }
-            eventDeleteSyncDao.getAllEventDeletePendingSyncs(
-                userId = userId
-            ).forEach {
-                eventSyncScheduler.sync(EventSyncScheduler.SyncType.DeleteEventSync(it.eventId))
+            val createdEvents = async {
+                eventSyncDao.getAllEventPendingSyncs(
+                    syncType = SyncType.CREATE,
+                    userId = userId
+                ).map {
+                    async { eventSyncScheduler.sync(EventSyncScheduler.SyncType.CreateEventSync(it.event.toEvent())) }
+                }
             }
 
-            taskSyncDao.getAllTaskPendingSyncs(
-                syncType = SyncType.CREATE,
-                userId = userId
-            ).forEach {
-                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(it.task.toTask()))
-            }
-            taskSyncDao.getAllTaskPendingSyncs(
-                syncType = SyncType.UPDATE,
-                userId = userId
-            ).forEach {
-                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.UpdateTaskSync(it.task.toTask()))
-            }
-            taskDeleteSyncDao.getAllTaskDeletePendingSyncs(
-                userId = userId
-            ).forEach {
-                taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(it.taskId))
+            val updatedEvents = async {
+                eventSyncDao.getAllEventPendingSyncs(
+                    syncType = SyncType.UPDATE,
+                    userId = userId
+                ).map {
+                    async { eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(it.event.toEvent())) }
+                }
             }
 
-            reminderSyncDao.getAllReminderPendingSyncs(
-                syncType = SyncType.CREATE,
-                userId = userId
-            ).forEach {
-                reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.CreateReminderSync(it.reminder.toReminder()))
-            }
-            reminderSyncDao.getAllReminderPendingSyncs(
-                syncType = SyncType.UPDATE,
-                userId = userId
-            ).forEach {
-                reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.UpdateReminderSync(it.reminder.toReminder()))
-            }
-            reminderDeleteSyncDao.getAllReminderDeletePendingSyncs(
-                userId = userId
-            ).forEach {
-                reminderSyncScheduler.sync(ReminderSyncScheduler.SyncType.DeleteReminderSync(it.reminderId))
+            val deletedEvents = async {
+                eventDeleteSyncDao.getAllEventDeletePendingSyncs(
+                    userId = userId
+                ).map {
+                    async { eventSyncScheduler.sync(EventSyncScheduler.SyncType.DeleteEventSync(it.eventId)) }
+                }
             }
 
+            val createdTasks = async {
+                taskSyncDao.getAllTaskPendingSyncs(
+                    syncType = SyncType.CREATE,
+                    userId = userId
+                ).map {
+                    async { taskSyncScheduler.sync(TaskSyncScheduler.SyncType.CreateTaskSync(it.task.toTask())) }
+                }
+            }
+
+            val updatedTasks = async {
+                taskSyncDao.getAllTaskPendingSyncs(
+                    syncType = SyncType.UPDATE,
+                    userId = userId
+                ).map {
+                    async { taskSyncScheduler.sync(TaskSyncScheduler.SyncType.UpdateTaskSync(it.task.toTask())) }
+                }
+            }
+            val deletedTasks = async {
+                taskDeleteSyncDao.getAllTaskDeletePendingSyncs(
+                    userId = userId
+                ).map {
+                    async { taskSyncScheduler.sync(TaskSyncScheduler.SyncType.DeleteTaskSync(it.taskId)) }
+                }
+            }
+
+            val createdReminders = async {
+                reminderSyncDao.getAllReminderPendingSyncs(
+                    syncType = SyncType.CREATE,
+                    userId = userId
+                ).map {
+                    async {
+                        reminderSyncScheduler.sync(
+                            ReminderSyncScheduler.SyncType.CreateReminderSync(
+                                it.reminder.toReminder()
+                            )
+                        )
+                    }
+                }
+            }
+            val updatedReminders = async {
+                reminderSyncDao.getAllReminderPendingSyncs(
+                    syncType = SyncType.UPDATE,
+                    userId = userId
+                ).map {
+                    async {
+                        reminderSyncScheduler.sync(
+                            ReminderSyncScheduler.SyncType.UpdateReminderSync(
+                                it.reminder.toReminder()
+                            )
+                        )
+                    }
+                }
+            }
+            val deletedReminders = async {
+                reminderDeleteSyncDao.getAllReminderDeletePendingSyncs(
+                    userId = userId
+                ).map {
+                    async {
+                        reminderSyncScheduler.sync(
+                            ReminderSyncScheduler.SyncType.DeleteReminderSync(it.reminderId)
+                        )
+                    }
+                }
+            }
+            createdEvents.await().forEach { it.join() }
+            updatedEvents.await().forEach { it.join() }
+            deletedEvents.await().forEach { it.join() }
+            createdTasks.await().forEach { it.join() }
+            updatedTasks.await().forEach { it.join() }
+            deletedTasks.await().forEach { it.join() }
+            createdReminders.await().forEach { it.join() }
+            updatedReminders.await().forEach { it.join() }
+            deletedReminders.await().forEach { it.join() }
         }
     }
 

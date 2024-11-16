@@ -90,23 +90,20 @@ class OfflineFirstEventRepository(
         return remoteEventDataSource.getAttendee(email)
     }
 
-    override suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network> {
-        val result = remoteEventDataSource.deleteLocalAttendeeFromAnEvent(eventId)
-        if (result is Result.Error) {
-            val event = localEventDataSource.getEventById(eventId) ?: return result
-            val userId = authInfoStorage.get()?.userId ?: return result
+    override suspend fun deleteLocalAttendeeFromEvent(event: Event): EmptyDataResult<DataError> {
+        localEventDataSource.deleteEvent(event.id)
+        val remoteResult = remoteEventDataSource.deleteLocalAttendeeFromAnEvent(event.id)
+        if (remoteResult is Result.Error) {
             applicationScope.launch {
-                eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(
-                    event.copy(
-                        attendees = event.attendees.filter {
-                            it.userId != userId || event.host == userId
-                        }
-                    )
-                ))
+                val userId = authInfoStorage.get()?.userId ?: return@launch
+                val updatedEvent = event.copy(
+                    attendees = event.attendees.filter { it.userId != userId || event.host == userId }
+                )
+                eventSyncScheduler.sync(EventSyncScheduler.SyncType.UpdateEventSync(updatedEvent))
             }.join()
+            return Result.Success(Unit)
         }
-        localEventDataSource.deleteEvent(eventId)
-        return result
+        return remoteResult
     }
 
     override suspend fun getEventById(eventId: String): Event? {
