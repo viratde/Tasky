@@ -21,4 +21,6 @@ interface AgendaRepository {
 
     suspend fun logout(): EmptyDataResult<DataError.Network>
 
+    suspend fun syncPendingAgendaItems()
+
 }

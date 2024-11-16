@@ -173,7 +173,7 @@ fun AgendaItemDetailsScreen(
                         title = stringResource(id = R.string.edit_title),
                         text = state.agendaItem.title,
                         inputType = InputType.TITLE,
-                        isEnabled = state.isInEditMode,
+                        isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                         onValueChange = { title ->
                             onAction(AgendaItemDetailsAction.OnTitleChange(title))
                         }
@@ -196,7 +196,7 @@ fun AgendaItemDetailsScreen(
                         title = stringResource(id = R.string.edit_description),
                         text = state.agendaItem.description,
                         inputType = InputType.DESCRIPTION,
-                        isEnabled = state.isInEditMode,
+                        isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                         onValueChange = { desc ->
                             onAction(AgendaItemDetailsAction.OnDescriptionChange(desc))
                         }
@@ -218,7 +218,7 @@ fun AgendaItemDetailsScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             photos = state.agendaItem.photos,
-                            enabled = state.isInEditMode && state.isNetworkConnected,
+                            enabled = state.isInEditMode && state.isNetworkConnected && state.isCreatorOfPreAgendaItem,
                             onAddPhoto = { photo, mimeType ->
                                 onAction(AgendaItemDetailsAction.OnAddAgendaPhoto(photo, mimeType))
                             },
@@ -246,7 +246,7 @@ fun AgendaItemDetailsScreen(
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.from),
                                 dateTime = state.agendaItem.from,
-                                isEnabled = state.isInEditMode,
+                                isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                                 onChange = { from ->
                                     onAction(AgendaItemDetailsAction.OnFromChange(from))
                                 }
@@ -267,7 +267,7 @@ fun AgendaItemDetailsScreen(
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.to),
                                 dateTime = state.agendaItem.to,
-                                isEnabled = state.isInEditMode,
+                                isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                                 onChange = { to ->
                                     onAction(AgendaItemDetailsAction.OnFromChange(to))
                                 }
@@ -281,7 +281,7 @@ fun AgendaItemDetailsScreen(
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.at),
                                 dateTime = state.agendaItem.time,
-                                isEnabled = state.isInEditMode,
+                                isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                                 onChange = { at ->
                                     onAction(AgendaItemDetailsAction.OnAtChange(at))
                                 }
@@ -297,7 +297,7 @@ fun AgendaItemDetailsScreen(
                                     .padding(horizontal = 16.dp),
                                 title = stringResource(id = R.string.at),
                                 dateTime = state.agendaItem.time,
-                                isEnabled = state.isInEditMode,
+                                isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                                 onChange = { at ->
                                     onAction(AgendaItemDetailsAction.OnAtChange(at))
                                 }
@@ -353,7 +353,7 @@ fun AgendaItemDetailsScreen(
                             onToggleAddModel = {
                                 onAction(AgendaItemDetailsAction.OnToggleVisitorsModel)
                             },
-                            isEnabled = state.isInEditMode,
+                            isEnabled = state.isInEditMode && state.isCreatorOfPreAgendaItem,
                             onDelete = { attendee ->
                                 onAction(AgendaItemDetailsAction.OnDeleteVisitor(attendee))
                             }
@@ -397,23 +397,45 @@ fun AgendaItemDetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                TaskyAgendaButton(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    text = when (state.agendaItem) {
-                        is AgendaItem.EventUi -> {
-                            stringResource(id = if (state.agendaItem.isHost) R.string.delete_event else R.string.leave_event)
+                if (state.isEditingPreAgendaItem) {
+                    TaskyAgendaButton(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        text = when (state.agendaItem) {
+                            is AgendaItem.EventUi -> {
+                                stringResource(id = if (state.agendaItem.isHost) R.string.delete_event else R.string.leave_event)
+                            }
+
+                            is AgendaItem.ReminderUi -> stringResource(id = R.string.delete_remainder)
+                            is AgendaItem.TaskUi -> stringResource(id = R.string.delete_task)
+                        },
+                        enabled = true,
+                        onClick = {
+                            when (state.agendaItem) {
+                                is AgendaItem.EventUi -> {
+                                    if (state.agendaItem.isHost) {
+                                        onAction(AgendaItemDetailsAction.OnDeleteAgendaItem(state.agendaItem))
+                                    } else {
+                                        onAction(
+                                            AgendaItemDetailsAction.OnLeaveAgendaItemEventIi(
+                                                state.agendaItem
+                                            )
+                                        )
+                                    }
+                                }
+
+                                is AgendaItem.ReminderUi -> {
+                                    onAction(AgendaItemDetailsAction.OnDeleteAgendaItem(state.agendaItem))
+                                }
+
+                                is AgendaItem.TaskUi -> {
+                                    onAction(AgendaItemDetailsAction.OnDeleteAgendaItem(state.agendaItem))
+                                }
+                            }
                         }
-
-                        is AgendaItem.ReminderUi -> stringResource(id = R.string.delete_remainder)
-                        is AgendaItem.TaskUi -> stringResource(id = R.string.delete_task)
-                    },
-                    enabled = true,
-                    onClick = {
-
-                    }
-                )
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
             }

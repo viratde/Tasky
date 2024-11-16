@@ -39,5 +39,9 @@ sealed interface AgendaItemDetailsAction {
         val eventUi: AgendaItem.EventUi
     ) : AgendaItemDetailsAction
 
+    data class OnToggleAgendaItemEventIi(
+        val eventUi: AgendaItem.EventUi
+    ) : AgendaItemDetailsAction
+
     data object OnNavigateUp : AgendaItemDetailsAction
 }

@@ -43,6 +43,7 @@ fun TaskyVisitor(
     modifier: Modifier = Modifier,
     name: String,
     isCreator: Boolean,
+    isEnabled:Boolean,
     onDelete: () -> Unit,
 ) {
 
@@ -105,7 +106,10 @@ fun TaskyVisitor(
                 }
             )
 
-            IconButton(onClick = onDelete) {
+            IconButton(
+                onClick = onDelete,
+                enabled = isEnabled
+            ) {
                 Icon(
                     imageVector = DeleteIcon,
                     contentDescription = null,
@@ -129,6 +133,7 @@ private fun TaskyVisitorCreatorPreview() {
         TaskyVisitor(
             name = "Virat Kumar",
             isCreator = false,
+            isEnabled = false,
             onDelete = {
 
             }
@@ -143,6 +148,22 @@ private fun TaskyVisitorPreview() {
         TaskyVisitor(
             name = "Virat Kumar",
             isCreator = true,
+            isEnabled = true,
+            onDelete = {
+
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun TaskyVisitorDisabledPreview() {
+    TaskyTheme {
+        TaskyVisitor(
+            name = "Virat Kumar",
+            isCreator = false,
+            isEnabled = false,
             onDelete = {
 
             }

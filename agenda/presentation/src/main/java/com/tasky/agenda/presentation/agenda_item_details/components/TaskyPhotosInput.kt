@@ -440,7 +440,7 @@ private fun TaskyPhotosNonEmptyPreview() {
             onDeletePhoto = {
 
             },
-            enabled = true
+            enabled = true,
         )
     }
 }

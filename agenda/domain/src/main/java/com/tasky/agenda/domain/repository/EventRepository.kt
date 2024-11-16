@@ -22,7 +22,7 @@ interface EventRepository {
 
     suspend fun getAttendee(email: String): Result<AttendeeExistence?, DataError.Network>
 
-    suspend fun deleteLocalAttendeeFromEvent(eventId: String): EmptyDataResult<DataError.Network>
+    suspend fun deleteLocalAttendeeFromEvent(event: Event): EmptyDataResult<DataError>
 
     suspend fun getEventById(eventId: String): Event?
 
